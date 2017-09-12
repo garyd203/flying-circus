@@ -1,0 +1,24 @@
+Classes we need
+
+- Base class to represent an AWS CFN resource, plus other low level primitives
+- Base classes to represent all AWS services as resources, with well-defined fields. A bug-for-bug pass-through implementation of existing functionality, complete with quirky names
+- Library of best practice default implementations of all services
+- Library of good practice implementations of common multi-service patterns
+- Multiple (internal) libraries of localised services
+- Concrete stacks built on top of the library classes
+
+Other cross cutting programmatic constructs
+
+- Export to YAML
+- Interact with CFN directly
+- Extra naming layer that is consistent across services and pythonic
+- CFN linter at instance creation time
+
+Programming Standards
+
+- Well tested
+- Based off boto3, perhaps
+- Clear doco
+- Python 2 & 3
+- Allow full access to underlying CFN
+- Easy exit strategy to go back to YAML
