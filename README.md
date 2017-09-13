@@ -1,15 +1,17 @@
 # flying-circus
 
+A new tool for managing AWS infrastructure.
+
 ## What It Is
 
-* A representation of an AWS Cloud Formation stack using Python (rather than, say, JSON or YAML or a Jinja template)
+* A representation of an AWS Cloud Formation stack using Python objects (rather than, say, JSON or YAML or a Jinja template)
 * Enables easy use of coding constructs for compact code, code re-use, etc.
-* Produces good practice, concistsent, human-readable YAML
+* Produces good practice, consistent, human-readable YAML
 
 ## What It Might Become (But Is Not Yet)
 
-* A tool for directly interacting with Cloud Formation service
-* Cloud Formation style- and validity-checker
+* A tool for directly interacting with the Cloud Formation service
+* A style- and validity-checker for Cloud Formation YAML
 
 ## What It Is Not
 
