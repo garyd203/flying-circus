@@ -1,5 +1,7 @@
+from flyingcircus.config import ExportYamlContext
 from flyingcircus.core import Stack
-from flyingcircus.services import s3
+from flyingcircus.core import Output
+from flyingcircus.service import s3
 
 SIMPLE_S3_YAML = '''
 {
@@ -31,12 +33,12 @@ SIMPLE_S3_YAML = '''
       "Description" : "Name of S3 bucket to hold website content"
     }
   } 
-}'''  # FIXME this is JSON, not YAML
+}'''  # FIXME this is JSON, not YAML. also should be canonicalised (for some value of canonicalisation that macthes what we do)
 
 
 class TestCoreServices:
     def test_s3_as_naive_python(self):
-        """As a developer, I can use a naive python representation of YAML to create objects representing a basic S3 bucket."""
+        """As a developer, I can use a straightforward python representation of YAML to create objects representing a basic S3 bucket."""
         # Exercise
         stack = Stack(
             AWSTemplateFormatVersion="2010-09-09",
@@ -53,26 +55,26 @@ class TestCoreServices:
             DeletionPolicy="Retain",
         )
         stack.Outputs["WebsiteURL"] = Output(
-            "!GetAtt S3Bucket.WebsiteURL",
+            Value="!GetAtt S3Bucket.WebsiteURL",
             Description="URL for website hosted on S3",
         )
         stack.Outputs["S3BucketSecureURL"] = Output(
-            '''!Join ["", ["https://", !GetAtt S3Bucket.DomainName]]''',
+            Value='''!Join ["", ["https://", !GetAtt S3Bucket.DomainName]]''',
             Description="Name of S3 bucket to hold website content",
         )
 
         # Verify
-        assert stack.export() == SIMPLE_S3_YAML
+        # TODO print(yaml.dump({'a': 42, 'b': 55, 'c': {"tag": "AWS::xyz", "foo":"HELLoworld"}}, line_break=True, default_flow_style=False))
+        with ExportYamlContext():  # this context manager simply makes explicit the defualt behavious of stringifying as YAML
+            assert str(stack) == SIMPLE_S3_YAML
 
-    def test_s3_as_simple_python(self):
-        """As a developer, I can use a simplified Python interface to create Python objects representing a basic S3 bucket."""
+    def test_s3_as_magic_python(self):
+        """As a developer, I can use a magic Python interface to create Python objects representing a basic S3 bucket."""
         # Exercise
-        stack = Stack(
-            Description="vcvxcv",
-        )
         bucket = s3.Bucket(
             Name="S3Bucket",
             Properties={
+                # TODO needs to be abstracted so we can export in a variable format
                 "AccessControl": "PublicRead",
                 "WebsiteConfiguration": {
                     "IndexDocument": "index.html",
@@ -81,17 +83,18 @@ class TestCoreServices:
             },
             DeletionPolicy="Retain",
         )
-        stack.add(bucket)
-        stack.add(Output(
-            Name="WebsiteURL",
-            Value=bucket.WebsiteURL,
-            Description="URL for website hosted on S3",
-        ))
-        stack.add(Output(
-            Name="S3BucketSecureURL",
-            Value=YamlJoin("https://", bucket.DomainName),
-            Description="Name of S3 bucket to hold website content",
-        ))
+        stack = Stack(
+            Description="vcvxcv",
+            WebsiteURL=Output(
+                Value=bucket.WebsiteURL,
+                Description="URL for website hosted on S3",
+            ),
+            S3BucketSecureURL=Output(
+                Value=Join("https://", bucket.DomainName),
+                Description="Name of S3 bucket to hold website content",
+            ),
+        ).add(bucket)
 
         # Verify
-        assert stack.export() == SIMPLE_S3_YAML
+        with ExportYamlContext():
+            assert str(stack) == SIMPLE_S3_YAML
