@@ -3,11 +3,8 @@
 import yaml
 
 
-class BaseAWSObject(yaml.YAMLObject):
-# class BaseAWSObject(object):
+class BaseAWSObject(object):
     """Base class to represent an object in AWS Cloud Formation."""
-
-    yaml_tag = "!sometag"
 
     AWS_YAML_FIELDS = []
     RESOURCE_ATTRIBUTES = []
@@ -15,7 +12,6 @@ class BaseAWSObject(yaml.YAMLObject):
     def __init__(self, *args, **kwargs):
         # args are interpreted according to their type
         # kwargs are added as fields using their type and Name
-        # yaml.YAMLObject.__init__(self)
         pass
 
     # TODO Name
@@ -26,14 +22,11 @@ class BaseAWSObject(yaml.YAMLObject):
 
     def export(self, format="yaml"):
         # import yaml
-        return yaml.dump(self, Dumper=self.yaml_dumper, line_break=True, default_flow_style=False)
+        return yaml.dump(self, line_break=True, default_flow_style=False)
 
-    @classmethod
-    def to_yaml(cls, dumper, data):
-        # Convert this class to a PyYAML node.\
-        #
-        # Should not be confused with a public method to export an object as a YAML string.
-        return dumper.represent_mapping("!FIXME", {'c': 'd'})
+    def as_yaml_node(self, dumper, data):
+        """Convert this class to a PyYAML node."""
+        return dumper.represent_mapping("!" + self.__class__.__name__, {'c': 'd'})
 
     def __str__(self):
         # TODO support ExportContext state on thread local
@@ -41,9 +34,11 @@ class BaseAWSObject(yaml.YAMLObject):
         return self.export()
 
 
-def _base_representer(dumper, data):
-    return dumper.represent_mapping("!TODO", {'a': 'b'})
-# yaml.add_multi_representer(BaseAWSObject, _base_representer)
+def representation_redirecter(dumper, data):
+    return data.as_yaml_node(dumper, data)
+
+
+yaml.add_multi_representer(BaseAWSObject, representation_redirecter)
 
 
 class Function(object):
