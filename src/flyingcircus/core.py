@@ -26,6 +26,7 @@ class BaseAWSObject(object):
 
     def as_yaml_node(self, dumper, data):
         """Convert this class to a PyYAML node."""
+        # see yaml.serializer line 102. If you use the "default" tag, then it will be conisdered implicit and the tag name isnt printed out (which is what we desire). Just need to figure out how to best trigger this behaviour.
         return dumper.represent_mapping("!" + self.__class__.__name__, {'c': 'd'})
 
     def __str__(self):
@@ -34,11 +35,7 @@ class BaseAWSObject(object):
         return self.export()
 
 
-def representation_redirecter(dumper, data):
-    return data.as_yaml_node(dumper, data)
-
-
-yaml.add_multi_representer(BaseAWSObject, representation_redirecter)
+yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper, data))
 
 
 class Function(object):
