@@ -4,37 +4,34 @@ from flyingcircus.core import Output
 from flyingcircus.service import s3
 
 SIMPLE_S3_YAML = '''
-{
-  "AWSTemplateFormatVersion" : "2010-09-09",
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete:
+  Sample template showing how to create a publicly accessible S3 bucket configured
+  for website access with a deletion policy of retail on delete.
+  
+  **WARNING** This template creates an S3 bucket that will NOT be deleted when
+  the stack is deleted. You will be billed for the AWS resources used if you
+  create a stack from this template.'
 
-  "Description" : "AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete: Sample template showing how to create a publicly accessible S3 bucket configured for website access with a deletion policy of retail on delete. **WARNING** This template creates an S3 bucket that will NOT be deleted when the stack is deleted. You will be billed for the AWS resources used if you create a stack from this template.",
+Resources:
+  S3Bucket:
+    DeletionPolicy: Retain
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        ErrorDocument: error.html
+        IndexDocument: index.html
+    Type: AWS::S3::Bucket
 
-  "Resources" : {
-    "S3Bucket" : {
-      "Type" : "AWS::S3::Bucket",
-      "Properties" : {
-        "AccessControl" : "PublicRead",
-        "WebsiteConfiguration" : {
-          "IndexDocument" : "index.html",
-          "ErrorDocument" : "error.html"      
-         }
-      },
-      "DeletionPolicy" : "Retain"
-    }
-  },
-
-  "Outputs" : {
-    "WebsiteURL" : {
-      "Value" : { "Fn::GetAtt" : [ "S3Bucket", "WebsiteURL" ] },
-      "Description" : "URL for website hosted on S3"
-    },
-    "S3BucketSecureURL" : {
-      "Value" : { "Fn::Join" : [ "", [ "https://", { "Fn::GetAtt" : [ "S3Bucket", "DomainName" ] } ] ] },
-      "Description" : "Name of S3 bucket to hold website content"
-    }
-  } 
-}'''  # FIXME this is JSON, not YAML. also should be canonicalised (for some value of canonicalisation that macthes what we do)
-
+Outputs:
+  S3BucketSecureURL:
+    Description: Name of S3 bucket to hold website content
+    Value: !Join ['', ['https://', !GetAtt S3Bucket.DomainName]]
+  WebsiteURL:
+    Description: URL for website hosted on S3
+    Value: !GetAtt S3Bucket.WebsiteURL
+'''
 
 class TestCoreServices:
     def test_s3_as_naive_python(self):
