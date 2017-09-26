@@ -1,1 +1,2 @@
-#FIXME pyyaml
+pytest==3.2.2
+pyyaml==3.12
