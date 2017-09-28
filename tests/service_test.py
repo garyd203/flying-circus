@@ -3,8 +3,29 @@ from flyingcircus.core import Stack
 from flyingcircus.core import Output
 from flyingcircus.service import s3
 
-SIMPLE_S3_YAML = '''
----
+import textwrap
+
+
+def reflow(st):
+    # TODO better name
+    """Dedent a multiline string, whilst removing leading and trailing blank lines.
+
+    This is perfect for text embedded inside indented Python code.
+    """
+    lines = st.split('\n')
+    while lines:
+        if not lines[0] or lines[0].isspace():
+            lines = lines[1:]
+            continue
+        if not lines[-1] or lines[-1].isspace():
+            lines = lines[:-1]
+            continue
+        break
+
+    return textwrap.dedent('\n'.join(lines))
+
+
+SIMPLE_S3_YAML = '''---
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete:
   Sample template showing how to create a publicly accessible S3 bucket configured
@@ -33,13 +54,21 @@ Outputs:
     Value: !GetAtt S3Bucket.WebsiteURL
 '''
 
+
 class TestCoreServices:
     def test_s3_as_naive_python(self):
         """As a developer, I can use a straightforward python representation of YAML to create objects representing a basic S3 bucket."""
         # Exercise
         stack = Stack(
             AWSTemplateFormatVersion="2010-09-09",
-            Description="vcvxcv",
+            Description=reflow("""
+                AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete:
+                Sample template showing how to create a publicly accessible S3 bucket configured
+                for website access with a deletion policy of retail on delete.
+                
+                **WARNING** This template creates an S3 bucket that will NOT be deleted when
+                the stack is deleted. You will be billed for the AWS resources used if you
+                create a stack from this template."""),
         )
         stack.Resources["S3Bucket"] = s3.Bucket(
             Properties={
@@ -63,6 +92,7 @@ class TestCoreServices:
         # Verify
         # TODO print(yaml.dump({'a': 42, 'b': 55, 'c': {"tag": "AWS::xyz", "foo":"HELLoworld"}}, line_break=True, default_flow_style=False))
         with ExportYamlContext():  # this context manager simply makes explicit the defualt behavious of stringifying as YAML
+            print(str(stack))
             assert str(stack) == SIMPLE_S3_YAML
 
     def test_s3_as_magic_python(self):

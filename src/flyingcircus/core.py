@@ -6,33 +6,46 @@ import yaml
 class BaseAWSObject(object):
     """Base class to represent an object in AWS Cloud Formation."""
 
-    AWS_YAML_FIELDS = []
-    RESOURCE_ATTRIBUTES = []
+    AWS_CFN_FIELDS = []
 
     def __init__(self, *args, **kwargs):
         # args are interpreted according to their type
         # kwargs are added as fields using their type and Name
-        pass
+
+        #: Map of fields that are exported
+        self._data = {}
+
+        # Add fields from constructor
+        for key, value in kwargs.items():
+            self.add(key, value)
 
     # TODO Name
     # TODO add?
     # TODO canonicalise
     # TODO dict-like interface to set/get fields
     # TODO getattr override to emulate the !GetAtt function for special attributes
+    # TODO __empty__ or false or whatever it is - are my fields all empty. will work recursively to trim trees
 
     def export(self, format="yaml"):
-        # import yaml
         return yaml.dump(self, line_break=True, default_flow_style=False)
 
     def as_yaml_node(self, dumper, data):
         """Convert this class to a PyYAML node."""
         # see yaml.serializer line 102. If you use the "default" tag, then it will be conisdered implicit and the tag name isnt printed out (which is what we desire). Just need to figure out how to best trigger this behaviour.
-        return dumper.represent_mapping("!" + self.__class__.__name__, {'c': 'd'})
+
+        data = {k: v for k, v in self._data.items() if v}
+        # TODO handle ordering
+
+        # TODO add leading ---
+        return dumper.represent_mapping("!" + self.__class__.__name__, data)
 
     def __str__(self):
         # TODO support ExportContext state on thread local
         # TODO if no current state, then instantiate a default one (YAML, stdout)
         return self.export()
+
+    def add(self, key, value):
+        self._data[key] = value
 
 
 yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper, data))
@@ -46,7 +59,12 @@ class Function(object):
 class Resource(BaseAWSObject):
     """Base class to represent a single resource in AWS Cloud Formation."""
 
-    pass
+    AWS_RESOURCE_TYPE = None
+
+    def __init__(self, *args, **kwargs):
+        BaseAWSObject.__init__(self, *args, **kwargs)
+        assert self.AWS_RESOURCE_TYPE is not None
+        self._data['Type'] = self.AWS_RESOURCE_TYPE
 
 
 class Output(BaseAWSObject):
@@ -61,5 +79,13 @@ class Stack(BaseAWSObject):
 
     def __init__(self, *args, **kwargs):
         BaseAWSObject.__init__(self, *args, **kwargs)
-        self.Resources = {}
-        self.Outputs = {}
+        self._data['Resources'] = {}
+        self._data['Outputs'] = {}
+
+    @property
+    def Outputs(self):
+        return self._data['Outputs']
+
+    @property
+    def Resources(self):
+        return self._data['Resources']
