@@ -1,7 +1,7 @@
 """Core classes for composing AWS Cloud Formation Stacks."""
 
 import yaml
-
+import yaml.resolver
 
 class BaseAWSObject(object):
     """Base class to represent an object in AWS Cloud Formation."""
@@ -27,17 +27,28 @@ class BaseAWSObject(object):
     # TODO __empty__ or false or whatever it is - are my fields all empty. will work recursively to trim trees
 
     def export(self, format="yaml"):
-        return yaml.dump(self, line_break=True, default_flow_style=False)
+        return yaml.dump(self, line_break=True, default_flow_style=False, explicit_start=True)
 
-    def as_yaml_node(self, dumper, data):
-        """Convert this class to a PyYAML node."""
+    def as_yaml_node(self, dumper):
+        """Convert this instance to a PyYAML node."""
+        import yaml.serializer
         # see yaml.serializer line 102. If you use the "default" tag, then it will be conisdered implicit and the tag name isnt printed out (which is what we desire). Just need to figure out how to best trigger this behaviour.
 
         data = {k: v for k, v in self._data.items() if v}
-        # TODO handle ordering
+        # TODO handle ordering (is it builtin?)
 
-        # TODO add leading ---
-        return dumper.represent_mapping("!" + self.__class__.__name__, data)
+        return dumper.represent_mapping(self._get_yaml_tag(), data)
+
+    def _get_yaml_tag(self):
+        """The tag to use when representing this class as a mapping node in YAML."""
+        # Ideally, we would create a tag that contains the object name
+        # (eg. "!Bucket"). Unfortunately, there is no way to prevent the
+        # YAML dumper from printing tags unless it determines that the tag
+        # is implicit (ie. the default tag for a mapping node is the tag
+        # being used), so we end up just using the default tag.
+        #
+        # return "!" + self.__class__.__name__
+        return yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
     def __str__(self):
         # TODO support ExportContext state on thread local
@@ -48,7 +59,7 @@ class BaseAWSObject(object):
         self._data[key] = value
 
 
-yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper, data))
+yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper))
 
 
 class Function(object):
