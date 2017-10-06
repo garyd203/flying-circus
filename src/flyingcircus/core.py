@@ -34,8 +34,7 @@ class BaseAWSObject(object):
         """Convert this instance to a PyYAML node."""
         # see yaml.serializer line 102. If you use the "default" tag, then it will be conisdered implicit and the tag name isnt printed out (which is what we desire). Just need to figure out how to best trigger this behaviour.
 
-        data = {k: v for k, v in self._data.items() if v}
-        # TODO handle ordering (is it builtin?)
+        data = self._get_ordered_output()
 
         return dumper.represent_mapping(self._get_yaml_tag(), data)
 
@@ -57,6 +56,15 @@ class BaseAWSObject(object):
 
     def add(self, key, value):
         self._data[key] = value
+
+    def _get_ordered_output(self):
+        """Extract the items that represent this AWS object.
+
+        The default implementation uses everything in self._data, sorted alphabetically.
+
+        :return: An ordered, filtered list of (key, value) pairs.
+        """
+        return sorted([(k, v) for k, v in self._data.items() if v])
 
 
 yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper))
@@ -111,3 +119,14 @@ class Stack(BaseAWSObject):
     @property
     def Resources(self):
         return self._data['Resources']
+
+    def _get_ordered_output(self):
+        ordered_keys = [
+            'AWSTemplateFormatVersion',
+            'Description',
+            'Resources',
+            'Outputs',
+        ]
+
+        return [(k, self._data[k]) for k in ordered_keys]
+
