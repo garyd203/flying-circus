@@ -39,7 +39,6 @@ Description: |-
   **WARNING** This template creates an S3 bucket that will NOT be deleted when
   the stack is deleted. You will be billed for the AWS resources used if you
   create a stack from this template.
-
 Resources:
   S3Bucket:
     DeletionPolicy: Retain
@@ -49,14 +48,13 @@ Resources:
         ErrorDocument: error.html
         IndexDocument: index.html
     Type: AWS::S3::Bucket
-
 Outputs:
   S3BucketSecureURL:
     Description: Name of S3 bucket to hold website content
-    Value: !Join ['', ['https://', !GetAtt S3Bucket.DomainName]]
+    Value: Fn::Join ['', ['https://', !GetAtt S3Bucket.DomainName]]
   WebsiteURL:
     Description: URL for website hosted on S3
-    Value: !GetAtt S3Bucket.WebsiteURL
+    Value: Fn::GetAtt S3Bucket.WebsiteURL
 '''
 
 
@@ -86,17 +84,16 @@ class TestCoreServices:
             DeletionPolicy="Retain",
         )
         stack.Outputs["WebsiteURL"] = Output(
-            Value="!GetAtt S3Bucket.WebsiteURL",
+            Value="Fn::GetAtt S3Bucket.WebsiteURL",
             Description="URL for website hosted on S3",
         )
         stack.Outputs["S3BucketSecureURL"] = Output(
-            Value='''!Join ["", ["https://", !GetAtt S3Bucket.DomainName]]''',
+            Value='''Fn::Join ['', ['https://', !GetAtt S3Bucket.DomainName]]''',
             Description="Name of S3 bucket to hold website content",
         )
 
         # Verify
-        # TODO print(yaml.dump({'a': 42, 'b': 55, 'c': {"tag": "AWS::xyz", "foo":"HELLoworld"}}, line_break=True, default_flow_style=False))
-        with ExportYamlContext():  # this context manager simply makes explicit the defualt behavious of stringifying as YAML
+        with ExportYamlContext():  # this context manager simply makes explicit the default behaviour of stringifying as YAML
             print(str(stack))
             assert str(stack) == SIMPLE_S3_YAML
 
