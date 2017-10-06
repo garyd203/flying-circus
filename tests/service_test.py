@@ -1,17 +1,18 @@
-from flyingcircus.config import ExportYamlContext
-from flyingcircus.core import Stack
-from flyingcircus.core import Output
-from flyingcircus.service import s3
-
 import textwrap
+
+from flyingcircus.config import ExportYamlContext
+from flyingcircus.core import Output
+from flyingcircus.core import Stack
+from flyingcircus.service import s3
 
 
 def reflow(st):
-    # TODO better name
-    """Dedent a multiline string, whilst removing leading and trailing blank lines.
+    # TODO make it a prod helper, not a test helper
+    """Remove unwanted whitespace from a multiline string intended for output.
 
     This is perfect for text embedded inside indented Python code.
     """
+    # Remove leading and trailing blank lines because they confuse the de-denter.
     lines = st.split('\n')
     while lines:
         if not lines[0] or lines[0].isspace():
@@ -22,18 +23,22 @@ def reflow(st):
             continue
         break
 
-    return textwrap.dedent('\n'.join(lines))
+    # Remove python-style leading indentation on each line
+    cleaned_lines = textwrap.dedent('\n'.join(lines))
+
+    return cleaned_lines
 
 
 SIMPLE_S3_YAML = '''---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete:
+Description: |-
+  AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete:
   Sample template showing how to create a publicly accessible S3 bucket configured
   for website access with a deletion policy of retail on delete.
-  
+
   **WARNING** This template creates an S3 bucket that will NOT be deleted when
   the stack is deleted. You will be billed for the AWS resources used if you
-  create a stack from this template.'
+  create a stack from this template.
 
 Resources:
   S3Bucket:

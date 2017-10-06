@@ -3,6 +3,7 @@
 import yaml
 import yaml.resolver
 
+
 class BaseAWSObject(object):
     """Base class to represent an object in AWS Cloud Formation."""
 
@@ -31,7 +32,6 @@ class BaseAWSObject(object):
 
     def as_yaml_node(self, dumper):
         """Convert this instance to a PyYAML node."""
-        import yaml.serializer
         # see yaml.serializer line 102. If you use the "default" tag, then it will be conisdered implicit and the tag name isnt printed out (which is what we desire). Just need to figure out how to best trigger this behaviour.
 
         data = {k: v for k, v in self._data.items() if v}
@@ -60,6 +60,17 @@ class BaseAWSObject(object):
 
 
 yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper))
+
+
+def represent_string(dumper, data):
+    # Override the normal string emission rules to handle long and short lines differently (for readability)
+    if len(data) > 80 or '\n' in data:
+        # '|' style means literal block style. So line breaks and formatting are retained.
+        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "|")
+    return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "")
+
+
+yaml.add_representer(str, represent_string)
 
 
 class Function(object):
