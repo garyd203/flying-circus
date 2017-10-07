@@ -2,6 +2,10 @@
 
 A new tool for managing AWS infrastructure.
 
+reuse code
+
+test code
+
 ## What It Is
 
 * A representation of an AWS Cloud Formation stack using Python objects (rather than, say, JSON or YAML or a Jinja template)

@@ -3,11 +3,16 @@
 import yaml
 import yaml.resolver
 
+from . import function
+
 
 class BaseAWSObject(object):
     """Base class to represent an object in AWS Cloud Formation."""
 
     AWS_CFN_FIELDS = []
+
+    #: See list of supported attributes per resource at http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html
+    AWS_ATTRIBUTES = []
 
     def __init__(self, *args, **kwargs):
         # args are interpreted according to their type
@@ -20,7 +25,11 @@ class BaseAWSObject(object):
         for key, value in kwargs.items():
             self.add(key, value)
 
-    # TODO Name
+        # Create logical name based on supplied physical name. This is pretty dodgy and I am not evry happy with it.
+        if 'Name' in self._data:
+            self.logical_name = self._data['Name']
+
+    # TODO Name. distinguish betwen logical name (for the stack) and physical name (for the created resource). store logical name on the object.
     # TODO add?
     # TODO canonicalise
     # TODO dict-like interface to set/get fields
@@ -66,6 +75,13 @@ class BaseAWSObject(object):
         """
         return sorted([(k, v) for k, v in self._data.items() if v])
 
+    def __getattr__(self, item):
+        if item in self.AWS_ATTRIBUTES:
+            return function.GetAtt(self, item)
+        if item in self._data:
+            return self._data[item]
+        raise AttributeError(item)
+
 
 yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper))
 
@@ -109,8 +125,9 @@ class Stack(BaseAWSObject):
 
     def __init__(self, *args, **kwargs):
         BaseAWSObject.__init__(self, *args, **kwargs)
-        self._data['Resources'] = {}
+        self._data.setdefault('AWSTemplateFormatVersion', '2010-09-09')
         self._data['Outputs'] = {}
+        self._data['Resources'] = {}
 
     @property
     def Outputs(self):
@@ -129,4 +146,13 @@ class Stack(BaseAWSObject):
         ]
 
         return [(k, self._data[k]) for k in ordered_keys]
+
+    def add_item(self, item):
+        if isinstance(item, Output):
+            self.Outputs[item.logical_name] = item
+        elif isinstance(item, Resource):
+            self.Resources[item.logical_name] = item
+        else:
+            raise TypeError("Unknown item for stack: {}".format(item.__class__.__name__))
+        return self # Allow call chaining
 
