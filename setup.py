@@ -3,9 +3,12 @@ from setuptools import setup
 
 setup(
     name="flying-circus",
-    version="0.0.3",
+    version="0.1",
     package_dir={'': 'src'},
     packages=find_packages(where="src"),
+    install_requires=[
+        'pyyaml',
+    ],
 
     # metadata for upload to PyPI
     author="Gary Donovan",
