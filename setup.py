@@ -1,15 +1,17 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
 setup(
     name="flying-circus",
-    version="0.0.2",
-    packages=find_packages(),
+    version="0.0.3",
+    package_dir={'': 'src'},
+    packages=find_packages(where="src"),
 
     # metadata for upload to PyPI
     author="Gary Donovan",
     author_email="gazza@gazza.id.au",
     description="A tool for managing AWS infrastructure.",
-    license="LGPL", #TODO is this correct? v3?
+    license="LGPL",  # TODO is this correct? v3?
     keywords="cloud formation",
     url="https://github.com/garyd203/flying-circus",
     classifiers=[
