@@ -34,3 +34,25 @@ class Join(Function):
     def as_yaml_node(self, dumper):
         args = [self._delimiter, self._values]
         return dumper.represent_sequence("!Join", args, flow_style='[')
+
+
+class Sub(Function):
+    """Models the behaviour of Fn:Sub for Python objects.
+
+    From http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-sub.html
+        The intrinsic function Fn::Sub substitutes variables in an input string with values that you specify. In your templates, you can use this function to construct commands or outputs that include values that aren't available until you create or update a stack.
+    """
+
+    def __init__(self, string, variableMap=None):
+        self._string = string
+        self._variables = variableMap
+
+    def as_yaml_node(self, dumper):
+        if self._variables:
+            args = [
+                self._string,
+                self._variables,
+            ]
+            return dumper.represent_sequence("!Sub", args)
+        return dumper.represent_scalar("!Sub", self._string)
+
