@@ -1,4 +1,5 @@
 """Core classes for composing AWS Cloud Formation Stacks."""
+import textwrap
 
 import yaml
 import yaml.resolver
@@ -82,7 +83,7 @@ class BaseAWSObject(object):
         if item in self._data:
             return self._data[item]
         raise AttributeError(item)
-        #TODO handle core Resource attributes: CreationPolicy, DeletionPOlicy, DependsON, Name, Metadata, Properties, UpdatePolicy
+        # TODO handle core Resource attributes: CreationPolicy, DeletionPOlicy, DependsON, Name, Metadata, Properties, UpdatePolicy
 
 
 yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper))
@@ -163,3 +164,25 @@ class Stack(BaseAWSObject):
         else:
             self._data[key] = value
         return self  # Allow call chaining
+
+
+def reflow(st):
+    """Remove unwanted whitespace from a multiline string intended for output.
+
+    This is perfect for text embedded inside indented Python code.
+    """
+    # Remove leading and trailing blank lines because they confuse the de-denter.
+    lines = st.split('\n')
+    while lines:
+        if not lines[0] or lines[0].isspace():
+            lines = lines[1:]
+            continue
+        if not lines[-1] or lines[-1].isspace():
+            lines = lines[:-1]
+            continue
+        break
+
+    # Remove python-style leading indentation on each line
+    cleaned_lines = textwrap.dedent('\n'.join(lines))
+
+    return cleaned_lines

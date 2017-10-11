@@ -1,34 +1,9 @@
-import textwrap
-
 from flyingcircus.config import ExportYamlContext
 from flyingcircus.core import Output
 from flyingcircus.core import Stack
+from flyingcircus.core import reflow
 from flyingcircus.function import Join
 from flyingcircus.service import s3
-
-
-def reflow(st):
-    # TODO make it a prod helper, not a test helper
-    """Remove unwanted whitespace from a multiline string intended for output.
-
-    This is perfect for text embedded inside indented Python code.
-    """
-    # Remove leading and trailing blank lines because they confuse the de-denter.
-    lines = st.split('\n')
-    while lines:
-        if not lines[0] or lines[0].isspace():
-            lines = lines[1:]
-            continue
-        if not lines[-1] or lines[-1].isspace():
-            lines = lines[:-1]
-            continue
-        break
-
-    # Remove python-style leading indentation on each line
-    cleaned_lines = textwrap.dedent('\n'.join(lines))
-
-    return cleaned_lines
-
 
 SIMPLE_S3_YAML_BASIC = '''---
 AWSTemplateFormatVersion: '2010-09-09'
