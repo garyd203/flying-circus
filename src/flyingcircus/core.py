@@ -25,7 +25,7 @@ class BaseAWSObject(object):
         for key, value in kwargs.items():
             self.add(key, value)
 
-        # Create logical name based on supplied physical name. This is pretty dodgy and I am not evry happy with it.
+        # Create logical name based on supplied physical name. This is pretty dodgy and I am not very happy with it.
         if 'Name' in self._data:
             self.logical_name = self._data['Name']
 
@@ -65,6 +65,7 @@ class BaseAWSObject(object):
 
     def add(self, key, value):
         self._data[key] = value
+        return self
 
     def _get_ordered_output(self):
         """Extract the items that represent this AWS object.
@@ -77,10 +78,11 @@ class BaseAWSObject(object):
 
     def __getattr__(self, item):
         if item in self.AWS_ATTRIBUTES:
-            return function.GetAtt(self, item)
+            return function.GetAtt(getattr(self, "logical_name", self.__class__.__name__), item)  # TODO THis is obviously wrong for the logical nmae
         if item in self._data:
             return self._data[item]
         raise AttributeError(item)
+        #TODO handle core Resource attributes: CreationPolicy, DeletionPOlicy, DependsON, Name, Metadata, Properties, UpdatePolicy
 
 
 yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper))
@@ -99,7 +101,13 @@ yaml.add_representer(str, represent_string)
 
 class Function(object):
     """Base class to represent an AWS Cloud Formation function."""
-    pass
+
+    def as_yaml_node(self, dumper):
+        """Convert this instance to a PyYAML node."""
+        raise NotImplementedError("as_yaml_node() not implemented in abstract class")
+
+
+yaml.add_multi_representer(Function, lambda dumper, data: data.as_yaml_node(dumper))
 
 
 class Resource(BaseAWSObject):
@@ -126,16 +134,14 @@ class Stack(BaseAWSObject):
     def __init__(self, *args, **kwargs):
         BaseAWSObject.__init__(self, *args, **kwargs)
         self._data.setdefault('AWSTemplateFormatVersion', '2010-09-09')
-        self._data['Outputs'] = {}
-        self._data['Resources'] = {}
 
     @property
     def Outputs(self):
-        return self._data['Outputs']
+        return self._data.setdefault('Outputs', {})
 
     @property
     def Resources(self):
-        return self._data['Resources']
+        return self._data.setdefault('Resources', {})
 
     def _get_ordered_output(self):
         ordered_keys = [
@@ -145,14 +151,15 @@ class Stack(BaseAWSObject):
             'Outputs',
         ]
 
+        # TODO what if there's stuff that's in _data but not in ordered_keys
+
         return [(k, self._data[k]) for k in ordered_keys]
 
-    def add_item(self, item):
-        if isinstance(item, Output):
-            self.Outputs[item.logical_name] = item
-        elif isinstance(item, Resource):
-            self.Resources[item.logical_name] = item
+    def add(self, key, value):
+        if isinstance(value, Output):
+            self.Outputs[key] = value
+        elif isinstance(value, Resource):
+            self.Resources[key] = value
         else:
-            raise TypeError("Unknown item for stack: {}".format(item.__class__.__name__))
-        return self # Allow call chaining
-
+            self._data[key] = value
+        return self  # Allow call chaining
