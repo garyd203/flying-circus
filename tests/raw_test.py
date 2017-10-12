@@ -103,7 +103,7 @@ class TestCoreServices:
 
     def test_s3_with_higher_level_api(self):
         """As a developer, I can use a Pythonic interface to create Python objects representing a basic S3 bucket."""
-        # FIXME I think we need to rework this API. stack has a peculiar layout, other resources have mostly properties, and hardly anything has the simple key-value model we seem to assume in the top-level class.
+        # FIXME I think we need to rework this API. stack has a peculiar layout, other resources have mostly properties, and hardly anything has the flat key-value model we seem to assume in the top-level class.
 
         # Exercise
         bucket = s3.Bucket(
