@@ -43,3 +43,19 @@ def simple_assume_role_policy(principals):
             ),
         ],
     )
+
+
+class Principal:
+    """Factory methods to create strings for different sorts of principal.
+
+    These do not comprise a standalone PrincipalSet, but are used to build one.
+    """
+
+    @staticmethod
+    def aws_account(accountid):
+        return 'arn:aws:iam::{}:root'.format(accountid)
+
+    @staticmethod
+    def iam_user(accountid, username):
+        return 'arn:aws:iam::{}:user/{}'.format(accountid, username)
+
