@@ -132,8 +132,12 @@ class Resource(BaseAWSObject):
     def __init__(self, *args, **kwargs):
         BaseAWSObject.__init__(self, *args, **kwargs)
         assert self.AWS_RESOURCE_TYPE is not None
-        self._data['Type'] = self.AWS_RESOURCE_TYPE
 
+    def _get_ordered_output(self):
+        return [
+            ("Type", self.AWS_RESOURCE_TYPE),
+            ("Properties", self._data),
+        ]
 
 class Parameter(BaseAWSObject):
     """Base class to represent a single parameter in an AWS Cloud Formation stack."""
