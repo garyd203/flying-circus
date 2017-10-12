@@ -1,6 +1,7 @@
 from .._raw.iam import *
 
 __all__ = [
+    "AssumeRolePolicy",
     "Policy",
     "PolicyDocument",
     "PolicyStatement",
@@ -56,9 +57,25 @@ class PrincipalSet(BaseAWSObject):
     def _has_specific_principals(self):
         return self.AWS or self.CanonicalUser or self.Service or self._data["Federated"]
 
-    def _list_or_item(item=None):
+    def _list_or_item(self, item=None):
         if item is None:
             return []
         if isinstance(item, (set, list)):
             return item
         return [item]
+
+
+class AssumeRolePolicy(PolicyDocument):
+    """A simple trust policy to describe can assume a role."""
+    def __init__(self, principals):
+        PolicyDocument.__init__(
+            self,
+            Version='2012-10-17',
+            Statement=[
+                PolicyStatement(
+                    Action=['sts:AssumeRole'],
+                    Effect="Allow",
+                    Principal=principals,
+                ),
+            ],
+        )
