@@ -16,7 +16,10 @@ class PolicyDocument(BaseAWSObject):
 
     See format specification at http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html
     """
-    pass
+
+    @property
+    def Statement(self):
+        return self._data.setdefault('Statement', [])
 
 
 class PolicyStatement(BaseAWSObject):
@@ -31,6 +34,6 @@ class PolicyStatement(BaseAWSObject):
 class Policy(BaseAWSObject):
     """An IAM Policy object"""
 
-    # TODO roll together the polocy ducment and the PolicyName attribute into one object (by inheriting this from PolicyDocument). the hierarchy adds no value.
+    # TODO roll together the policy document and the PolicyName attribute into one object (by inheriting this from PolicyDocument). the hierarchy adds no value.
 
     pass  # FIXME

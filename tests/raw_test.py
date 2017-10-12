@@ -3,7 +3,7 @@ from flyingcircus.core import Output
 from flyingcircus.core import Stack
 from flyingcircus.core import reflow
 from flyingcircus.function import Join
-from flyingcircus.raw import s3
+from flyingcircus._raw import s3
 
 SIMPLE_S3_YAML_BASIC = '''---
 AWSTemplateFormatVersion: '2010-09-09'
