@@ -97,6 +97,10 @@ class AWSObject(object):
         raise AttributeError(item)
         # TODO handle core Resource attributes: CreationPolicy, DeletionPOlicy, DependsON, Name, Metadata, Properties, UpdatePolicy
 
+    def get_logical_name(self):
+        # TODO figure out based on the object type (eg. Resource, Parameter) and subtype (eg. RoleName vs. Name)
+        raise NotImplementedError()
+
 
 yaml.add_multi_representer(AWSObject, lambda dumper, data: data.as_yaml_node(dumper))
 
@@ -141,6 +145,7 @@ class Resource(AWSObject):
 
 class Parameter(AWSObject):
     """Base class to represent a single parameter in an AWS Cloud Formation stack."""
+    # TODO explicitly list attributes
     pass
 
 
@@ -181,7 +186,7 @@ class Stack(AWSObject):
 
         # TODO what if there's stuff that's in _data but not in ordered_keys
 
-        return [(k, self._data[k]) for k in ordered_keys]
+        return [(k, self._data[k]) for k in ordered_keys if k in self._data]
 
     def add(self, key, value):
         if isinstance(value, Output):
