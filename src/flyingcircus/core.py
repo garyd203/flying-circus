@@ -122,6 +122,11 @@ class Resource(BaseAWSObject):
         self._data['Type'] = self.AWS_RESOURCE_TYPE
 
 
+class Parameter(BaseAWSObject):
+    """Base class to represent a single parameter in an AWS Cloud Formation stack."""
+    pass
+
+
 class Output(BaseAWSObject):
     """Base class to represent a single output in an AWS Cloud Formation stack."""
 
@@ -141,6 +146,10 @@ class Stack(BaseAWSObject):
         return self._data.setdefault('Outputs', {})
 
     @property
+    def Parameters(self):
+        return self._data.setdefault('Parameters', {})
+
+    @property
     def Resources(self):
         return self._data.setdefault('Resources', {})
 
@@ -148,6 +157,7 @@ class Stack(BaseAWSObject):
         ordered_keys = [
             'AWSTemplateFormatVersion',
             'Description',
+            'Parameters',
             'Resources',
             'Outputs',
         ]
@@ -159,6 +169,8 @@ class Stack(BaseAWSObject):
     def add(self, key, value):
         if isinstance(value, Output):
             self.Outputs[key] = value
+        if isinstance(value, Parameter):
+            self.Parameters[key] = value
         elif isinstance(value, Resource):
             self.Resources[key] = value
         else:
