@@ -1,1 +1,1 @@
-"""Raw, direct representation of every AWS service as resources."""
+"""Raw, direct representation of every AWS resource and it's dependent types, arranged by service."""

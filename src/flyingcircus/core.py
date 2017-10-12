@@ -1,6 +1,5 @@
 """Core classes for composing AWS Cloud Formation Stacks."""
 import textwrap
-
 import yaml
 import yaml.resolver
 
@@ -8,7 +7,7 @@ from . import function
 
 
 class NonAliasedDumper(yaml.Dumper):
-    """We don't usually want the serializer to use node referneces, because that makes the YAML difficult to read for a human.
+    """We don't usually want the serializer to use node references/aliasing, because that makes the YAML difficult to read for a human.
     For lack of an option to disable it in pyYAML, we hack this up by clobbering the functionality with a superclass
     """
 
@@ -20,13 +19,16 @@ class NonAliasedDumper(yaml.Dumper):
         super(NonAliasedDumper, self).serialize_node(node, parent, index)
 
 
-class BaseAWSObject(object):
-    """Base class to represent an object in AWS Cloud Formation."""
+class AWSObject(object):
+    """Base class to represent any dictionary-like object in AWS Cloud Formation."""
 
     AWS_CFN_FIELDS = []
 
     #: See list of supported attributes per resource at http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html
     AWS_ATTRIBUTES = []
+
+    #: These keys, if present, are output first. All other keys are output afterwards, in alphabetical order.
+    KEY_ORDER = []
 
     def __init__(self, *args, **kwargs):
         # args are interpreted according to their type
@@ -39,10 +41,6 @@ class BaseAWSObject(object):
         for key, value in kwargs.items():
             self.add(key, value)
 
-        # Create logical name based on supplied physical name. This is pretty dodgy and I am not very happy with it.
-        if 'Name' in self._data:
-            self.logical_name = self._data['Name']
-
     # TODO Name. distinguish betwen logical name (for the stack) and physical name (for the created resource). store logical name on the object.
     # TODO add?
     # TODO canonicalise
@@ -51,12 +49,12 @@ class BaseAWSObject(object):
     # TODO __empty__ or false or whatever it is - are my fields all empty. will work recursively to trim trees
 
     def export(self, format="yaml"):
-        return yaml.dump_all([self], stream=None, Dumper=NonAliasedDumper, line_break=True, default_flow_style=False, explicit_start=True)
+        # TODO have the option to use aliases in dump (eg. set by export context), but default to no aliases.
+        return yaml.dump_all([self], stream=None, Dumper=NonAliasedDumper, line_break=True, default_flow_style=False,
+                             explicit_start=True)
 
     def as_yaml_node(self, dumper):
         """Convert this instance to a PyYAML node."""
-        # see yaml.serializer line 102. If you use the "default" tag, then it will be conisdered implicit and the tag name isnt printed out (which is what we desire). Just need to figure out how to best trigger this behaviour.
-
         data = self._get_ordered_output()
 
         return dumper.represent_mapping(self._get_yaml_tag(), data)
@@ -92,14 +90,15 @@ class BaseAWSObject(object):
 
     def __getattr__(self, item):
         if item in self.AWS_ATTRIBUTES:
-            return function.GetAtt(getattr(self, "logical_name", self.__class__.__name__), item)  # TODO THis is obviously wrong for the logical nmae
+            return function.GetAtt(getattr(self, "logical_name", self.__class__.__name__),
+                                   item)  # TODO THis is obviously wrong for the logical nmae
         if item in self._data:
             return self._data[item]
         raise AttributeError(item)
         # TODO handle core Resource attributes: CreationPolicy, DeletionPOlicy, DependsON, Name, Metadata, Properties, UpdatePolicy
 
 
-yaml.add_multi_representer(BaseAWSObject, lambda dumper, data: data.as_yaml_node(dumper))
+yaml.add_multi_representer(AWSObject, lambda dumper, data: data.as_yaml_node(dumper))
 
 
 def represent_string(dumper, data):
@@ -124,13 +123,13 @@ class Function(object):
 yaml.add_multi_representer(Function, lambda dumper, data: data.as_yaml_node(dumper))
 
 
-class Resource(BaseAWSObject):
+class Resource(AWSObject):
     """Base class to represent a single resource in AWS Cloud Formation."""
 
     AWS_RESOURCE_TYPE = None
 
     def __init__(self, *args, **kwargs):
-        BaseAWSObject.__init__(self, *args, **kwargs)
+        AWSObject.__init__(self, *args, **kwargs)
         assert self.AWS_RESOURCE_TYPE is not None
 
     def _get_ordered_output(self):
@@ -140,24 +139,24 @@ class Resource(BaseAWSObject):
         ]
 
 
-class Parameter(BaseAWSObject):
+class Parameter(AWSObject):
     """Base class to represent a single parameter in an AWS Cloud Formation stack."""
     pass
 
 
-class Output(BaseAWSObject):
+class Output(AWSObject):
     """Base class to represent a single output in an AWS Cloud Formation stack."""
 
     def __init__(self, Name=None, Value=None, Description=None):
-        BaseAWSObject.__init__(self, Name == Name, Value=Value, Description=Description)
+        AWSObject.__init__(self, Name == Name, Value=Value, Description=Description)
 
 
-class Stack(BaseAWSObject):
+class Stack(AWSObject):
     """Base class to represent a single stack in AWS Cloud Formation."""
 
     def __init__(self, *args, **kwargs):
-        BaseAWSObject.__init__(self, *args, **kwargs)
-        self._data.setdefault('AWSTemplateFormatVersion', '2010-09-09')
+        AWSObject.__init__(self, *args, **kwargs)
+        self._data.setdefault('AWSTemplateFormatVersion', '2010-09-09')  # TODO better done in a factory function.?
 
     @property
     def Outputs(self):

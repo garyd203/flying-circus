@@ -1,4 +1,4 @@
-from ..core import BaseAWSObject
+from ..core import AWSObject
 from ..core import Resource
 
 
@@ -11,22 +11,22 @@ class Role(Resource):
     ]
 
 
-class PolicyDocument(BaseAWSObject):
+class PolicyDocument(AWSObject):
     """An IAM PolicyDocument.
 
     See format specification at http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html
     """
 
     def __init__(self, *args, **kwargs):
-        BaseAWSObject.__init__(self, *args, **kwargs)
-        self._data.setdefault("Version", "2012-10-17")
+        AWSObject.__init__(self, *args, **kwargs)
+        self._data.setdefault("Version", "2012-10-17")  # TODO better done in a factory function.?
 
     @property
     def Statement(self):
         return self._data.setdefault('Statement', [])
 
 
-class PolicyStatement(BaseAWSObject):
+class PolicyStatement(AWSObject):
     """A single IAM Policy statement
 
     See http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html#Statement
@@ -35,10 +35,10 @@ class PolicyStatement(BaseAWSObject):
     pass
 
 
-class Policy(BaseAWSObject):
+class Policy(AWSObject):
     """An IAM Policy object"""
 
-    # TODO roll together the policy document and the PolicyName attribute into one object (by inheriting this from PolicyDocument). the hierarchy adds no value.
+    # TODO roll together the policy document and the PolicyName attribute into one object (by inheriting this from PolicyDocument)??. the hierarchy adds no value.
 
     def _get_ordered_output(self):
         #TODO make this ordering a helper somewhere
@@ -52,14 +52,14 @@ class Policy(BaseAWSObject):
         return [(k, self._data[k]) for k in ordered_keys]
 
 
-class PrincipalSet(BaseAWSObject):
+class PrincipalSet(AWSObject):
     """Represents a set of principals for use in an IAM policy Statement (either as a Principal or NotPrincipal element).
 
     See http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html#Principal
     """
 
     def __init__(self, aws=None, services=None, federated=None, canonicalusers=None, everyone=False):
-        BaseAWSObject.__init__(self)
+        AWSObject.__init__(self)
 
         # We can have several of some types of principal
         self.AWS.extend(self._list_or_item(aws))
