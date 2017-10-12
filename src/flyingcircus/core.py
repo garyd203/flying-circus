@@ -139,6 +139,7 @@ class Resource(BaseAWSObject):
             ("Properties", self._data),
         ]
 
+
 class Parameter(BaseAWSObject):
     """Base class to represent a single parameter in an AWS Cloud Formation stack."""
     pass

@@ -17,6 +17,10 @@ class PolicyDocument(BaseAWSObject):
     See format specification at http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html
     """
 
+    def __init__(self, *args, **kwargs):
+        BaseAWSObject.__init__(self, *args, **kwargs)
+        self._data.setdefault("Version", "2012-10-17")
+
     @property
     def Statement(self):
         return self._data.setdefault('Statement', [])
@@ -36,7 +40,16 @@ class Policy(BaseAWSObject):
 
     # TODO roll together the policy document and the PolicyName attribute into one object (by inheriting this from PolicyDocument). the hierarchy adds no value.
 
-    pass  # FIXME
+    def _get_ordered_output(self):
+        #TODO make this ordering a helper somewhere
+        ordered_keys = [
+            'PolicyName',
+            'PolicyDocument',
+        ]
+
+        # TODO what if there's stuff that's in _data but not in ordered_keys
+
+        return [(k, self._data[k]) for k in ordered_keys]
 
 
 class PrincipalSet(BaseAWSObject):
