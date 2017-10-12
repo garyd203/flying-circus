@@ -7,6 +7,19 @@ import yaml.resolver
 from . import function
 
 
+class NonAliasedDumper(yaml.Dumper):
+    """We don't usually want the serializer to use node referneces, because that makes the YAML difficult to read for a human.
+    For lack of an option to disable it in pyYAML, we hack this up by clobbering the functionality with a superclass
+    """
+
+    def generate_anchor(self, node):
+        return None
+
+    def serialize_node(self, node, parent, index):
+        self.serialized_nodes = {}
+        super(NonAliasedDumper, self).serialize_node(node, parent, index)
+
+
 class BaseAWSObject(object):
     """Base class to represent an object in AWS Cloud Formation."""
 
@@ -38,7 +51,7 @@ class BaseAWSObject(object):
     # TODO __empty__ or false or whatever it is - are my fields all empty. will work recursively to trim trees
 
     def export(self, format="yaml"):
-        return yaml.dump(self, line_break=True, default_flow_style=False, explicit_start=True)
+        return yaml.dump_all([self], stream=None, Dumper=NonAliasedDumper, line_break=True, default_flow_style=False, explicit_start=True)
 
     def as_yaml_node(self, dumper):
         """Convert this instance to a PyYAML node."""

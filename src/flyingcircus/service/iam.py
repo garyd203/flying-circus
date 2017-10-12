@@ -11,7 +11,7 @@ __all__ = [
 
 
 class AssumeRolePolicy(PolicyDocument):
-    """A simple trust policy to describe can assume a role."""
+    """A simple trust policy to describe who can assume a role."""
 
     def __init__(self, principals):
         PolicyDocument.__init__(
