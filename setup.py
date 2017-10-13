@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="flying-circus",
-    version="0.2",
+    version="0.3",
     package_dir={'': 'src'},
     packages=find_packages(where="src"),
     install_requires=[
