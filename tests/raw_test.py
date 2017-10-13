@@ -17,13 +17,13 @@ Description: |-
   create a stack from this template.
 Resources:
   S3Bucket:
-    DeletionPolicy: Retain
+    Type: AWS::S3::Bucket
     Properties:
       AccessControl: PublicRead
       WebsiteConfiguration:
         ErrorDocument: error.html
         IndexDocument: index.html
-    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
 Outputs:
   S3BucketSecureURL:
     Description: Name of S3 bucket to hold website content

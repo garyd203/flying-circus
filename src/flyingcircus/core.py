@@ -20,9 +20,16 @@ class NonAliasedDumper(yaml.Dumper):
 
 
 class AWSObject(object):
-    """Base class to represent any dictionary-like object in AWS Cloud Formation."""
+    """Base class to represent any dictionary-like object in AWS Cloud Formation.
 
-    AWS_CFN_FIELDS = []
+    In general, CloudFormation attributes are stored directly as Python
+    attributes on the object.
+    """
+
+    # TODO filter/validate fields as we set them
+    # TODO tests for core class
+
+    CFN_FIELDS = []
 
     #: See list of supported attributes per resource at http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html
     AWS_ATTRIBUTES = []
@@ -133,14 +140,31 @@ class Resource(AWSObject):
     AWS_RESOURCE_TYPE = None
 
     def __init__(self, *args, **kwargs):
+        properties = kwargs.get("Properties", None)
+        if properties is not None:
+            del kwargs["Properties"]
+
         AWSObject.__init__(self, *args, **kwargs)
+
+        for key, value in properties.items():
+            self.add(key, value)
+
         assert self.AWS_RESOURCE_TYPE is not None
 
     def _get_ordered_output(self):
-        return [
+        properties = dict(self._data)
+        result = [
             ("Type", self.AWS_RESOURCE_TYPE),
-            ("Properties", self._data),
+            ("Properties", properties),
         ]
+
+        # Remove Resource-level attributes that are not part of Properties
+        # TODO make this cover all attributes, not just DeletionPolicy
+        if "DeletionPolicy" in self._data:
+            result.append(("DeletionPolicy", self._data["DeletionPolicy"]))
+            del properties["DeletionPolicy"]
+
+        return result
 
 
 class Parameter(AWSObject):
