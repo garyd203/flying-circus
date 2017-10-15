@@ -105,7 +105,7 @@ class AWSObject(object):
         # TODO handle core Resource attributes: CreationPolicy, DeletionPOlicy, DependsON, Name, Metadata, Properties, UpdatePolicy
 
     def get_logical_name(self):
-        # TODO figure out based on the object type (eg. Resource, Parameter) and subtype (eg. RoleName vs. Name)
+        # TODO figure out based on the object type (eg. Resource, Parameter) and subtype (eg. RoleName vs. Name), where an answer is possible
         raise NotImplementedError()
 
 
