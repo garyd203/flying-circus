@@ -15,12 +15,15 @@ class TestYAMLOutput:
 class TestBaseClass:
     """Verify behaviour of the base AWSObject class specifically"""
 
+    @pytest.mark.skip
     def test_init_should_not_accept_positional_parameters(self):
         assert False
 
+    @pytest.mark.skip
     def test_init_should_only_accept_kwargs(self):
         assert False
 
+    @pytest.mark.skip
     def test_init_should_map_keyword_args_to_attributes(self):
         assert False
 
@@ -55,6 +58,7 @@ class TestAttributeAccess:
         assert hasattr(data, "bar")
         assert data.bar == "321"
 
+    @pytest.mark.skip
     def test_internal_attributes_can_be_set_and_read(self):
         # TODO Meaning implementation details, not for use externally or exported as CFN
 
@@ -95,21 +99,26 @@ class TestAttributeAccess:
     # Read Special Cases
     # ------------------
 
+    @pytest.mark.skip
     def test_aws_attributes_cannot_be_read_before_they_are_set(self):
         assert False
 
+    @pytest.mark.skip
     def test_aws_attributes_with_a_default_value_can_be_read_before_they_are_set(self):
         assert False
 
     # Update
     # ------
 
+    @pytest.mark.skip
     def test_aws_attributes_can_be_updated(self):
         assert False
 
+    @pytest.mark.skip
     def test_internal_attributes_can_be_updated(self):
         assert False
 
+    @pytest.mark.skip
     def test_unknown_aws_attributes_can_be_updated(self):
         # TODO By the same special access function and/or normal setattr
         assert False
@@ -117,11 +126,14 @@ class TestAttributeAccess:
     # Delete
     # ------
 
+    @pytest.mark.skip
     def test_aws_attributes_can_be_deleted(self):
         assert False
 
+    @pytest.mark.skip
     def test_unknown_aws_attributes_can_be_deleted(self):
         assert False
 
+    @pytest.mark.skip
     def test_internal_attributes_can_be_deleted(self):
         assert False
