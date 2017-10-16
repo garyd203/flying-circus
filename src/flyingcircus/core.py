@@ -20,6 +20,48 @@ class NonAliasedDumper(yaml.Dumper):
 
 
 class AWSObject(object):
+    """Base class to represent any dictionary-like object from AWS Cloud Formation.
+
+    In general, Cloud Formation attributes are stored directly as Python
+    attributes on the object. Any public Python instance attribute is
+    considered to be a Cloud Formation attribute
+    """
+
+    # FIXME brainstorm implementation ideas:
+    # -> override setattr to verify any change
+    # have a export-time sanity check that all fields are valid -> prefer to have errors occur at the time we make them
+    # at export time only export the fields that are known -> prefer to have errors be explicit, and occur at the time we make them
+    # Have an internal dict that all CFN attribs are stored in, and map that to getattr/setattr calls -> seems like work for no good reason
+
+    #: Set of valid AWS attribute names for this class
+    AWS_ATTRIBUTES = set()
+
+    def __setattr__(self, key, value):
+        if key not in self.AWS_ATTRIBUTES:
+            raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
+        super(AWSObject, self).__setattr__(key, value)
+
+    def set_unknown_aws_attribute(self, key, value):
+        """Override the normal checking and set an AWS attribute that we don't know about.
+
+        This is intended as a bridging mechanism for when (older versions of)
+        the library do not explicitly know about a newly introduced AWS
+        attribute.
+
+        Note that normal, known, AWS attributes cannot be set by this method.
+
+        Ideally, users would issue a pull request to fix the problem in our
+        type mapping, but this method exists for when you need a workaround.
+        """
+        #TODO store this attrib somewhere so we know to export it? Or does that all work out in the wash. Write a test...
+        if key in self.AWS_ATTRIBUTES:
+            #TODO throwing an error here stuffs up the migration. At least it's thrown at set-time, not at export time.
+            raise AttributeError("'{}' is a recognised AWS attribute should be set as a normal Python attribute".format(key))
+
+        object.__setattr__(self, key, value)
+
+
+class _AWSObjectOld(object):
     """Base class to represent any dictionary-like object in AWS Cloud Formation.
 
     In general, CloudFormation attributes are stored directly as Python
