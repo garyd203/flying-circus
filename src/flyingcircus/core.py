@@ -24,7 +24,11 @@ class AWSObject(object):
 
     In general, Cloud Formation attributes are stored directly as Python
     attributes on the object. Any public Python instance attribute is
-    considered to be a Cloud Formation attribute
+    considered to be a Cloud Formation attribute.
+
+    By contrast, a private Python attribute (ie. named with a leading
+    underscore) is considered to be an internal attribute and is not exported
+    to Cloud Formation.
     """
 
     # FIXME brainstorm implementation ideas:
@@ -34,12 +38,18 @@ class AWSObject(object):
     # Have an internal dict that all CFN attribs are stored in, and map that to getattr/setattr calls -> seems like work for no good reason
 
     #: Set of valid AWS attribute names for this class
-    AWS_ATTRIBUTES = set()
+    AWS_ATTRIBUTES = set()  # TODO make a function instead
 
     def __setattr__(self, key, value):
-        if key not in self.AWS_ATTRIBUTES:
-            raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
-        super(AWSObject, self).__setattr__(key, value)
+        if key.startswith("_"):
+            # Internal attribute
+            super(AWSObject, self).__setattr__(key, value)
+            return
+        if key in self.AWS_ATTRIBUTES:
+            # Known AWS attribute
+            super(AWSObject, self).__setattr__(key, value)
+            return
+        raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
 
     def set_unknown_aws_attribute(self, key, value):
         """Override the normal checking and set an AWS attribute that we don't know about.
@@ -53,12 +63,18 @@ class AWSObject(object):
         Ideally, users would issue a pull request to fix the problem in our
         type mapping, but this method exists for when you need a workaround.
         """
-        #TODO store this attrib somewhere so we know to export it? Or does that all work out in the wash. Write a test...
+        # TODO store this attrib somewhere so we know to export it? Or does that all work out in the wash. Write a test...
         if key in self.AWS_ATTRIBUTES:
-            #TODO throwing an error here stuffs up the migration. At least it's thrown at set-time, not at export time.
-            raise AttributeError("'{}' is a recognised AWS attribute should be set as a normal Python attribute".format(key))
+            # TODO throwing an error here stuffs up the migration. At least it's thrown at set-time, not at export time.
+            raise AttributeError(
+                "'{}' is a recognised AWS attribute should be set as a normal Python attribute".format(key))
 
         object.__setattr__(self, key, value)
+
+
+class CollapsedObject(AWSObject):
+    # TODO an object that collapses a second-level object into attributes on the main object, that would otherwise be trivial (eg. Resource.Properties)
+    pass
 
 
 class _AWSObjectOld(object):

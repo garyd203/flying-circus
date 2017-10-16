@@ -58,15 +58,14 @@ class TestAttributeAccess:
         assert hasattr(data, "bar")
         assert data.bar == "321"
 
-    @pytest.mark.skip
     def test_internal_attributes_can_be_set_and_read(self):
-        # TODO Meaning implementation details, not for use externally or exported as CFN
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
 
-        # TODO how to specify these?
-        #  __slots__ -> nah, too weird and needs to be re-set for each subclass
-        # implementation details only use underscore attributes?
-        # Class-specific list of exceptions -> perhaps too heavy handed, although it's expected to be minimal usage
-        assert False
+        data._internal_value = "123"
+
+        assert hasattr(data, "_internal_value")
+        assert data._internal_value == "123"
 
     def test_unknown_attributes_cannot_be_set_directly(self):
         SimpleClass = self._create_simple_class()
