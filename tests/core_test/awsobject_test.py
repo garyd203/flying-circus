@@ -39,7 +39,10 @@ class TestAttributeAccess:
 
     def _create_simple_class(self):
         class SimpleClass(AWSObject):
-            AWS_ATTRIBUTES = {"Foo", "bar"}
+            AWS_ATTRIBUTES = {"Foo", "bar", "ValueWithDefault"}
+
+            def __init__(self, Foo=None, bar=None, ValueWithDefault=42):
+                AWSObject.__init__(self, Foo=Foo, bar=bar, ValueWithDefault=ValueWithDefault)
 
         return SimpleClass
 
@@ -98,13 +101,18 @@ class TestAttributeAccess:
     # Read Special Cases
     # ------------------
 
-    @pytest.mark.skip
     def test_aws_attributes_cannot_be_read_before_they_are_set(self):
-        assert False
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
 
-    @pytest.mark.skip
+        assert not hasattr(data, "Foo")
+
     def test_aws_attributes_with_a_default_value_can_be_read_before_they_are_set(self):
-        assert False
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+
+        assert hasattr(data, "ValueWithDefault")
+        assert data.ValueWithDefault == 42
 
     # Update
     # ------

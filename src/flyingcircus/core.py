@@ -24,11 +24,16 @@ class AWSObject(object):
 
     In general, Cloud Formation attributes are stored directly as Python
     attributes on the object. Any public Python instance attribute is
-    considered to be a Cloud Formation attribute.
+    considered to be a Cloud Formation attribute. By contrast, a private
+    Python attribute (ie. named with a leading underscore) is considered to
+    be an internal attribute and is not exported to Cloud Formation.
 
-    By contrast, a private Python attribute (ie. named with a leading
-    underscore) is considered to be an internal attribute and is not exported
-    to Cloud Formation.
+    Concrete subclasses are expected to implement a constructor that
+    explicitly lists all the known AWS attributes. This is intended to help
+    with API discovery and IDE auto-completion.
+
+    Default values for attributes are implemented by having a non-None
+    default value in the constructor.
     """
 
     # FIXME brainstorm implementation ideas:
@@ -39,6 +44,12 @@ class AWSObject(object):
 
     #: Set of valid AWS attribute names for this class
     AWS_ATTRIBUTES = set()  # TODO make a function instead
+
+    def __init__(self, **kwargs):
+        # Set default values
+        for key, value in kwargs.items():
+            if value is not None:
+                setattr(self, key, value)
 
     def __setattr__(self, key, value):
         if key.startswith("_"):
