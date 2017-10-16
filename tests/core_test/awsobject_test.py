@@ -3,6 +3,9 @@
 This functionality forms the core of Flying Circus.
 """
 import pytest
+from bdb import foo
+from hypothesis import given
+import hypothesis.strategies as st
 
 from flyingcircus.core import AWSObject
 
@@ -33,7 +36,6 @@ class TestAttributeAccess:
 
     # TODO dict access for aws attributes only
     # TODO default values. Do this with constructor default args
-    # TODO use hypothesis for value injection
     # TODO delete nonexistent attributes of various sorts
     # TODO verify behaviour of set_unknown_aws_attribute with know attribute
 
@@ -49,26 +51,28 @@ class TestAttributeAccess:
     # Set and Read
     # ------------
 
-    def test_valid_aws_attributes_can_be_set_and_read(self):
+    @given(st.text(), st.text())
+    def test_valid_aws_attributes_can_be_set_and_read(self, foo_value, bar_value):
         SimpleClass = self._create_simple_class()
         data = SimpleClass()
 
-        data.Foo = "123"
-        data.bar = "321"
+        data.Foo = foo_value
+        data.bar = bar_value
 
         assert hasattr(data, "Foo")
-        assert data.Foo == "123"
+        assert data.Foo == foo_value
         assert hasattr(data, "bar")
-        assert data.bar == "321"
+        assert data.bar == bar_value
 
-    def test_internal_attributes_can_be_set_and_read(self):
+    @given(st.text())
+    def test_internal_attributes_can_be_set_and_read(self, value):
         SimpleClass = self._create_simple_class()
         data = SimpleClass()
 
-        data._internal_value = "123"
+        data._internal_value = value
 
         assert hasattr(data, "_internal_value")
-        assert data._internal_value == "123"
+        assert data._internal_value == value
 
     def test_unknown_attributes_cannot_be_set_directly(self):
         SimpleClass = self._create_simple_class()
@@ -79,14 +83,15 @@ class TestAttributeAccess:
         assert "WeirdValue" in str(excinfo.value)
         assert not hasattr(data, "WeirdValue")
 
-    def test_unknown_aws_attributes_can_be_explicitly_set_and_read_normally(self):
+    @given(st.text())
+    def test_unknown_aws_attributes_can_be_explicitly_set_and_read_normally(self, value):
         SimpleClass = self._create_simple_class()
         data = SimpleClass()
 
-        data.set_unknown_aws_attribute("WeirdValue", "hello")
+        data.set_unknown_aws_attribute("WeirdValue", value)
 
         assert hasattr(data, "WeirdValue")
-        assert data.WeirdValue == "hello"
+        assert data.WeirdValue == value
 
     def test_valid_aws_attributes_cannot_be_explicitly_set(self):
         SimpleClass = self._create_simple_class()
@@ -117,17 +122,37 @@ class TestAttributeAccess:
     # Update
     # ------
 
+    @given(st.text(), st.text(), st.text())
+    def test_aws_attributes_can_be_updated(self, foo_value_old, foo_value_new, bar_value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+
+        # Setup: set initial values
+        data.Foo = foo_value_old
+        data.bar = bar_value
+
+        # Exercise
+        data.Foo = foo_value_new
+
+        # Verify
+        assert data.Foo == foo_value_new
+        assert data.bar == bar_value
+
+    @given(st.text())
+    def test_internal_attributes_can_be_updated(self, new_value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+
+        data.ValueWithDefault = new_value
+
+        assert data.ValueWithDefault == new_value
+
     @pytest.mark.skip
-    def test_aws_attributes_can_be_updated(self):
+    def test_unknown_aws_attributes_can_be_updated_directly(self):
         assert False
 
     @pytest.mark.skip
-    def test_internal_attributes_can_be_updated(self):
-        assert False
-
-    @pytest.mark.skip
-    def test_unknown_aws_attributes_can_be_updated(self):
-        # TODO By the same special access function and/or normal setattr
+    def test_unknown_aws_attributes_can_be_updated_via_explict_setter(self):
         assert False
 
     # Delete
