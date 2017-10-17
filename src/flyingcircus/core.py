@@ -49,7 +49,10 @@ class AWSObject(object):
         # Set default values
         for key, value in kwargs.items():
             if value is not None:
-                setattr(self, key, value)
+                try:
+                    setattr(self, key, value)
+                except AttributeError as ex:
+                    raise TypeError(str(ex)) from ex
 
     def __setattr__(self, key, value):
         if hasattr(self, key):
@@ -86,10 +89,11 @@ class AWSObject(object):
             raise AttributeError(
                 "'{}' is a recognised AWS attribute should be set as a normal Python attribute".format(key))
 
+        # Bypass the filtering in our __setattr__ implementation
         object.__setattr__(self, key, value)
 
 
-class CollapsedObject(AWSObject):
+class FlattenedObject(AWSObject):
     # TODO an object that collapses a second-level object into attributes on the main object, where the main object would otherwise be trivial (eg. Resource.Properties)
     pass
 

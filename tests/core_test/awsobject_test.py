@@ -2,10 +2,9 @@
 
 This functionality forms the core of Flying Circus.
 """
-import pytest
-from bdb import foo
-from hypothesis import given
 import hypothesis.strategies as st
+import pytest
+from hypothesis import given
 
 from flyingcircus.core import AWSObject
 
@@ -18,18 +17,65 @@ class TestYAMLOutput:
 class TestBaseClass:
     """Verify behaviour of the base AWSObject class specifically"""
 
-    @pytest.mark.skip
     def test_init_should_not_accept_positional_parameters(self):
-        # TODO does this make sense
-        assert False
+        class InitTestObject(AWSObject):
+            AWS_ATTRIBUTES = {"Foo"}
 
-    @pytest.mark.skip
+            def __init__(self, Foo=None):
+                # NB: Make sure we exercise the __init__ in the base class!
+                AWSObject.__init__(self, Foo)
+
+        with pytest.raises(TypeError) as excinfo:
+            _ = InitTestObject()
+
+        assert "positional" in str(excinfo.value)
+
     def test_init_should_only_accept_kwargs(self):
-        assert False
+        import inspect
+        sig = inspect.signature(AWSObject.__init__)
+        for param in sig.parameters.values():
+            if param.name == 'self':
+                continue
+            assert param.kind == param.VAR_KEYWORD
 
-    @pytest.mark.skip
-    def test_init_should_map_keyword_args_to_attributes(self):
-        assert False
+    @given(st.text(), st.text(), st.text())
+    def test_init_should_map_keyword_args_to_attributes(self, foo_value, default_value, bar_value):
+        class InitTestObject(AWSObject):
+            AWS_ATTRIBUTES = {"Foo", "ValueWithDefault", "Bar"}
+
+            def __init__(self, Foo=None, ValueWithDefault=default_value, Bar=None):
+                AWSObject.__init__(self, Foo=Foo, ValueWithDefault=ValueWithDefault, Bar=Bar)
+
+        data = InitTestObject(foo_value, Bar=bar_value)
+
+        assert data.Foo == foo_value
+        assert data.ValueWithDefault == default_value
+        assert data.Bar == bar_value
+
+    @given(st.text())
+    def test_init_should_only_accept_keyword_args_that_are_known_aws_attributes(self, value):
+        class InitTestObject(AWSObject):
+            AWS_ATTRIBUTES = {"Foo"}
+
+            def __init__(self, Foo=None):
+                # NB: Make sure we exercise the __init__ in the base class!
+                AWSObject.__init__(self, Foo=Foo, SomeUnknownAttribute=value)
+
+        with pytest.raises(TypeError) as excinfo:
+            _ = InitTestObject()
+
+        assert "SomeUnknownAttribute" in str(excinfo.value)
+
+    def test_init_should_ignore_keyword_parameters_that_are_none(self):
+        class InitTestObject(AWSObject):
+            AWS_ATTRIBUTES = {"Foo"}
+
+            def __init__(self, Foo=None):
+                AWSObject.__init__(self, Foo=Foo)
+
+        data = InitTestObject()
+
+        assert not hasattr(data, "Foo")
 
 
 class TestAttributeAccess:
