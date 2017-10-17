@@ -139,7 +139,7 @@ class TestAttributeAccess:
         assert data.bar == bar_value
 
     @given(st.text())
-    def test_internal_attributes_can_be_updated(self, new_value):
+    def test_aws_attributes_with_a_default_value_can_be_updated(self, new_value):
         SimpleClass = self._create_simple_class()
         data = SimpleClass()
 
@@ -147,25 +147,81 @@ class TestAttributeAccess:
 
         assert data.ValueWithDefault == new_value
 
-    @pytest.mark.skip
-    def test_unknown_aws_attributes_can_be_updated_directly(self):
-        assert False
+    @given(st.text(), st.text())
+    def test_internal_attributes_can_be_updated(self, old_value, new_value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+        data._internal_value = old_value
 
-    @pytest.mark.skip
-    def test_unknown_aws_attributes_can_be_updated_via_explict_setter(self):
-        assert False
+        data._internal_value = new_value
+
+        assert data._internal_value == new_value
+
+    @given(st.text(), st.text())
+    def test_unknown_aws_attributes_can_be_updated_directly(self, old_value, new_value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+        data.set_unknown_aws_attribute("WeirdValue", old_value)
+
+        # FIXME breaks because attrib is not known. we could either just look up pre-existing attributs on the object, or keep a dynamic list of valid AWS attributes for this object that gets updated by set_unknown_aws_attribute
+        data.WeirdValue = new_value
+
+        assert data.WeirdValue == new_value
+
+    @given(st.text(), st.text())
+    def test_unknown_aws_attributes_can_be_updated_via_explict_setter(self, old_value, new_value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+        data.set_unknown_aws_attribute("WeirdValue", old_value)
+
+        data.set_unknown_aws_attribute("WeirdValue", new_value)
+
+        assert data.WeirdValue == new_value
 
     # Delete
     # ------
 
-    @pytest.mark.skip
-    def test_aws_attributes_can_be_deleted(self):
-        assert False
+    @given(st.text(), st.text())
+    def test_aws_attributes_can_be_deleted(self, foo_value, bar_value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
 
-    @pytest.mark.skip
-    def test_unknown_aws_attributes_can_be_deleted(self):
-        assert False
+        # Setup: set initial values
+        data.Foo = foo_value
+        data.bar = bar_value
 
-    @pytest.mark.skip
-    def test_internal_attributes_can_be_deleted(self):
-        assert False
+        # Exercise
+        del data.Foo
+        del data.bar
+
+        # Verify
+        assert not hasattr(data, "Foo")
+        assert not hasattr(data, "bar")
+
+    def test_aws_attributes_with_a_default_value_can_be_deleted(self):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+
+        del data.ValueWithDefault
+
+        assert not hasattr(data, "ValueWithDefault")
+
+    @given(st.text())
+    def test_unknown_aws_attributes_can_be_deleted(self, value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+        data.set_unknown_aws_attribute("WeirdValue", value)
+
+        del data.WeirdValue
+
+        assert not hasattr(data, "WeirdValue")
+
+    @given(st.text())
+    def test_internal_attributes_can_be_deleted(self, value):
+        SimpleClass = self._create_simple_class()
+        data = SimpleClass()
+        data._internal_value = value
+
+        del data._internal_value
+
+        assert not hasattr(data, "_internal_value")

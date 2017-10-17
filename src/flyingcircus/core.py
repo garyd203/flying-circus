@@ -52,6 +52,12 @@ class AWSObject(object):
                 setattr(self, key, value)
 
     def __setattr__(self, key, value):
+        if hasattr(self, key):
+            # Allow modification of existing attributes. This avoids madness,
+            # whilst also neatly covering some corner cases with our
+            # attribute filtering
+            super(AWSObject, self).__setattr__(key, value)
+            return
         if key.startswith("_"):
             # Internal attribute
             super(AWSObject, self).__setattr__(key, value)
@@ -65,7 +71,7 @@ class AWSObject(object):
     def set_unknown_aws_attribute(self, key, value):
         """Override the normal checking and set an AWS attribute that we don't know about.
 
-        This is intended as a bridging mechanism for when (older versions of)
+        This is intended as a bridging mechanism for when older versions of
         the library do not explicitly know about a newly introduced AWS
         attribute.
 
@@ -76,7 +82,7 @@ class AWSObject(object):
         """
         # TODO store this attrib somewhere so we know to export it? Or does that all work out in the wash. Write a test...
         if key in self.AWS_ATTRIBUTES:
-            # TODO throwing an error here stuffs up the migration. At least it's thrown at set-time, not at export time.
+            # TODO throwing an error here stuffs up the code migration when users move to a version that knows about this attribute. At least it's thrown at set-time, not at export time.
             raise AttributeError(
                 "'{}' is a recognised AWS attribute should be set as a normal Python attribute".format(key))
 
@@ -84,7 +90,7 @@ class AWSObject(object):
 
 
 class CollapsedObject(AWSObject):
-    # TODO an object that collapses a second-level object into attributes on the main object, that would otherwise be trivial (eg. Resource.Properties)
+    # TODO an object that collapses a second-level object into attributes on the main object, where the main object would otherwise be trivial (eg. Resource.Properties)
     pass
 
 
