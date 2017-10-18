@@ -36,12 +36,6 @@ class AWSObject(object):
     default value in the constructor.
     """
 
-    # FIXME brainstorm implementation ideas:
-    # -> override setattr to verify any change
-    # have a export-time sanity check that all fields are valid -> prefer to have errors occur at the time we make them
-    # at export time only export the fields that are known -> prefer to have errors be explicit, and occur at the time we make them
-    # Have an internal dict that all CFN attribs are stored in, and map that to getattr/setattr calls -> seems like work for no good reason
-
     #: Set of valid AWS attribute names for this class
     AWS_ATTRIBUTES = set()  # TODO make a function instead
 
@@ -70,6 +64,12 @@ class AWSObject(object):
             super(AWSObject, self).__setattr__(key, value)
             return
         raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
+
+    def export(self, format="yaml"):
+        if format == "yaml":
+            return ""
+        else:
+            raise ValueError("Export format '{}' is unknown".format(format))
 
     def set_unknown_aws_attribute(self, key, value):
         """Override the normal checking and set an AWS attribute that we don't know about.

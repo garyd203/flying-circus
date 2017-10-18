@@ -3,19 +3,15 @@
 This functionality forms the core of Flying Circus.
 """
 import hypothesis.strategies as st
+import inspect
 import pytest
 from hypothesis import given
 
 from flyingcircus.core import AWSObject
 
 
-class TestYAMLOutput:
-    """Verify YAML output."""
-    pass
-
-
-class TestBaseClass:
-    """Verify behaviour of the base AWSObject class specifically"""
+class TestInitMethod:
+    """Verify behaviour of the base AWSObject's constructor"""
 
     def test_init_should_not_accept_positional_parameters(self):
         class InitTestObject(AWSObject):
@@ -31,7 +27,6 @@ class TestBaseClass:
         assert "positional" in str(excinfo.value)
 
     def test_init_should_only_accept_kwargs(self):
-        import inspect
         sig = inspect.signature(AWSObject.__init__)
         for param in sig.parameters.values():
             if param.name == 'self':
@@ -78,12 +73,36 @@ class TestBaseClass:
         assert not hasattr(data, "Foo")
 
 
+class TestExport:
+    """Verify behaviour of the export method"""
+
+    VALID_EXPORT_FORMATS = {"yaml"}
+
+    @pytest.mark.parametrize('format', VALID_EXPORT_FORMATS)
+    def test_valid_export_methods_produce_a_result(self, format):
+        data = AWSObject()
+
+        output = data.export(format)
+
+        assert output is not None
+
+    @given(st.text().filter(lambda x: x not in TestExport.VALID_EXPORT_FORMATS))
+    def test_invalid_export_methods_cause_an_error(self, format):
+        data = AWSObject()
+
+        with pytest.raises(ValueError) as excinfo:
+            data.export(format)
+
+        assert format in str(excinfo.value)
+
+
 class TestAttributeAccess:
     """Verify behaviour of attributes on a Flying Circus AWS object"""
 
     # TODO dict access for aws attributes only
     # TODO delete nonexistent attributes of various sorts
     # TODO verify behaviour of set_unknown_aws_attribute with known/internal attribute
+    # TODO consider why we have default values set in the concrete classes? What is the value of passing these through, rather than setting no value and having it fall through to AWS? Documentation is nice, and consistency is nice (if aws defaults change), and explicit is better than implicit, but it just feels that we are doing something that shouldn't be our business.
 
     class SimpleObject(AWSObject):
         """Simple AWS object for testing attribute access"""
