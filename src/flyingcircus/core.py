@@ -36,6 +36,8 @@ class AWSObject(object):
     default value in the constructor.
     """
 
+    # TODO implement __str__ and/or __repr__
+
     #: Set of valid AWS attribute names for this class
     AWS_ATTRIBUTES = set()  # TODO make a function instead
 
@@ -65,12 +67,6 @@ class AWSObject(object):
             return
         raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
 
-    def export(self, format="yaml"):
-        if format == "yaml":
-            return ""
-        else:
-            raise ValueError("Export format '{}' is unknown".format(format))
-
     def set_unknown_aws_attribute(self, key, value):
         """Override the normal checking and set an AWS attribute that we don't know about.
 
@@ -91,6 +87,31 @@ class AWSObject(object):
 
         # Bypass the filtering in our __setattr__ implementation
         object.__setattr__(self, key, value)
+
+    def export(self, format="yaml"):
+        """Export this AWS object as cloudformation in the specified format."""
+        # TODO document the formats. 'json' or 'yaml'
+        if format == "yaml":
+            return yaml.dump_all(
+                [self],
+                # line_break=True, #TODO
+                # default_flow_style=False, #TODO
+                explicit_start=True,
+            )
+        else:
+            raise ValueError("Export format '{}' is unknown".format(format))
+
+    def as_yaml_node(self, dumper):
+        """Get a representation of this object as a PyYAML node."""
+        data = {
+            key: getattr(self, key)
+            for key in self.AWS_ATTRIBUTES
+            if hasattr(self, key)
+        }
+        # TODO better tag name
+        # TODO ordering
+        # TODO include unknown aws attributes
+        return dumper.represent_mapping(self.__class__.__name__, data)
 
 
 class FlattenedObject(AWSObject):
@@ -188,7 +209,8 @@ class _AWSObjectOld(object):
         raise NotImplementedError()
 
 
-yaml.add_multi_representer(AWSObject, lambda dumper, data: data.as_yaml_node(dumper))
+yaml.add_multi_representer(AWSObject, lambda dumper, data: data.as_yaml_node(
+    dumper))  # TODO find a neater way to set this up, that is more tied to the class itself
 
 
 def represent_string(dumper, data):
