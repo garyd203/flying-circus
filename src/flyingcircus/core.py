@@ -6,17 +6,28 @@ import yaml.resolver
 from . import function
 
 
-class NonAliasedDumper(yaml.Dumper):
-    """We don't usually want the serializer to use node references/aliasing, because that makes the YAML difficult to read for a human.
-    For lack of an option to disable it in pyYAML, we hack this up by clobbering the functionality with a superclass
+class NonAliasingDumper(yaml.Dumper):
+    """A YAML dumper that doesn't use aliases or print anchors.
+
+    The use of aliasing in PyYAML is a little bit arbitrary since it depends
+    on object identity, rather than equality. Additionally, the use of node
+    aliasing usually makes the output more difficult to understand for a
+    human. Hence we prefer to not use aliases in our CloudFormation YAML
+    output.
+
+    There is no method to disable aliasing in PyYAML, so we work around this
+    by using a subclassed Dumper implementation that clobbers the relevant
+    functionality.
     """
 
     def generate_anchor(self, node):
+        # Don't generate anchors at all
         return None
 
     def serialize_node(self, node, parent, index):
+        # Don't keep track of previously serialised nodes, so any node will appear to be new.
         self.serialized_nodes = {}
-        super(NonAliasedDumper, self).serialize_node(node, parent, index)
+        super(NonAliasingDumper, self).serialize_node(node, parent, index)
 
 
 class AWSObject(object):
@@ -89,11 +100,12 @@ class AWSObject(object):
         object.__setattr__(self, key, value)
 
     def export(self, format="yaml"):
-        """Export this AWS object as cloudformation in the specified format."""
+        """Export this AWS object as CloudFormation in the specified format."""
         # TODO document the formats. 'json' or 'yaml'
         if format == "yaml":
             return yaml.dump_all(
                 [self],
+                Dumper=NonAliasingDumper,
                 # line_break=True, #TODO
                 # default_flow_style=False, #TODO
                 explicit_start=True,
@@ -103,15 +115,26 @@ class AWSObject(object):
 
     def as_yaml_node(self, dumper):
         """Get a representation of this object as a PyYAML node."""
-        data = {
+        # Ideally, we would create a tag that contains the object name
+        # (eg. "!Bucket") for completeness. Unfortunately, there is no way
+        # to then prevent the YAML dumper from printing tags unless it
+        # determines that the tag is implicit (ie. the default tag for a
+        # mapping node is the tag being used), so we end up just using the
+        # default tag.
+        # TODO investigate hacking a Dumper subclass like we did for aliasing
+        tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+
+        # Get all attributes for export
+        # TODO ordering
+        # TODO include unknown aws attributes
+        attributes = {
             key: getattr(self, key)
             for key in self.AWS_ATTRIBUTES
             if hasattr(self, key)
         }
-        # TODO better tag name
-        # TODO ordering
-        # TODO include unknown aws attributes
-        return dumper.represent_mapping(self.__class__.__name__, data)
+
+        # Represent this object as a mapping of it's AWS attributes
+        return dumper.represent_mapping(tag, attributes)
 
 
 class FlattenedObject(AWSObject):
@@ -157,7 +180,7 @@ class _AWSObjectOld(object):
 
     def export(self, format="yaml"):
         # TODO have the option to use aliases in dump (eg. set by export context), but default to no aliases.
-        return yaml.dump_all([self], stream=None, Dumper=NonAliasedDumper, line_break=True, default_flow_style=False,
+        return yaml.dump_all([self], stream=None, Dumper=NonAliasingDumper, line_break=True, default_flow_style=False,
                              explicit_start=True)
 
     def as_yaml_node(self, dumper):
