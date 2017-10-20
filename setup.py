@@ -1,9 +1,19 @@
+import os
+
 from setuptools import find_packages
 from setuptools import setup
 
+
+def get_version_data():
+    data = {}
+    with open(os.path.join("src", "flyingcircus", "_about.py")) as fp:
+        exec(fp.read(), data)
+    return data
+
+
 setup(
     name="flying-circus",
-    version="0.4",
+    version=get_version_data()['__version__'],
     package_dir={'': 'src'},
     packages=find_packages(where="src"),
     install_requires=[
@@ -21,7 +31,9 @@ setup(
         # TODO add more classifiers
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
+        'Natural Language :: English',
         'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
 )
