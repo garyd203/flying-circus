@@ -100,7 +100,7 @@ class TestAttributeAccess:
     """Verify behaviour of attributes on a Flying Circus AWS object"""
 
     # TODO dict access for aws attributes only
-    # TODO delete nonexistent attributes of various sorts
+    # TODO test deleting nonexistent attributes of various sorts
     # TODO verify behaviour of set_unknown_aws_attribute with known/internal attribute
     # TODO consider why we have default values set in the concrete classes? What is the value of passing these through, rather than setting no value and having it fall through to AWS? Documentation is nice, and consistency is nice (if aws defaults change), and explicit is better than implicit, but it just feels that we are doing something that shouldn't be our business.
 
