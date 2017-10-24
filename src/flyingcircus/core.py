@@ -106,8 +106,7 @@ class AWSObject(object):
             return yaml.dump_all(
                 [self],
                 Dumper=NonAliasingDumper,
-                # line_break=True, #TODO
-                # default_flow_style=False, #TODO
+                default_flow_style=False,
                 explicit_start=True,
             )
         else:
@@ -368,3 +367,11 @@ def reflow(st):
     cleaned_lines = textwrap.dedent('\n'.join(lines))
 
     return cleaned_lines
+
+
+def reflow_trailing(st):  # TODO poor name
+    """Reflow a block of text, but add a final trailing newline.
+
+    This is helpful for creating inline block of YAML that need to be compared to generated YAML, which has a final empty line
+    """
+    return reflow(st) + "\n"
