@@ -3,9 +3,11 @@ import textwrap
 import yaml
 import yaml.resolver
 
-from .yaml import NonAliasingDumper
 from .yaml import CustomYamlObject
+from .yaml import NonAliasingDumper
 
+
+# TODO rename "AWS attribute" to "CloudFormation attribute" everywhere ?
 
 class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
@@ -168,11 +170,10 @@ class AWSObject(CustomYamlObject):
 
         # Get all attributes for export
         # TODO ordering
-        # TODO include unknown aws attributes
-        # TODO use the class iterator, which should hadnle the previous two problems for you
+        # TODO use the class iterator, which should handle the above problem for you
         attributes = {
             key: getattr(self, key)
-            for key in self.AWS_ATTRIBUTES
+            for key in self.AWS_ATTRIBUTES.union(self._known_unknown_aws_attributes)
             if hasattr(self, key)
         }
 

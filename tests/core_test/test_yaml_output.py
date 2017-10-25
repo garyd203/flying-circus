@@ -8,7 +8,7 @@ from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
 
-class TestYAMLOutput:
+class TestYamlOutput:
     """Verify YAML output."""
     '''fixme
 
@@ -27,20 +27,59 @@ class TestYAMLOutput:
     None
     python object that doesnt implement our base class => error?
 
-    # configuration
-    no python attributes set
-    no known aws attributes, only internal attributes set
-    has known aws attributes, only internal attributes set
-    has known aws attributes, some aws attributes set
-    no known aws attributes, some unknown attributes set
-    has known aws attributes, some known and unknown and internal attributes set
-
-
     '''
     pass
 
 
-class TestYAMLBasicFormatting:
+class TestYamlAttributeExport:
+    """Verify all relevant attributes are exported to YAML"""
+
+    def test_aws_attributes_are_only_exported_when_set(self):
+        data = DualAttributeObject(one=42)
+        data._internal_value = 7
+        data.set_unknown_aws_attribute("special", 8)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            special: 8
+            """)
+
+    def test_empty_export_when_no_aws_attributes_configured_and_internal_attributes_set(self):
+        data = ZeroAttributeObject()
+        data._internal_value = 7
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            --- {}
+            """)
+
+    def test_empty_export_when_no_aws_attributes_set_and_internal_attributes_set(self):
+        data = DualAttributeObject()
+        data._internal_value = 7
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            --- {}
+            """)
+
+    def test_unknown_attributes_are_exported_when_no_known_attributes(self):
+        data = ZeroAttributeObject()
+        data.set_unknown_aws_attribute("special", 8)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            special: 8
+            """)
+
+
+class TestYamlBasicFormatting:
     """Verify basic formatting of YAML output"""
 
     # TODO alphabetical ordering or explicit-then-alphabetical ordering
