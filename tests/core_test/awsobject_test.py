@@ -102,14 +102,14 @@ class TestAttributeAccess:
     # TODO dict access for aws attributes only
     # TODO test deleting nonexistent attributes of various sorts
     # TODO verify behaviour of set_unknown_aws_attribute with known/internal attribute
-    # TODO consider why we have default values set in the concrete classes? What is the value of passing these through, rather than setting no value and having it fall through to AWS? Documentation is nice, and consistency is nice (if aws defaults change), and explicit is better than implicit, but it just feels that we are doing something that shouldn't be our business.
+    # TODO set attrib to None => valid
 
     class SimpleObject(AWSObject):
         """Simple AWS object for testing attribute access"""
-        AWS_ATTRIBUTES = {"Foo", "bar", "ValueWithDefault"}
+        AWS_ATTRIBUTES = {"Foo", "bar"}
 
-        def __init__(self, Foo=None, bar=None, ValueWithDefault=42):
-            AWSObject.__init__(self, Foo=Foo, bar=bar, ValueWithDefault=ValueWithDefault)
+        def __init__(self, Foo=None, bar=None):
+            AWSObject.__init__(self, Foo=Foo, bar=bar)
 
     # Set and Read
     # ------------
@@ -169,12 +169,6 @@ class TestAttributeAccess:
 
         assert not hasattr(data, "Foo")
 
-    def test_aws_attributes_with_a_default_value_can_be_read_before_they_are_set(self):
-        data = self.SimpleObject()
-
-        assert hasattr(data, "ValueWithDefault")
-        assert data.ValueWithDefault == 42
-
     # Update
     # ------
 
@@ -192,14 +186,6 @@ class TestAttributeAccess:
         # Verify
         assert data.Foo == foo_value_new
         assert data.bar == bar_value
-
-    @given(st.text())
-    def test_aws_attributes_with_a_default_value_can_be_updated(self, new_value):
-        data = self.SimpleObject()
-
-        data.ValueWithDefault = new_value
-
-        assert data.ValueWithDefault == new_value
 
     @given(st.text(), st.text())
     def test_internal_attributes_can_be_updated(self, old_value, new_value):
@@ -221,7 +207,7 @@ class TestAttributeAccess:
         assert data.WeirdValue == new_value
 
     @given(st.text(), st.text())
-    def test_unknown_aws_attributes_can_be_updated_via_explict_setter(self, old_value, new_value):
+    def test_unknown_aws_attributes_can_be_updated_via_explicit_setter(self, old_value, new_value):
         data = self.SimpleObject()
         data.set_unknown_aws_attribute("WeirdValue", old_value)
 
@@ -247,13 +233,6 @@ class TestAttributeAccess:
         # Verify
         assert not hasattr(data, "Foo")
         assert not hasattr(data, "bar")
-
-    def test_aws_attributes_with_a_default_value_can_be_deleted(self):
-        data = self.SimpleObject()
-
-        del data.ValueWithDefault
-
-        assert not hasattr(data, "ValueWithDefault")
 
     @given(st.text())
     def test_unknown_aws_attributes_can_be_deleted(self, value):
