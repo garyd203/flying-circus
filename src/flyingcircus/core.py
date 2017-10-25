@@ -91,10 +91,15 @@ class AWSObject(object):
         type mapping, but this method exists for when you need a workaround.
         """
         # TODO store this attrib somewhere so we know to export it? Or does that all work out in the wash. Write a test...
+
+        if key.startswith("_"):
+            # Internal attribute
+            raise AttributeError("'{}' is an internal attribute and should not be set as a AWS attribute".format(key))
         if key in self.AWS_ATTRIBUTES:
+            # Known AWS attribute
             # TODO throwing an error here stuffs up the code migration when users move to a version that knows about this attribute. At least it's thrown at set-time, not at export time.
             raise AttributeError(
-                "'{}' is a recognised AWS attribute should be set as a normal Python attribute".format(key))
+                "'{}' is a recognised AWS attribute and should be set as a normal Python attribute".format(key))
 
         # Bypass the filtering in our __setattr__ implementation
         object.__setattr__(self, key, value)

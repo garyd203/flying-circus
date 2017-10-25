@@ -101,7 +101,6 @@ class TestAttributeAccess:
     """Verify behaviour of attributes on a Flying Circus AWS object"""
 
     # TODO dict access for aws attributes only
-    # TODO verify behaviour of set_unknown_aws_attribute with known/internal attribute
 
     class SimpleObject(AWSObject):
         """Simple AWS object for testing attribute access"""
@@ -154,14 +153,24 @@ class TestAttributeAccess:
     def test_valid_aws_attributes_cannot_be_explicitly_set(self):
         data = self.SimpleObject()
 
-        data.set_unknown_aws_attribute("WeirdValue", "hello")
         with pytest.raises(AttributeError) as excinfo:
             data.set_unknown_aws_attribute("bar", "hello")
+
         assert "bar" in str(excinfo.value)
         assert not hasattr(data, "bar")
 
+    def test_internal_attributes_cannot_be_explicitly_set(self):
+        data = self.SimpleObject()
+
+        with pytest.raises(AttributeError) as excinfo:
+            data.set_unknown_aws_attribute("_internal_value", "hello")
+
+        assert "_internal_value" in str(excinfo.value)
+        assert not hasattr(data, "_internal_value")
+
     # Set Special Cases
     # -----------------
+
     def test_attribute_can_be_set_to_none(self):
         """An attribute can be set to None, although
         it can't be initialised to None in the constructor.
