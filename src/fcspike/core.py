@@ -1,3 +1,4 @@
+import textwrap
 import yaml
 
 from flyingcircus.core import NonAliasingDumper
@@ -192,3 +193,25 @@ class Stack(AWSObject):
         else:
             self._data[key] = value
         return self  # Allow call chaining
+
+
+def reflow(st):
+    """Remove unwanted whitespace from a multi-line string intended for output.
+
+    This is perfect for text embedded inside indented Python code.
+    """
+    # Remove leading and trailing blank lines because they confuse the de-denter.
+    lines = st.split('\n')
+    while lines:
+        if not lines[0] or lines[0].isspace():
+            lines = lines[1:]
+            continue
+        if not lines[-1] or lines[-1].isspace():
+            lines = lines[:-1]
+            continue
+        break
+
+    # Remove python-style leading indentation on each line
+    cleaned_lines = textwrap.dedent('\n'.join(lines))
+
+    return cleaned_lines
