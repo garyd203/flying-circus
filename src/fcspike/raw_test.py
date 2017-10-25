@@ -1,9 +1,9 @@
-from flyingcircus.config import ExportYamlContext
-from flyingcircus.core import Output
-from flyingcircus.core import Stack
-from flyingcircus.core import reflow
-from flyingcircus.function import Join
-from flyingcircus._raw import s3
+from fcspike._raw import s3
+from fcspike.config import ExportYamlContext
+from fcspike.core import Output
+from fcspike.core import Stack
+from fcspike.core import reflow
+from fcspike.function import Join
 
 SIMPLE_S3_YAML_BASIC = '''---
 AWSTemplateFormatVersion: '2010-09-09'
