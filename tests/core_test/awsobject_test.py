@@ -16,11 +16,13 @@ class TestInitMethod:
     """Verify behaviour of the base AWSObject's constructor"""
 
     def test_init_should_not_accept_positional_parameters(self):
+        # noinspection PyPep8Naming
         class InitTestObject(AWSObject):
             AWS_ATTRIBUTES = {"Foo"}
 
             def __init__(self, Foo=None):
                 # NB: Make sure we exercise the __init__ in the base class!
+                # noinspection PyArgumentList
                 AWSObject.__init__(self, Foo)
 
         with pytest.raises(TypeError) as excinfo:
@@ -37,6 +39,7 @@ class TestInitMethod:
 
     @given(st.text(), st.text(), st.text())
     def test_init_should_map_keyword_args_to_attributes(self, foo_value, default_value, bar_value):
+        # noinspection PyPep8Naming
         class InitTestObject(AWSObject):
             AWS_ATTRIBUTES = {"Foo", "ValueWithDefault", "Bar"}
 
@@ -51,6 +54,7 @@ class TestInitMethod:
 
     @given(st.text())
     def test_init_should_only_accept_keyword_args_that_are_known_aws_attributes(self, value):
+        # noinspection PyPep8Naming
         class InitTestObject(AWSObject):
             AWS_ATTRIBUTES = {"Foo"}
 
@@ -64,6 +68,7 @@ class TestInitMethod:
         assert "SomeUnknownAttribute" in str(excinfo.value)
 
     def test_init_should_ignore_keyword_parameters_that_are_none(self):
+        # noinspection PyPep8Naming
         class InitTestObject(AWSObject):
             AWS_ATTRIBUTES = {"Foo"}
 
@@ -101,6 +106,7 @@ class TestExport:
 class TestAttributeAccess:
     """Verify behaviour of attributes on a Flying Circus AWS object"""
 
+    # noinspection PyPep8Naming
     class SimpleObject(AWSObject):
         """Simple AWS object for testing attribute access"""
         AWS_ATTRIBUTES = {"Foo", "bar"}
