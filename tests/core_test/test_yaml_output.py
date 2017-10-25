@@ -3,6 +3,9 @@ import pytest
 
 from flyingcircus.core import AWSObject
 from flyingcircus.core import reflow_trailing
+from .common import DualAttributeObject
+from .common import SingleAttributeObject
+from .common import ZeroAttributeObject
 
 
 class TestYAMLOutput:
@@ -45,7 +48,7 @@ class TestYAMLBasicFormatting:
     # TODO list values are indented
 
     def test_yaml_document_explicitly_indicates_document_start(self):
-        data = AWSObject()
+        data = ZeroAttributeObject()
 
         output = data.export("yaml")
 
@@ -72,11 +75,8 @@ class TestYAMLBasicFormatting:
             """)
 
     def test_yaml_aliases_are_not_used(self):
-        class TestObject(AWSObject):
-            AWS_ATTRIBUTES = {"foo", "bar"}
-
         shared_data = {'a': 'b'}
-        data = TestObject(foo=shared_data, bar=shared_data)
+        data = DualAttributeObject(one=shared_data, two=shared_data)
 
         output = data.export("yaml")
 
@@ -84,7 +84,7 @@ class TestYAMLBasicFormatting:
         assert "*" not in output, "We don't want aliases to anchors, which are indicated by an asterisk"
 
     def test_empty_top_level_object_is_exported_as_empty_dict(self):
-        data = AWSObject()
+        data = ZeroAttributeObject()
 
         output = data.export("yaml")
 
@@ -93,109 +93,93 @@ class TestYAMLBasicFormatting:
             """)
 
     def test_single_entry_object_is_exported_in_block_style(self):
-        class SingleEntryObject(AWSObject):
-            AWS_ATTRIBUTES = {"foo"}
-
-        data = SingleEntryObject(foo=1)
+        data = SingleAttributeObject(one=1)
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
             ---
-            foo: 1
+            one: 1
             """)
 
     def test_multi_entry_object_is_exported_in_block_style(self):
-        class MultiEntryObject(AWSObject):
-            # TODO pull these helper classes into top level
-            AWS_ATTRIBUTES = {"bar", "foo"}
-
-        data = MultiEntryObject(bar=1, foo=2)
+        data = DualAttributeObject(one=1, two=2)
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
             ---
-            bar: 1
-            foo: 2
+            one: 1
+            two: 2
             """)
 
     def test_attributes_are_not_exported_when_they_havent_been_set(self):
-        class MultiEntryObject(AWSObject):
-            AWS_ATTRIBUTES = {"bar", "foo"}
-
-        data = MultiEntryObject(bar=1, foo=None)
+        data = DualAttributeObject(one=1, two=None)
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
             ---
-            bar: 1
+            one: 1
             """)
 
     @pytest.mark.skip("we dont currently support filtering out empty attributes")
     def test_empty_attributes_are_not_exported(self):
-        class MultiEntryObject(AWSObject):
-            AWS_ATTRIBUTES = {"bar", "foo"}
-
-        empty_attribute = AWSObject()
-        data = MultiEntryObject(bar=1, foo=empty_attribute)
+        empty_attribute = ZeroAttributeObject()
+        data = DualAttributeObject(one=1, two=empty_attribute)
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
             ---
-            bar: 1
+            one: 1
             """)
 
 
 class TestYamlStringFormatting:
     """Verify formatting of strings in YAML output"""
 
-    class TextOutput(AWSObject):
-        AWS_ATTRIBUTES = {"text"}
-
     def test_string_quotes_are_not_used_when_unnecessary(self):
-        data = self.TextOutput(text="Hello world. Here is a namespace AWS::service::Resource")
+        data = SingleAttributeObject(one="Hello world. Here is a namespace AWS::service::Resource")
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
             ---
-            text: Hello world. Here is a namespace AWS::service::Resource
+            one: Hello world. Here is a namespace AWS::service::Resource
             """)
 
     def test_leading_and_trailing_whitespace_is_not_stripped(self):
-        data = self.TextOutput(text="    hello world   ")
+        data = SingleAttributeObject(one="    hello world   ")
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
             ---
-            text: '    hello world   '
+            one: '    hello world   '
             """)
 
     def test_long_strings_dont_get_broken(self):
         long_text = "This is a really long string and it just goes on and on and on. I hope there's a good reason for it. Of course, this means that my IDE is complaining about the length of the line too, but it will get over that. I hope."
-        data = self.TextOutput(text=long_text)
+        data = SingleAttributeObject(one=long_text)
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
             ---
-            text: |-
+            one: |-
               {}
             """.format(long_text))
 
     def test_multiline_strings_retain_formatting(self):
-        data = self.TextOutput(text="hello\nworld\n\n  We should retain indenting too")
+        data = SingleAttributeObject(one="hello\nworld\n\n  We should retain indenting too")
 
         output = data.export("yaml")
 
         print(output)
         assert output == reflow_trailing("""
             ---
-            text: |-
+            one: |-
               hello
               world
               

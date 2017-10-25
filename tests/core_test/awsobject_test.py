@@ -9,6 +9,8 @@ from hypothesis import given
 
 from flyingcircus.core import AWSObject
 
+from .common import ZeroAttributeObject
+
 
 class TestInitMethod:
     """Verify behaviour of the base AWSObject's constructor"""
@@ -80,7 +82,7 @@ class TestExport:
 
     @pytest.mark.parametrize('format', VALID_EXPORT_FORMATS)
     def test_valid_export_methods_produce_a_result(self, format):
-        data = AWSObject()
+        data = ZeroAttributeObject()
 
         output = data.export(format)
 
@@ -88,7 +90,7 @@ class TestExport:
 
     @given(st.text().filter(lambda x: x not in TestExport.VALID_EXPORT_FORMATS))
     def test_invalid_export_methods_cause_an_error(self, format):
-        data = AWSObject()
+        data = ZeroAttributeObject()
 
         with pytest.raises(ValueError) as excinfo:
             data.export(format)
