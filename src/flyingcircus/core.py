@@ -165,6 +165,7 @@ class AWSObject(object):
     # Export Data
     # -----------
 
+    # TODO change param name to prevent namespace clash
     def export(self, format="yaml"):
         """Export this AWS object as CloudFormation in the specified format."""
         # TODO document the formats. 'json' or 'yaml'
@@ -233,34 +234,22 @@ def represent_string(dumper, data):
 yaml.add_representer(str, represent_string)
 
 
-def reflow(st):
+# TODO new `reflow` function that cleans a long (multi-) line string and marks it as as suitable for PyYAML flow style
+
+def dedent(st):
     """Remove unwanted whitespace from a multi-line string intended for output.
 
     This is perfect for text embedded inside indented Python code.
     """
-    # TODO better name. reflow sounds like it does forced line breaks
-    # TODO have functionality variations by providing extra args. eg include_trailing_newlines
     # TODO needs test cases
-    # Remove leading and trailing blank lines because they confuse the de-denter.
+
     lines = st.split('\n')
-    while lines:
-        if not lines[0] or lines[0].isspace():
-            lines = lines[1:]
-            continue
-        if not lines[-1] or lines[-1].isspace():
-            lines = lines[:-1]
-            continue
-        break
+
+    # Remove a leading line that contains only a newline character
+    if lines and not lines[0]:
+        lines = lines[1:]
 
     # Remove python-style leading indentation on each line
     cleaned_lines = textwrap.dedent('\n'.join(lines))
 
     return cleaned_lines
-
-
-def reflow_trailing(st):  # TODO poor name
-    """Reflow a block of text, but add a final trailing newline.
-
-    This is helpful for creating inline block of YAML that need to be compared to generated YAML, which has a final empty line
-    """
-    return reflow(st) + "\n"

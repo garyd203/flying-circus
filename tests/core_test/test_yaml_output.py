@@ -2,7 +2,7 @@
 import pytest
 
 from flyingcircus.core import AWSObject
-from flyingcircus.core import reflow_trailing
+from flyingcircus.core import dedent
 from .common import DualAttributeObject
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
@@ -62,7 +62,7 @@ class TestYAMLBasicFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             dict_value:
               a: b
@@ -88,7 +88,7 @@ class TestYAMLBasicFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             --- {}
             """)
 
@@ -97,7 +97,7 @@ class TestYAMLBasicFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: 1
             """)
@@ -107,7 +107,7 @@ class TestYAMLBasicFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: 1
             two: 2
@@ -118,7 +118,7 @@ class TestYAMLBasicFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: 1
             """)
@@ -130,7 +130,7 @@ class TestYAMLBasicFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: 1
             """)
@@ -144,7 +144,7 @@ class TestYamlStringFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: Hello world. Here is a namespace AWS::service::Resource
             """)
@@ -154,7 +154,7 @@ class TestYamlStringFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: '    hello world   '
             """)
@@ -165,7 +165,7 @@ class TestYamlStringFormatting:
 
         output = data.export("yaml")
 
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: |-
               {}
@@ -176,8 +176,7 @@ class TestYamlStringFormatting:
 
         output = data.export("yaml")
 
-        print(output)
-        assert output == reflow_trailing("""
+        assert output == dedent("""
             ---
             one: |-
               hello
