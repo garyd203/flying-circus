@@ -120,3 +120,57 @@ class TestYAMLBasicFormatting:
             bar: 1
             foo: 2
             """)
+
+
+class TestYamlStringFormatting:
+    """Verify formatting of strings in YAML output"""
+
+    class TextOutput(AWSObject):
+        AWS_ATTRIBUTES = {"text"}
+
+    def test_string_quotes_are_not_used_when_unnecessary(self):
+        data = self.TextOutput(text="Hello world. Here is a namespace AWS::service::Resource")
+
+        output = data.export("yaml")
+
+        assert output == reflow_trailing("""
+            ---
+            text: Hello world. Here is a namespace AWS::service::Resource
+            """)
+
+    def test_leading_and_trailing_whitespace_is_not_stripped(self):
+        data = self.TextOutput(text="    hello world   ")
+
+        output = data.export("yaml")
+
+        assert output == reflow_trailing("""
+            ---
+            text: '    hello world   '
+            """)
+
+    def test_long_strings_dont_get_broken(self):
+        long_text = "This is a really long string and it just goes on and on and on. I hope there's a good reason for it. Of course, this means that my IDE is complaining about the length of the line too, but it will get over that. I hope."
+        data = self.TextOutput(text=long_text)
+
+        output = data.export("yaml")
+
+        assert output == reflow_trailing("""
+            ---
+            text: |-
+              {}
+            """.format(long_text))
+
+    def test_multiline_strings_retain_formatting(self):
+        data = self.TextOutput(text="hello\nworld\n\n  We should retain indenting too")
+
+        output = data.export("yaml")
+
+        print(output)
+        assert output == reflow_trailing("""
+            ---
+            text: |-
+              hello
+              world
+              
+                We should retain indenting too
+            """)

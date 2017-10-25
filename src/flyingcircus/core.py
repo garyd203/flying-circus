@@ -236,11 +236,21 @@ yaml.add_multi_representer(AWSObject, lambda dumper, data: data.as_yaml_node(
 
 
 def represent_string(dumper, data):
-    # Override the normal string emission rules to handle long and short lines differently (for readability)
-    if len(data) > 80 or '\n' in data:
-        # '|' style means literal block style. So line breaks and formatting are retained.
+    # Override the normal string emission rules to produce the most readable text output
+    # TODO test cases
+    if '\n' in data:
+        # '|' style means literal block style, so line breaks and formatting are retained.
+        # This will be especially handy for inline code.
         return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "|")
-    return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "")
+    elif len(data) > 65:
+        # Longer lines will be automatically folded (ie. have line breaks
+        # inserted) by PyYAML, which is likely to cause confusion. We
+        # compromise by using the literal block style ('|'), which doesn't
+        # fold, but does require some special block indicators.
+        # TODO need some way to allow folding. Having a helper function probably isn't really good enough. perhaps have the reflow function return a special subclass of string which we can detect here
+        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, '|')
+    else:
+        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "")
 
 
 yaml.add_representer(str, represent_string)
@@ -348,10 +358,13 @@ class Stack(AWSObject):
 
 
 def reflow(st):
-    """Remove unwanted whitespace from a multiline string intended for output.
+    """Remove unwanted whitespace from a multi-line string intended for output.
 
     This is perfect for text embedded inside indented Python code.
     """
+    # TODO better name. reflow sounds like it does forced line breaks
+    # TODO have functionality variations by providing extra args. eg include_trailing_newlines
+    # TODO needs test cases
     # Remove leading and trailing blank lines because they confuse the de-denter.
     lines = st.split('\n')
     while lines:
