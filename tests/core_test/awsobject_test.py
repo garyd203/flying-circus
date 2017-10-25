@@ -102,7 +102,6 @@ class TestAttributeAccess:
 
     # TODO dict access for aws attributes only
     # TODO verify behaviour of set_unknown_aws_attribute with known/internal attribute
-    # TODO set attrib to None => valid
 
     class SimpleObject(AWSObject):
         """Simple AWS object for testing attribute access"""
@@ -160,6 +159,23 @@ class TestAttributeAccess:
             data.set_unknown_aws_attribute("bar", "hello")
         assert "bar" in str(excinfo.value)
         assert not hasattr(data, "bar")
+
+    # Set Special Cases
+    # -----------------
+    def test_attribute_can_be_set_to_none(self):
+        """An attribute can be set to None, although
+        it can't be initialised to None in the constructor.
+        """
+        # Setup
+        data = self.SimpleObject()
+        assert not hasattr(data, "Foo")
+
+        # Exercise
+        data.Foo = None
+
+        # Verify
+        assert hasattr(data, "Foo")
+        assert data.Foo is None
 
     # Read Special Cases
     # ------------------
