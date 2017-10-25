@@ -8,7 +8,6 @@ import pytest
 from hypothesis import given
 
 from flyingcircus.core import AWSObject
-
 from .common import ZeroAttributeObject
 
 
@@ -102,7 +101,6 @@ class TestAttributeAccess:
     """Verify behaviour of attributes on a Flying Circus AWS object"""
 
     # TODO dict access for aws attributes only
-    # TODO test deleting nonexistent attributes of various sorts
     # TODO verify behaviour of set_unknown_aws_attribute with known/internal attribute
     # TODO set attrib to None => valid
 
@@ -237,6 +235,15 @@ class TestAttributeAccess:
         assert not hasattr(data, "bar")
 
     @given(st.text())
+    def test_internal_attributes_can_be_deleted(self, value):
+        data = self.SimpleObject()
+        data._internal_value = value
+
+        del data._internal_value
+
+        assert not hasattr(data, "_internal_value")
+
+    @given(st.text())
     def test_unknown_aws_attributes_can_be_deleted(self, value):
         data = self.SimpleObject()
         data.set_unknown_aws_attribute("WeirdValue", value)
@@ -253,3 +260,38 @@ class TestAttributeAccess:
         del data._internal_value
 
         assert not hasattr(data, "_internal_value")
+
+    def test_delete_nonexistent_attribute_raises_error(self):
+        data = self.SimpleObject()
+
+        with pytest.raises(AttributeError) as excinfo:
+            del data.DoesNotExist
+
+        assert "DoesNotExist" in str(excinfo.value)
+
+    def test_delete_unset_aws_attribute_raises_error(self):
+        data = self.SimpleObject()
+
+        with pytest.raises(AttributeError) as excinfo:
+            del data.Foo
+
+        assert "Foo" in str(excinfo.value)
+
+    def test_delete_nonexistent_internal_attribute_raises_error(self):
+        data = self.SimpleObject()
+
+        with pytest.raises(AttributeError) as excinfo:
+            del data._internal_value
+
+        assert "_internal_value" in str(excinfo.value)
+
+    @given(st.text())
+    def test_delete_already_deleted_unknown_aws_attribute_raises_error(self, value):
+        data = self.SimpleObject()
+        data.set_unknown_aws_attribute("WeirdValue", value)
+        del data.WeirdValue
+
+        with pytest.raises(AttributeError) as excinfo:
+            del data.WeirdValue
+
+        assert "WeirdValue" in str(excinfo.value)
