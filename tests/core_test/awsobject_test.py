@@ -8,6 +8,7 @@ import pytest
 from hypothesis import given
 
 from flyingcircus.core import AWSObject
+from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
 
@@ -99,8 +100,6 @@ class TestExport:
 
 class TestAttributeAccess:
     """Verify behaviour of attributes on a Flying Circus AWS object"""
-
-    # TODO dict access for aws attributes only
 
     class SimpleObject(AWSObject):
         """Simple AWS object for testing attribute access"""
@@ -226,7 +225,6 @@ class TestAttributeAccess:
         data = self.SimpleObject()
         data.set_unknown_aws_attribute("WeirdValue", old_value)
 
-        # FIXME breaks because attrib is not known. we could either just look up pre-existing attributs on the object, or keep a dynamic list of valid AWS attributes for this object that gets updated by set_unknown_aws_attribute
         data.WeirdValue = new_value
 
         assert data.WeirdValue == new_value
@@ -320,3 +318,140 @@ class TestAttributeAccess:
             del data.WeirdValue
 
         assert "WeirdValue" in str(excinfo.value)
+
+
+class TestDictionaryAccess:
+    """Verify behaviour of dictionary access to attributes on a Flying Circus AWS object"""
+
+    # CRUD Access for AWS Attributes
+    # ------------------------------
+
+    @given(st.text())
+    def test_aws_attributes_can_be_set(self, value):
+        data = SingleAttributeObject()
+
+        data["one"] = value
+
+        assert hasattr(data, "one")
+        assert data.one == value
+
+    @given(st.text())
+    def test_aws_attributes_can_be_read(self, value):
+        data = SingleAttributeObject(one=value)
+
+        assert data["one"] == value
+
+    @given(st.text(), st.text())
+    def test_aws_attributes_can_be_updated(self, old_value, new_value):
+        data = SingleAttributeObject(one=old_value)
+
+        data["one"] = new_value
+
+        assert data["one"] == new_value
+        assert data.one == new_value
+
+    @given(st.text())
+    def test_aws_attributes_can_be_deleted(self, value):
+        data = SingleAttributeObject(one=value)
+
+        del data["one"]
+
+        assert not hasattr(data, "one")
+
+    def test_unset_aws_attributes_cannot_be_read(self):
+        data = SingleAttributeObject()
+
+        with pytest.raises(KeyError) as excinfo:
+            _ = data["one"]
+
+        assert "one" in str(excinfo.value)
+
+    def test_unset_aws_attributes_cannot_be_deleted(self):
+        data = SingleAttributeObject()
+
+        with pytest.raises(KeyError) as excinfo:
+            del data["one"]
+
+        assert "one" in str(excinfo.value)
+
+    # CRUD Access For Internal Attributes
+    # -----------------------------------
+
+    @given(st.text())
+    def test_internal_attributes_cannot_be_set(self, value):
+        data = SingleAttributeObject()
+
+        with pytest.raises(KeyError) as excinfo:
+            data["_internal_value"] = value
+
+        assert "_internal_value" in str(excinfo.value)
+
+    @given(st.text())
+    def test_internal_attributes_cannot_be_read(self, value):
+        data = SingleAttributeObject()
+        data._internal_value = value
+
+        with pytest.raises(KeyError) as excinfo:
+            _ = data["_internal_value"]
+
+        assert "_internal_value" in str(excinfo.value)
+
+    @given(st.text(), st.text())
+    def test_internal_attributes_cannot_be_updated(self, old_value, new_value):
+        data = SingleAttributeObject()
+        data._internal_value = old_value
+
+        with pytest.raises(KeyError) as excinfo:
+            data["_internal_value"] = new_value
+
+        assert "_internal_value" in str(excinfo.value)
+        assert data._internal_value == old_value
+
+    @given(st.text())
+    def test_internal_attributes_cannot_be_deleted(self, value):
+        data = SingleAttributeObject()
+        data._internal_value = value
+
+        with pytest.raises(KeyError) as excinfo:
+            _ = data["_internal_value"]
+
+        assert "_internal_value" in str(excinfo.value)
+        assert data._internal_value == value
+
+    # CRUD Access For Unknown AWS Attributes
+    # --------------------------------------
+
+    @given(st.text())
+    def test_unknown_aws_attributes_cannot_be_set(self, value):
+        data = SingleAttributeObject()
+
+        with pytest.raises(KeyError) as excinfo:
+            data["WeirdValue"] = value
+
+        assert "WeirdValue" in str(excinfo.value)
+
+    @given(st.text())
+    def test_unknown_aws_attributes_can_be_read(self, value):
+        data = SingleAttributeObject()
+        data.set_unknown_aws_attribute("WeirdValue", value)
+
+        assert data["WeirdValue"] == value
+
+    @given(st.text(), st.text())
+    def test_unknown_aws_attributes_can_be_updated(self, old_value, new_value):
+        data = SingleAttributeObject()
+        data.set_unknown_aws_attribute("WeirdValue", old_value)
+
+        data["WeirdValue"] = new_value
+
+        assert data["WeirdValue"] == new_value
+        assert data.WeirdValue == new_value
+
+    @given(st.text())
+    def test_unknown_aws_attributes_can_be_deleted(self, value):
+        data = SingleAttributeObject()
+        data.set_unknown_aws_attribute("WeirdValue", value)
+
+        del data["WeirdValue"]
+
+        assert not hasattr(data, "WeirdValue")
