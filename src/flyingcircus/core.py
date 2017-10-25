@@ -3,34 +3,11 @@ import textwrap
 import yaml
 import yaml.resolver
 
-
-class NonAliasingDumper(yaml.Dumper):
-    """A YAML dumper that doesn't use aliases or print anchors.
-
-    The use of aliasing in PyYAML is a little bit arbitrary since it depends
-    on object identity, rather than equality. Additionally, the use of node
-    aliasing usually makes the output more difficult to understand for a
-    human. Hence we prefer to not use aliases in our CloudFormation YAML
-    output.
-
-    There is no method to disable aliasing in PyYAML, so we work around this
-    by using a subclassed Dumper implementation that clobbers the relevant
-    functionality.
-    """
-
-    # TODO move to another module
-
-    def generate_anchor(self, node):
-        # Don't generate anchors at all
-        return None
-
-    def serialize_node(self, node, parent, index):
-        # Don't keep track of previously serialised nodes, so any node will appear to be new.
-        self.serialized_nodes = {}
-        super(NonAliasingDumper, self).serialize_node(node, parent, index)
+from .yaml import NonAliasingDumper
+from .yaml import CustomYamlObject
 
 
-class AWSObject(object):
+class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
 
     In general, Cloud Formation attributes are stored directly as Python
@@ -180,7 +157,6 @@ class AWSObject(object):
             raise ValueError("Export format '{}' is unknown".format(format))
 
     def as_yaml_node(self, dumper):
-        """Get a representation of this object as a PyYAML node."""
         # Ideally, we would create a tag that contains the object name
         # (eg. "!Bucket") for completeness. Unfortunately, there is no way
         # to then prevent the YAML dumper from printing tags unless it
@@ -207,31 +183,6 @@ class AWSObject(object):
 class FlattenedObject(AWSObject):
     # TODO an object that collapses a second-level object into attributes on the main object, where the main object would otherwise be trivial (eg. Resource.Properties)
     pass
-
-
-yaml.add_multi_representer(AWSObject, lambda dumper, data: data.as_yaml_node(
-    dumper))  # TODO find a neater way to set this up, that is more tied to the class itself
-
-
-def represent_string(dumper, data):
-    # Override the normal string emission rules to produce the most readable text output
-    # TODO test cases
-    if '\n' in data:
-        # '|' style means literal block style, so line breaks and formatting are retained.
-        # This will be especially handy for inline code.
-        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "|")
-    elif len(data) > 65:
-        # Longer lines will be automatically folded (ie. have line breaks
-        # inserted) by PyYAML, which is likely to cause confusion. We
-        # compromise by using the literal block style ('|'), which doesn't
-        # fold, but does require some special block indicators.
-        # TODO need some way to allow folding. Having a helper function probably isn't really good enough. perhaps have the reflow function return a special subclass of string which we can detect here
-        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, '|')
-    else:
-        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "")
-
-
-yaml.add_representer(str, represent_string)
 
 
 # TODO new `reflow` function that cleans a long (multi-) line string and marks it as as suitable for PyYAML flow style

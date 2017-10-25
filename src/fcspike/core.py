@@ -1,7 +1,7 @@
 import textwrap
 import yaml
 
-from flyingcircus.core import NonAliasingDumper
+from flyingcircus.yaml import NonAliasingDumper
 
 
 class AWSObject(object):
