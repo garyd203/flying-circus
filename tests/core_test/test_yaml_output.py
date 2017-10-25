@@ -1,5 +1,4 @@
 """Tests for YAML output from the AWSObject base class."""
-
 import pytest
 
 from flyingcircus.core import AWSObject
@@ -22,6 +21,8 @@ class TestYAMLOutput:
     dictionary with 1 item
     dictionary with nested dictionary
     dictionary with nested list
+    None
+    python object that doesnt implement our base class => error?
 
     # configuration
     no python attributes set
@@ -82,16 +83,13 @@ class TestYAMLBasicFormatting:
         assert "&" not in output, "We don't want anchors, which are marked with an ampersand"
         assert "*" not in output, "We don't want aliases to anchors, which are indicated by an asterisk"
 
-    @pytest.mark.skip
-    def test_empty_objects_are_not_exported(self):
-        """If an object has no non-empty attributes, then it is not exported"""
-        # TODO further variations with attributes that are set to None, or attributes that are themselves empty
+    def test_empty_top_level_object_is_exported_as_empty_dict(self):
         data = AWSObject()
 
         output = data.export("yaml")
 
         assert output == reflow_trailing("""
-            ---
+            --- {}
             """)
 
     def test_single_entry_object_is_exported_in_block_style(self):
@@ -109,6 +107,7 @@ class TestYAMLBasicFormatting:
 
     def test_multi_entry_object_is_exported_in_block_style(self):
         class MultiEntryObject(AWSObject):
+            # TODO pull these helper classes into top level
             AWS_ATTRIBUTES = {"bar", "foo"}
 
         data = MultiEntryObject(bar=1, foo=2)
@@ -119,6 +118,34 @@ class TestYAMLBasicFormatting:
             ---
             bar: 1
             foo: 2
+            """)
+
+    def test_attributes_are_not_exported_when_they_havent_been_set(self):
+        class MultiEntryObject(AWSObject):
+            AWS_ATTRIBUTES = {"bar", "foo"}
+
+        data = MultiEntryObject(bar=1, foo=None)
+
+        output = data.export("yaml")
+
+        assert output == reflow_trailing("""
+            ---
+            bar: 1
+            """)
+
+    @pytest.mark.skip("we dont currently support filtering out empty attributes")
+    def test_empty_attributes_are_not_exported(self):
+        class MultiEntryObject(AWSObject):
+            AWS_ATTRIBUTES = {"bar", "foo"}
+
+        empty_attribute = AWSObject()
+        data = MultiEntryObject(bar=1, foo=empty_attribute)
+
+        output = data.export("yaml")
+
+        assert output == reflow_trailing("""
+            ---
+            bar: 1
             """)
 
 
