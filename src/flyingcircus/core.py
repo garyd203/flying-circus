@@ -32,6 +32,15 @@ class AWSObject(CustomYamlObject):
     #: Set of valid AWS attribute names for this class
     AWS_ATTRIBUTES = set()  # TODO make a function instead?
 
+    #: Order in which we write attributes out, when exporting them to a file.
+    #: If an attribute is not set, it will not be exported, even if it is
+    #: listed here.
+    #:
+    #: Any attributes not specified here will be listed alphabetically after
+    #: these attributes (ie. the default ordering is to list every attribute
+    #: in alphabetical order)
+    EXPORT_ORDER = []
+
     # Attribute Access
     # ----------------
 
@@ -171,14 +180,48 @@ class AWSObject(CustomYamlObject):
         # Get all attributes for export
         # TODO ordering
         # TODO use the class iterator, which should handle the above problem for you
-        attributes = {
-            key: getattr(self, key)
-            for key in self.AWS_ATTRIBUTES.union(self._known_unknown_aws_attributes)
+        attributes = [
+            (key, getattr(self, key))
+            for key in self._get_export_order()
             if hasattr(self, key)
-        }
+        ]
 
         # Represent this object as a mapping of it's AWS attributes
         return dumper.represent_mapping(tag, attributes)
+
+    def _get_export_order(self):
+        """Get ordered list of all attribute names that might exist on this object."""
+        result = []
+
+        # All valid AWS attributes
+        trailing_attribs = self.AWS_ATTRIBUTES.union(self._known_unknown_aws_attributes)
+
+        # Some attributes need to b explicitly listed in a particular order
+        # at the beginning of the map output
+        for name in self.EXPORT_ORDER:
+            try:
+                trailing_attribs.remove(name)
+            except KeyError:
+                # The explicit attribute ordering refers to a attribute that
+                # is not valid. This could indicate a configuration problem,
+                # but failures here are stylistic rather than critical, so
+                # we choose to silently ignore any problems.
+                # TODO log warning message
+                continue
+            result.append(name)
+
+        # Include all remaining attributes in standard sort order
+        result.extend(sorted(trailing_attribs, key=self._get_export_sort_key))
+        return result
+
+    @classmethod
+    def _get_export_sort_key(cls, st):
+        """Sort method for sorting dictionary keys when exporting."""
+        # We want to order alphabetically in a case-insensitive fashion, but
+        # we also want to ensure consistency in the event of two keys that
+        # differ only in case (crazy as that may be). The best way to achieve
+        # this is to use a compound key that falls back to the original value.
+        return (st.lower(), st)
 
 
 class FlattenedObject(AWSObject):
