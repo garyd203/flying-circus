@@ -8,27 +8,10 @@ from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
 
-class TestYamlOutput:
-    """Verify YAML output."""
-    '''fixme
-
-    # data types/formatting
-    empty object. prints properly, but can optionally be left out?
-    text value
-    int value
-    list with no items
-    normal list
-    list with nested list
-    list with nested dictionary
-    dictionary with no items
-    dictionary with 1 item
-    dictionary with nested dictionary
-    dictionary with nested list
-    None
-    python object that doesnt implement our base class => error?
-
-    '''
-    pass
+# TODO test empty object. prints properly, but can optionally be left out?
+# TODO test None output
+# TODO test python object that doesnt implement our base class => error
+# TODO list values are indented - see issue #42
 
 
 class TestYamlAttributeExport:
@@ -81,9 +64,6 @@ class TestYamlAttributeExport:
 
 class TestYamlBasicFormatting:
     """Verify basic formatting of YAML output"""
-
-    # TODO block flow style
-    # TODO list values are indented
 
     def test_yaml_document_explicitly_indicates_document_start(self):
         data = ZeroAttributeObject()
@@ -173,8 +153,8 @@ class TestYamlBasicFormatting:
             one: 1
             """)
 
-    # Dictionary Export Order
-    # -----------------------
+    # Object/Dictionary Export Order
+    # ------------------------------
 
     def test_map_entries_are_ordered_alphabetically(self):
         class MegaObject(AWSObject):
@@ -348,3 +328,58 @@ class TestYamlStringFormatting:
               
                 We should retain indenting too
             """)
+
+    # List Export Style
+    # -----------------
+
+    def test_list_is_exported_in_block_style(self):
+        data = SingleAttributeObject(one=[2, 3, 4])
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+                ---
+                one:
+                - 2
+                - 3
+                - 4
+                """)
+
+    def test_single_entry_list_is_exported_in_block_style(self):
+        data = SingleAttributeObject(one=[2])
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+                ---
+                one:
+                - 2
+                """)
+
+    def test_empty_list_is_exported_in_flow_style(self):
+        data = SingleAttributeObject(one=[])
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+                ---
+                one: []
+                """)
+
+    def test_nested_lists_are_readable(self):
+        data = SingleAttributeObject(one=[[2, 3, 4], [5], [6, 7], 8])
+
+        output = data.export("yaml")
+
+        # TODO This is not actually very readable - see issue #41
+        assert output == dedent("""
+                ---
+                one:
+                - - 2
+                  - 3
+                  - 4
+                - - 5
+                - - 6
+                  - 7
+                - 8
+                """)
