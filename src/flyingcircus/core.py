@@ -178,8 +178,7 @@ class AWSObject(CustomYamlObject):
         tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
         # Get all attributes for export
-        # TODO ordering
-        # TODO use the class iterator, which should handle the above problem for you
+        # TODO use the class iterator, to handle ordering and missing attributes transparently
         attributes = [
             (key, getattr(self, key))
             for key in self._get_export_order()
