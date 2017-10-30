@@ -8,12 +8,6 @@ from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
 
-# TODO test empty object. prints properly, but can optionally be left out?
-# TODO test None output
-# TODO test python object that doesnt implement our base class => error
-# TODO list values are indented - see issue #42
-
-
 class TestYamlAttributeExport:
     """Verify all relevant attributes are exported to YAML"""
 
@@ -131,16 +125,6 @@ class TestYamlBasicFormatting:
             two: 2
             """)
 
-    def test_attributes_are_not_exported_when_they_havent_been_set(self):
-        data = DualAttributeObject(one=1, two=None)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            one: 1
-            """)
-
     @pytest.mark.skip("we dont currently support filtering out empty attributes")
     def test_empty_attributes_are_not_exported(self):
         empty_attribute = ZeroAttributeObject()
@@ -152,6 +136,31 @@ class TestYamlBasicFormatting:
             ---
             one: 1
             """)
+
+    def test_none_values_are_exported_as_null(self):
+        data = SingleAttributeObject()
+        data.one = None
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: null
+            """)
+
+    def test_complex_attributes_that_dont_extend_the_base_class_should_raise_an_error(self):
+        class CustomObjectThatIsntYamlisable(object):
+            pass
+
+        attrib = CustomObjectThatIsntYamlisable()
+        attrib.foo = 42
+        data = SingleAttributeObject(one=attrib)
+
+        with pytest.raises(TypeError) as excinfo:
+            _ = data.export("yaml")
+
+        assert "CustomObjectThatIsntYamlisable" in str(excinfo.value)
+        assert "does not extend" in str(excinfo.value)
 
     # Object/Dictionary Export Order
     # ------------------------------
@@ -304,7 +313,10 @@ class TestYamlStringFormatting:
             """)
 
     def test_long_strings_dont_get_broken(self):
-        long_text = "This is a really long string and it just goes on and on and on. I hope there's a good reason for it. Of course, this means that my IDE is complaining about the length of the line too, but it will get over that. I hope."
+        long_text = "This is a really long string and it just goes on and on " \
+                    "and on. I hope there's a good reason for it. Of " \
+                    "course, this means that my IDE is complaining about " \
+                    "the length of the line too, but it got over that."
         data = SingleAttributeObject(one=long_text)
 
         output = data.export("yaml")

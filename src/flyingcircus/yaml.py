@@ -6,8 +6,21 @@ import yaml
 def register_yaml_representers():
     """Configure YAML output from PyYAML."""
     # TODO better to add these to a custom Dumper than pollute the global object?
+
+    # Add marshalling/representers for custom types
     yaml.add_representer(str, _represent_string)
     yaml.add_multi_representer(CustomYamlObject, CustomYamlObject.represent_object)
+
+    # Don't silently fail if we try to export something weird
+    def unknown_type(dumper, data):
+        raise TypeError(
+            "{} object cannot be dumped to YAML because it does not "
+            "extend CustomYamlObject".format(
+                data.__class__.__name__
+            )
+        )
+
+    yaml.add_multi_representer(object, unknown_type)
 
 
 class CustomYamlObject(object):
@@ -47,15 +60,15 @@ class NonAliasingDumper(yaml.Dumper):
     The use of aliasing in PyYAML is a little bit arbitrary since it depends
     on object identity, rather than equality. Additionally, the use of node
     aliasing usually makes the output more difficult to understand for a
-    human. Hence we prefer to not use aliases in our CloudFormation YAML
-    output.
+    human. Finally, AWS CloudFormation doesn't support aliases anyway :-)
+    Hence we prefer to not use aliases in our CloudFormation YAML output.
 
     There is no method to disable aliasing in PyYAML, so we work around this
     by using a subclassed Dumper implementation that clobbers the relevant
     functionality.
     """
 
-    # TODO move to another module
+    # TODO what about overriding ignore_aliases() instead ?
 
     def generate_anchor(self, node):
         # Don't generate anchors at all
