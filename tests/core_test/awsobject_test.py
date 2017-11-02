@@ -9,6 +9,7 @@ from hypothesis import given
 
 from flyingcircus.core import AWSObject
 from .common import SingleAttributeObject
+from .common import DualAttributeObject
 from .common import ZeroAttributeObject
 
 
@@ -461,3 +462,90 @@ class TestDictionaryAccess:
         del data["WeirdValue"]
 
         assert not hasattr(data, "WeirdValue")
+
+
+class _NestedObject(DualAttributeObject):
+    """Test object that is a grandchild of AWSObject."""
+    AWS_ATTRIBUTES = {"one", "two", "three", "four"}
+
+    def __init__(self, one=None, two=None, three=None, four=None):
+        DualAttributeObject.__init__(self, one=one, two=two)
+        self._set_constructor_attributes(dict(three=three, four=four))
+
+
+class TestSplitCurrentAttributes:
+    """Verify behaviour of the _split_current_attributes() internal helper method."""
+
+    # Happy Case :-)
+    # --------------
+    def test_current_class_attributes_are_separated_from_other_parameters(self):
+        current, other = _NestedObject._split_current_attributes(dict(one=1, two=2, three=3, four=4))
+
+        assert current == {"three": 3, "four": 4}
+        assert other == {"one": 1, "two": 2}
+
+    # Params Dict Corner Cases
+    # ------------------------
+    def test_results_are_empty_when_no_parameters_supplied(self):
+        current, other = _NestedObject._split_current_attributes({})
+
+        assert current == {}
+        assert other == {}
+
+    def test_only_supplied_parameters_are_used_when_some_parent_attributes_missing(self):
+        current, other = _NestedObject._split_current_attributes(dict(two=2, three=3, four=4))
+
+        assert current == {"three": 3, "four": 4}
+        assert other == {"two": 2}
+
+    def test_only_supplied_parameters_are_used_when_some_child_attributes_missing(self):
+        current, other = _NestedObject._split_current_attributes(dict(one=1, two=2, four=4))
+
+        assert current == {"four": 4}
+        assert other == {"one": 1, "two": 2}
+
+    def test_invalid_parameters_are_passed_to_parent(self):
+        current, other = _NestedObject._split_current_attributes(dict(one=1, two=2, three=3, four=4, five=5))
+
+        assert current == {"three": 3, "four": 4}
+        assert other == {"one": 1, "two": 2, "five": 5}
+
+    def test_original_parameters_dictionary_is_not_altered(self):
+        params = dict(one=1, two=2, three=3, four=4)
+        current, other = _NestedObject._split_current_attributes(params)
+
+        assert params == {"one": 1, "two": 2, "three": 3, "four": 4}
+
+    # AWS_ATTRIBUTES Corner Cases
+    # ---------------------------
+
+    def test_should_work_when_child_class_has_no_defined_aws_attributes(self):
+        class ExtendedObject(DualAttributeObject):
+            pass
+
+        current, other = ExtendedObject._split_current_attributes(dict(one=1))
+
+        assert current == {}
+        assert other == {"one": 1}
+
+    def test_should_work_when_parent_class_has_no_defined_aws_attributes(self):
+        current, other = DualAttributeObject._split_current_attributes(dict(one=1))
+
+        assert current == {"one": 1}
+        assert other == {}
+
+    def test_should_work_when_parent_class_has_no_defined_aws_attributes_but_grandparent_does(self):
+        class BoringObject(DualAttributeObject):
+            pass
+
+        class ObjectWithMoreAttributes(BoringObject):
+            AWS_ATTRIBUTES = {"one", "two", "three", "four"}
+
+            def __init__(self, one=None, two=None, three=None, four=None):
+                BoringObject.__init__(self, one=one, two=two)
+                self._set_constructor_attributes(dict(three=three, four=four))
+
+        current, other = ObjectWithMoreAttributes._split_current_attributes(dict(one=1, two=2, three=3, four=4))
+
+        assert current == {"three": 3, "four": 4}
+        assert other == {"one": 1, "two": 2}

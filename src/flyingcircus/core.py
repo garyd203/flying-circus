@@ -68,6 +68,26 @@ class AWSObject(CustomYamlObject):
                     # normally get treated as TypeError's, interestingly.
                     raise TypeError(str(ex)) from ex
 
+    @classmethod
+    def _split_current_attributes(cls, params):
+        """Filter attribute values to separate those that are defined by the current class."""
+        parent_names = super(cls, cls).AWS_ATTRIBUTES
+        current_names = cls.AWS_ATTRIBUTES.difference(parent_names)
+
+        current_attribs = {}
+        other_params = dict(params)
+
+        for name in current_names:
+            try:
+                current_attribs[name] = other_params.pop(name)
+            except KeyError:
+                pass
+
+        return current_attribs, other_params
+
+    # Attribute Access
+    # ----------------
+
     def __setattr__(self, key, value):
         if hasattr(self, key):
             # Allow modification of existing attributes. This avoids madness,
