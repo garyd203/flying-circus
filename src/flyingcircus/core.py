@@ -8,6 +8,7 @@ from .yaml import NonAliasingDumper
 
 
 # TODO rename "AWS attribute" to "CloudFormation attribute" everywhere ?
+# TODO rename "unknown" AWS attributes to something less confusing.
 
 class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
@@ -41,22 +42,30 @@ class AWSObject(CustomYamlObject):
     #: in alphabetical order)
     EXPORT_ORDER = []
 
-    # Attribute Access
-    # ----------------
+    # Constructor
+    # -----------
 
     def __init__(self, **kwargs):
         # Set of unknown AWS attribute names that we have seen in this
         # object. These may or may not still be present.
         self._known_unknown_aws_attributes = set()
 
-        # Set default values
-        for key, value in kwargs.items():
+        # Set initial values passed to constructor
+        self._set_constructor_attributes(kwargs)
+
+    def _set_constructor_attributes(self, params):
+        """Set any attributes that were passed to the object constructor.
+
+        This requires some special handling to handle constructor-specific
+        semantics, in contrast to normal attribute setting.
+        """
+        for name, value in params.items():
             if value is not None:
                 try:
-                    setattr(self, key, value)
+                    setattr(self, name, value)
                 except AttributeError as ex:
-                    # Unrecognised keyword parameters normally get treated as
-                    # TypeError's, interestingly.
+                    # Unrecognised keyword parameters in a constructor
+                    # normally get treated as TypeError's, interestingly.
                     raise TypeError(str(ex)) from ex
 
     def __setattr__(self, key, value):
@@ -88,6 +97,7 @@ class AWSObject(CustomYamlObject):
         Ideally, users would issue a pull request to fix the problem in our
         type mapping, but this method exists for when you need a workaround.
         """
+        # TODO use a better name than "unknown attribute". How about "new attribute"???
         if self._is_internal_attribute(key):
             raise AttributeError("'{}' is an internal attribute and should not be set as a AWS attribute".format(key))
         if self._is_normal_aws_attribute(key):
