@@ -250,12 +250,76 @@ class AWSObject(CustomYamlObject):
         # we also want to ensure consistency in the event of two keys that
         # differ only in case (crazy as that may be). The best way to achieve
         # this is to use a compound key that falls back to the original value.
-        return (st.lower(), st)
+        return st.lower(), st
 
 
-class FlattenedObject(AWSObject):
-    # TODO an object that collapses a second-level object into attributes on the main object, where the main object would otherwise be trivial (eg. Resource.Properties)
-    pass
+class Resource(AWSObject):
+    """Represents a CloudFormation Resource in a Stack.
+
+    See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+    and http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
+    """
+
+    # This list includes the attributes that are defined at this level by
+    # CloudFormation, but only listed in AWS_ATTRIBUTES in some subclasses.
+    EXPORT_ORDER = ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "DeletionPolicy", "Properties"]
+
+    AWS_ATTRIBUTES = {
+        # NB: CreationPolicy is defined as a Resource-level attribute, but is
+        # currently only valid for AutoScalingGroup, EC2::Instance and
+        # CloudFormation::WaitCondition.
+        #
+        # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
+        #
+        # "CreationPolicy",
+        "DeletionPolicy",
+        "DependsOn",
+        #: Note that Metadata is not expected to be used by Flying Circus
+        #: users, so it can't be set in the constructor. However, you can
+        #: still modify it and set it as an attribute if you must.
+        "Metadata",
+        "Properties",
+        #: Note that Type is coupled to the Flying Circus Python type, and
+        #: can't be directly set
+        "Type",
+        # NB: UpdatePolicy is defined as a Resource-level attribute, but is
+        # currently only valid for AutoScalingGroup.
+        #
+        # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
+        #
+        # "UpdatePolicy",
+    }
+
+    #: The AWS CloudFormation string for this resource's Type
+    RESOURCE_TYPE = None
+
+    #: TODO List the resource's properties here, rather than create an explicit subclass for each resource
+    RESOURCE_PROPERTIES = {}
+
+    # TODO if Properties is set directly, then do something special in __setattr__ to ensure it is an object, not a dict.
+    # TODO classmethod to instantiate a Properties object for this resource type. Or better, have a hard-wired Properties initialised in __init__
+
+    def __init__(self, DeletionPolicy=None, DependsOn=None, Properties=None):
+        AWSObject.__init__(**locals())
+
+        if not self.RESOURCE_TYPE:
+            raise TypeError(
+                "Concrete Resource class {} needs to define the "
+                "CloudFormation Type as a class variable called "
+                "RESOURCE_TYPE".
+                    format(self.__class__.__name__)
+            )
+
+    @property
+    def Type(self):
+        #TODO consider whether using a property to enforce read-only is the best appraoch. Alternative is to cusotmise __setattr__ even further
+        return self.RESOURCE_TYPE
+
+
+class ResourceProperties(AWSObject):
+    def __init__(self, property_names, **properties):
+        self.AWS_ATTRIBUTES = property_names
+        AWSObject.__init__(self, **properties)
 
 
 # TODO new `reflow` function that cleans a long (multi-) line string and marks it as as suitable for PyYAML flow style
