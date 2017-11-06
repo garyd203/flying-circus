@@ -293,26 +293,32 @@ class Resource(AWSObject):
     #: The AWS CloudFormation string for this resource's Type
     RESOURCE_TYPE = None
 
-    #: TODO List the resource's properties here, rather than create an explicit subclass for each resource
+    #: Set of valid property names for this Resource class
     RESOURCE_PROPERTIES = {}
 
-    # TODO if Properties is set directly, then do something special in __setattr__ to ensure it is an object, not a dict.
     # TODO classmethod to instantiate a Properties object for this resource type. Or better, have a hard-wired Properties initialised in __init__
 
     def __init__(self, DeletionPolicy=None, DependsOn=None, Properties=None):
+        if Properties is None:
+            # TODO better to use the (not yet existing) generic hook to pre-initialise all coplex objects. See issue #45
+            Properties = ResourceProperties(self.RESOURCE_PROPERTIES)
+
         AWSObject.__init__(**locals())
 
         if not self.RESOURCE_TYPE:
             raise TypeError(
                 "Concrete Resource class {} needs to define the "
                 "CloudFormation Type as a class variable called "
-                "RESOURCE_TYPE".
-                    format(self.__class__.__name__)
+                "RESOURCE_TYPE".format(
+                    self.__class__.__name__
+                )
             )
 
     @property
     def Type(self):
-        #TODO consider whether using a property to enforce read-only is the best appraoch. Alternative is to cusotmise __setattr__ even further
+        # The Type attribute is read-only because it is coupled to the
+        # underlying class via this class constant. The easiest way to
+        # achieve this is through a property
         return self.RESOURCE_TYPE
 
 

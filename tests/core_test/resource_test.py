@@ -1,16 +1,15 @@
 """Tests for the Resource base class."""
-
 import pytest
 
 from flyingcircus.core import Resource
 
-# TODO RESOURCE_PROPERTIES is used
-
 SIMPLE_RESOURCE_NAME = "NameSpace::Service::Resource"
+SIMPLE_RESOURCE_PROPERTIES = {"props", "kudos"}
 
 
 class SimpleResource(Resource):
     RESOURCE_TYPE = SIMPLE_RESOURCE_NAME
+    RESOURCE_PROPERTIES = SIMPLE_RESOURCE_PROPERTIES
 
 
 class TestResourceUnusualAttributes:
@@ -34,7 +33,8 @@ class TestResourceUnusualAttributes:
     def test_type_cannot_be_set_as_attribute(self):
         data = SimpleResource()
 
-        with pytest.raises(AttributeError) as excinfo:
+        with pytest.raises(AttributeError):
+            # noinspection PyPropertyAccess
             data.Type = "CantSetThis"
 
         assert data.Type == SIMPLE_RESOURCE_NAME
@@ -86,3 +86,19 @@ class TestResourceUnusualAttributes:
             data.UpdatePolicy = "CantSetThis"
 
         assert "UpdatePolicy" in str(excinfo.value)
+
+
+class TestProperties:
+    """Test the Properties attribute on a Resource."""
+
+    def test_properties_attribute_always_exists(self):
+        data = SimpleResource()
+
+        assert hasattr(data, "Properties")
+        assert data.Properties is not None
+
+    def test_properties_has_attributes_from_resource_definition(self):
+        data = SimpleResource()
+
+        data.Properties.kudos = 1
+        data.Properties.props = 'hello'
