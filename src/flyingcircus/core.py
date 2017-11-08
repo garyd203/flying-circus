@@ -253,6 +253,36 @@ class AWSObject(CustomYamlObject):
         return st.lower(), st
 
 
+class Stack(AWSObject):
+    """Represents a CloudFormation Stack, the top-level template object.
+
+    See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html
+    """
+
+    # This is in the order recommended in the documentation
+    EXPORT_ORDER = [
+        "AWSTemplateFormatVersion", "Description", "Metadata", "Parameters",
+        "Mappings", "Conditions", "Transform", "Resources", "Outputs",
+    ]
+
+    AWS_ATTRIBUTES = {
+        "AWSTemplateFormatVersion", "Description", "Metadata", "Parameters",
+        "Mappings", "Conditions", "Transform", "Resources", "Outputs",
+    }
+
+    def __init__(self, AWSTemplateFormatVersion=None, Description=None,
+                 Metadata=None, Parameters=None, Mappings=None,
+                 Conditions=None, Transform=None, Resources=None, Outputs=None):
+        # We default to the most recent format version
+        # TODO consider functionality to set defaults in a generic way. Not sure how much it would be needed, so maybe not worth the fuss
+        if AWSTemplateFormatVersion is None:
+            AWSTemplateFormatVersion = "2010-09-09"
+
+        AWSObject.__init__(**locals())
+
+        # TODO We really want issue #45 to auto-initialise all the sets
+
+
 class Resource(AWSObject):
     """Represents a CloudFormation Resource in a Stack.
 
@@ -300,7 +330,7 @@ class Resource(AWSObject):
 
     def __init__(self, DeletionPolicy=None, DependsOn=None, Properties=None):
         if Properties is None:
-            # TODO better to use the (not yet existing) generic hook to pre-initialise all coplex objects. See issue #45
+            # TODO better to use the (not yet existing) generic hook to pre-initialise all complex objects. See issue #45
             Properties = ResourceProperties(self.RESOURCE_PROPERTIES)
 
         AWSObject.__init__(**locals())

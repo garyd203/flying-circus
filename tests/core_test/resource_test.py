@@ -1,4 +1,5 @@
 """Tests for the Resource base class."""
+
 import pytest
 
 from flyingcircus.core import Resource
