@@ -7,6 +7,7 @@ from .common import DualAttributeObject
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
+#TODO space between sections/attributes at the top-level Stack template
 
 class TestYamlAttributeExport:
     """Verify all relevant attributes are exported to YAML"""

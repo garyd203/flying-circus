@@ -266,13 +266,13 @@ class Stack(AWSObject):
     ]
 
     AWS_ATTRIBUTES = {
-        "AWSTemplateFormatVersion", "Description", "Metadata", "Parameters",
-        "Mappings", "Conditions", "Transform", "Resources", "Outputs",
+        "AWSTemplateFormatVersion", "Conditions", "Description", "Mappings",
+        "Metadata", "Outputs", "Parameters", "Resources", "Transform",
     }
 
-    def __init__(self, AWSTemplateFormatVersion=None, Description=None,
-                 Metadata=None, Parameters=None, Mappings=None,
-                 Conditions=None, Transform=None, Resources=None, Outputs=None):
+    def __init__(self, AWSTemplateFormatVersion=None, Conditions=None,
+                 Description=None, Mappings=None, Metadata=None, Outputs=None,
+                 Parameters=None, Resources=None, Transform=None):
         # We default to the most recent format version
         # TODO consider functionality to set defaults in a generic way. Not sure how much it would be needed, so maybe not worth the fuss
         if AWSTemplateFormatVersion is None:
@@ -358,7 +358,7 @@ class ResourceProperties(AWSObject):
         AWSObject.__init__(self, **properties)
 
 
-# TODO new `reflow` function that cleans a long (multi-) line string and marks it as as suitable for PyYAML flow style
+# TODO new `reflow` function that cleans a long (multi-) line string from IDE padding, and marks it as as suitable for PyYAML flow style
 
 def dedent(st):
     """Remove unwanted whitespace from a multi-line string intended for output.
