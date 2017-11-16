@@ -7,7 +7,8 @@ from .common import DualAttributeObject
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
-#TODO space between sections/attributes at the top-level Stack template
+
+# TODO space between sections/attributes at the top-level Stack template
 
 class TestYamlAttributeExport:
     """Verify all relevant attributes are exported to YAML"""
@@ -289,59 +290,6 @@ class TestYamlBasicFormatting:
             d: 4
             """)
 
-
-class TestYamlStringFormatting:
-    """Verify formatting of strings in YAML output"""
-
-    def test_string_quotes_are_not_used_when_unnecessary(self):
-        data = SingleAttributeObject(one="Hello world. Here is a namespace AWS::service::Resource")
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            one: Hello world. Here is a namespace AWS::service::Resource
-            """)
-
-    def test_leading_and_trailing_whitespace_is_not_stripped(self):
-        data = SingleAttributeObject(one="    hello world   ")
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            one: '    hello world   '
-            """)
-
-    def test_long_strings_dont_get_broken(self):
-        long_text = "This is a really long string and it just goes on and on " \
-                    "and on. I hope there's a good reason for it. Of " \
-                    "course, this means that my IDE is complaining about " \
-                    "the length of the line too, but it got over that."
-        data = SingleAttributeObject(one=long_text)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            one: |-
-              {}
-            """.format(long_text))
-
-    def test_multiline_strings_retain_formatting(self):
-        data = SingleAttributeObject(one="hello\nworld\n\n  We should retain indenting too")
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            one: |-
-              hello
-              world
-              
-                We should retain indenting too
-            """)
-
     # List Export Style
     # -----------------
 
@@ -396,3 +344,56 @@ class TestYamlStringFormatting:
                   - 7
                 - 8
                 """)
+
+
+class TestYamlStringFormatting:
+    """Verify formatting of strings in YAML output"""
+
+    def test_string_quotes_are_not_used_when_unnecessary(self):
+        data = SingleAttributeObject(one="Hello world. Here is a namespace AWS::service::Resource")
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: Hello world. Here is a namespace AWS::service::Resource
+            """)
+
+    def test_leading_and_trailing_whitespace_is_not_stripped(self):
+        data = SingleAttributeObject(one="    hello world   ")
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: '    hello world   '
+            """)
+
+    def test_long_strings_dont_get_broken(self):
+        long_text = "This is a really long string and it just goes on and on " \
+                    "and on. I hope there's a good reason for it. Of " \
+                    "course, this means that my IDE is complaining about " \
+                    "the length of the line too, but it got over that."
+        data = SingleAttributeObject(one=long_text)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: |-
+              {}
+            """.format(long_text))
+
+    def test_multiline_strings_retain_formatting(self):
+        data = SingleAttributeObject(one="hello\nworld\n\n  We should retain indenting too")
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: |-
+              hello
+              world
+              
+                We should retain indenting too
+            """)
