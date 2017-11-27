@@ -25,7 +25,7 @@ ScalingPolicy = raw.ScalingPolicy
 #           or. new_stack = stack1 + stack2 + stack3.add_namespace_prefix("Prefix")
 
 
-def autoscaling_group_with_cpu(low=20, high=90):
+def autoscaling_group_from_cpu(low=20, high=90):
     # FIXME docstring
     # FIXME rename
     # FIXME tweak default values for cpu thresholds. eg. to match some AWS doco
@@ -57,7 +57,17 @@ def autoscaling_group_with_cpu(low=20, high=90):
     )
     stack.Resources["AutoScalingGroup"] = asg
 
-    high_alarm = cloudwatch.Alarms.high_cpu(threshold=75)
+    scale_up_policy = ScalingPolicy(
+        Properties=dict(
+            AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
+            AutoScalingGroupName="!Ref AutoScalingGroup",  # FIXME need real !Ref
+            Cooldown=1,
+            ScalingAdjustment=1,
+        ),
+    )
+    stack.Resources["ScaleUpPolicy"] = scale_up_policy
+
+    high_alarm = cloudwatch.Alarms.high_cpu(threshold=high)
     # FIXME need properties to be a real object (not a dict), and to auto-create empty lists. Then we can do an append here, rather than setting the list
     high_alarm.Properties['AlarmActions'] = ["!Ref ScaleUpPolicy"]  # FIXME need real !Ref
     high_alarm.Properties['Dimensions'] = [
@@ -69,14 +79,29 @@ def autoscaling_group_with_cpu(low=20, high=90):
     ]
     stack.Resources["CPUAlarmHigh"] = high_alarm
 
-    scale_up_policy = ScalingPolicy(
+    return stack
+
+
+def simple_scaling_policy(alarm, asg_name, downscale=False):
+    # TODO docstring
+    # TODO need !Ref to work before we can do this
+    # TODO need stack merge to work before this is useful
+    stack = Stack(
+        Description="""Resources for a single scaling policy.""",
+        Resources={},  # TODO shouldn't need to initialise this explicitly to an empty dict
+    )
+
+    scaling_policy = ScalingPolicy(
         Properties=dict(
             AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
-            AutoScalingGroupName="!Ref AutoScalingGroup",  # FIXME need real !Ref
+            AutoScalingGroupName=asg_name,
             Cooldown=1,
-            ScalingAdjustment=1,
+            ScalingAdjustment=1,  # TODO does this need to be -1 for scale down? Switch value based on `downscale`
         ),
     )
-    stack.Resources["ScaleUpPolicy"] = scale_up_policy
+    stack.Resources["ScalingPolicy"] = scaling_policy
+
+    alarm.Properties.AlarmActions.append("!Ref ScalingPolicy")  # FIXME need real !Ref
+    stack.Resources["ScalingAlarm"] = alarm  # TODO need to override the implicit resource name on `alarm`
 
     return stack
