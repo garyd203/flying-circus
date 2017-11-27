@@ -57,27 +57,16 @@ def autoscaling_group_with_cpu(low=20, high=90):
     )
     stack.Resources["AutoScalingGroup"] = asg
 
-    high_alarm = cloudwatch.Alarm(
-        Properties=dict(
-            EvaluationPeriods=1,
-            Statistic="Average",  # FIXME lookup constant
-            Threshold=75,
-            AlarmDescription="Alarm if CPU too high or metric disappears indicating instance is down",
-            Period=60,
-            AlarmActions=["!Ref ScaleUpPolicy"],  # FIXME need real !Ref
-            Namespace="AWS/EC2",  # FIXME lookup constant?
-            Dimensions=[
-                # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
-                dict(
-                    Name="AutoScalingGroupName",
-                    Value="!Ref AutoScalingGroup",  # FIXME need real !Ref
-
-                ),
-            ],
-            ComparisonOperator="GreaterThanThreshold",  # FIXME lookup constant
-            MetricName="CPUUtilization"  # TODO Lookup a very long list?
-        ),
-    )
+    high_alarm = cloudwatch.Alarms.high_cpu(threshold=75)
+    # FIXME need properties to be a real object (not a dict), and to auto-create empty lists. Then we can do an append here, rather than setting the list
+    high_alarm.Properties['AlarmActions'] = ["!Ref ScaleUpPolicy"]  # FIXME need real !Ref
+    high_alarm.Properties['Dimensions'] = [
+        # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
+        dict(
+            Name="AutoScalingGroupName",
+            Value="!Ref AutoScalingGroup",  # FIXME need real !Ref
+        )
+    ]
     stack.Resources["CPUAlarmHigh"] = high_alarm
 
     scale_up_policy = ScalingPolicy(
