@@ -41,7 +41,7 @@ class Policy(AWSObject):
     # TODO roll together the policy document and the PolicyName attribute into one object (by inheriting this from PolicyDocument)??. the hierarchy adds no value.
 
     def _get_ordered_output(self):
-        #TODO make this ordering a helper somewhere
+        # TODO make this ordering a helper somewhere
         ordered_keys = [
             'PolicyName',
             'PolicyDocument',
