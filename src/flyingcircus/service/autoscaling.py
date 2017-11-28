@@ -79,6 +79,28 @@ def autoscaling_group_from_cpu(low=20, high=90):
     ]
     stack.Resources["CPUAlarmHigh"] = high_alarm
 
+    scale_down_policy = ScalingPolicy(
+        Properties=dict(
+            AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
+            AutoScalingGroupName="!Ref AutoScalingGroup",  # FIXME need real !Ref
+            Cooldown=1,
+            ScalingAdjustment=-1,
+        ),
+    )
+    stack.Resources["ScaleDownPolicy"] = scale_down_policy
+
+    low_alarm = cloudwatch.Alarms.low_cpu(threshold=low)
+    # FIXME need properties to be a real object (not a dict), and to auto-create empty lists. Then we can do an append here, rather than setting the list
+    low_alarm.Properties['AlarmActions'] = ["!Ref ScaleDownPolicy"]  # FIXME need real !Ref
+    low_alarm.Properties['Dimensions'] = [
+        # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
+        dict(
+            Name="AutoScalingGroupName",
+            Value="!Ref AutoScalingGroup",  # FIXME need real !Ref
+        )
+    ]
+    stack.Resources["CPUAlarmLow"] = low_alarm
+
     return stack
 
 

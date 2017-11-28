@@ -14,6 +14,7 @@ class Alarms:
         """An alarm that triggers when CPU is too high
         (or the underlying metric disappears, indicating the instance is down).
         """
+        # TODO I think dimension should be a compulsory attribute
         # TODO share code with the cpu_low_alarm implementation
         return Alarm(
             Properties=dict(
@@ -25,6 +26,27 @@ class Alarms:
                 Period=60,
                 Namespace="AWS/EC2",  # FIXME lookup constant?
                 ComparisonOperator="GreaterThanThreshold",  # FIXME lookup constant
+                MetricName="CPUUtilization"  # TODO Lookup a very long list?
+            ),
+        )
+
+    def low_cpu(threshold):
+        """An alarm that triggers when CPU is too low
+        (or the underlying metric disappears, indicating the instance is down).
+        """
+        # TODO I think dimension should be a compulsory attribute
+        # TODO share code with the cpu_high_alarm implementation
+        return Alarm(
+            Properties=dict(
+                # TODO sort these in some sensible order, perhaps
+                EvaluationPeriods=1,
+                Statistic="Average",  # FIXME lookup constant
+                Threshold=threshold,
+                AlarmDescription="Alarm if CPU too low or metric disappears indicating instance is down",  # TODO tweak
+                Period=60,
+                Namespace="AWS/EC2",  # FIXME lookup constant?
+                ComparisonOperator="LessThanThreshold",  # FIXME lookup constant
+                #FIXME check LessThanThreshold is correct, and it;s not LowerThanThreshold or some similar synonym
                 MetricName="CPUUtilization"  # TODO Lookup a very long list?
             ),
         )
