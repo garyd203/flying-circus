@@ -4,7 +4,7 @@ from flyingcircus.core import Stack, dedent
 from . import cloudwatch
 from .._raw import autoscaling as raw
 
-# TODO rethink this approach. maybe an __all__, or an from _raw import * ?
+# TODO rethink this approach. maybe an __all__, or a from _raw import * ?
 AutoScalingGroup = raw.AutoScalingGroup
 LaunchConfiguration = raw.LaunchConfiguration
 Resource = raw.Resource
@@ -25,17 +25,15 @@ ScalingPolicy = raw.ScalingPolicy
 #           or. new_stack = stack1 + stack2 + stack3.add_namespace_prefix("Prefix")
 
 
-def autoscaling_group_from_cpu(low=20, high=90):
-    # FIXME docstring
-    # FIXME rename
-    # FIXME tweak default values for cpu thresholds. eg. to match some AWS doco
+def autoscaling_group_by_cpu(low=20, high=80):
+    """Create an auto-scaling group that scales based on it's CPU load."""
     stack = Stack(
         # TODO generate description by auto-breaking the line with the (not-yet-existent) reflow function instead
         Description=dedent("""
             Deploy an auto-scaling group that scales based on lower and upper CPU usage
             thresholds.
             """),
-        Resources={},  # TODO shouldn't need to initialise this explicitly to an empty dict
+        Resources={},  # TODO #45: shouldn't need to initialise this explicitly to an empty dict
     )
 
     launch_config = LaunchConfiguration(
@@ -105,12 +103,13 @@ def autoscaling_group_from_cpu(low=20, high=90):
 
 
 def simple_scaling_policy(alarm, asg_name, downscale=False):
-    # TODO docstring
+    """Create a simple scaling policy using the supplied alarm."""
     # TODO need !Ref to work before we can do this
     # TODO need stack merge to work before this is useful
+    # TODO need to use this
     stack = Stack(
         Description="""Resources for a single scaling policy.""",
-        Resources={},  # TODO shouldn't need to initialise this explicitly to an empty dict
+        Resources={},  # TODO #45: shouldn't need to initialise this explicitly to an empty dict
     )
 
     scaling_policy = ScalingPolicy(
@@ -118,7 +117,7 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
             AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
             AutoScalingGroupName=asg_name,
             Cooldown=1,
-            ScalingAdjustment=1,  # TODO does this need to be -1 for scale down? Switch value based on `downscale`
+            ScalingAdjustment=-1 if downscale else 1,
         ),
     )
     stack.Resources["ScalingPolicy"] = scaling_policy

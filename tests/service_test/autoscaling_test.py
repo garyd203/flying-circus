@@ -1,5 +1,5 @@
 from flyingcircus.core import dedent
-from flyingcircus.service.autoscaling import autoscaling_group_from_cpu
+from flyingcircus.service.autoscaling import autoscaling_group_by_cpu
 
 
 class TestCpuAutoScalingGroup:
@@ -121,7 +121,7 @@ class TestCpuAutoScalingGroup:
     """)
 
     def test_yaml(self):
-        stack = autoscaling_group_from_cpu(low=49, high=74)
+        stack = autoscaling_group_by_cpu(low=49, high=74)
 
         template = stack.export("yaml")
 
