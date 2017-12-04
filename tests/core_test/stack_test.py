@@ -1,6 +1,8 @@
 """Tests for the Stack base class."""
+
 import pytest
 
+from core_test.common import SingleAttributeObject
 from core_test.common import ZeroAttributeObject
 from flyingcircus.core import Stack
 
@@ -101,3 +103,42 @@ class TestGetLogicalName:
             stack.get_logical_name(data)
 
         assert "multiple names" in str(excinfo.value)
+
+
+class _ObjectThatReferencesStack(SingleAttributeObject):
+    """Test object that verifies it has the correct stack when exported"""
+
+    def __init__(self, containing_stack):
+        SingleAttributeObject.__init__(self, one="foo")
+        self._expected_stack = containing_stack
+
+    def as_yaml_node(self, dumper):
+        assert dumper.cfn_stack is self._expected_stack
+        return super().as_yaml_node(dumper)
+
+
+class TestCurrentStack:
+    """Verify that the current stack object is set correctly when exporting."""
+
+    def _create_stack_that_checks_reference(self):
+        stack = Stack()
+        data = _ObjectThatReferencesStack(stack)
+        stack.Resources["Data"] = data
+        return stack
+
+    def test_current_stack_is_available_to_attributes(self):
+        # Setup
+        stack = self._create_stack_that_checks_reference()
+
+        # Exercise
+        stack.export("yaml")  # Should not throw error
+
+    def test_correct_stack_is_available_when_multiple_stacks_have_been_exported(self):
+        # Setup
+        stack1 = self._create_stack_that_checks_reference()
+        stack2 = self._create_stack_that_checks_reference()
+
+        stack1.export("yaml")
+
+        # Exercise
+        stack2.export("yaml")  # Should not throw error

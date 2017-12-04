@@ -78,3 +78,37 @@ class NonAliasingDumper(yaml.Dumper):
         # Don't keep track of previously serialised nodes, so any node will appear to be new.
         self.serialized_nodes = {}
         super(NonAliasingDumper, self).serialize_node(node, parent, index)
+
+
+class AmazonCFNDumper(NonAliasingDumper, yaml.Dumper):
+    """A YAML dumper with output customised for AWS CloudFormation."""
+
+    def __init__(self, *args, **kwargs):
+        yaml.Dumper.__init__(self, *args, **kwargs)
+
+        self.__cloud_formation_stack = None
+
+    @property
+    def cfn_stack(self):
+        """The Cloud Formation stack being exported.
+
+        This should be set by the stack object when it is first represented.
+        """
+        return self.__cloud_formation_stack
+
+    @cfn_stack.setter
+    def cfn_stack(self, value):
+        # Checks
+        if value is not None:
+            from .core import Stack
+            if not isinstance(value, Stack):
+                raise TypeError(
+                    "The current CloudFormation stack must be a Stack object, "
+                    "in order to prevent surprise to users."
+                )
+
+            if self.__cloud_formation_stack is not None:
+                raise RuntimeError("The current CloudFormation stack is already set!")
+
+        # Set value
+        self.__cloud_formation_stack = value

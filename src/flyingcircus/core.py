@@ -3,8 +3,8 @@ import textwrap
 import yaml
 import yaml.resolver
 
+from .yaml import AmazonCFNDumper
 from .yaml import CustomYamlObject
-from .yaml import NonAliasingDumper
 
 
 # TODO rename "AWS attribute" to "CloudFormation attribute" everywhere ?
@@ -190,7 +190,7 @@ class AWSObject(CustomYamlObject):
         if format == "yaml":
             return yaml.dump_all(
                 [self],
-                Dumper=NonAliasingDumper,
+                Dumper=AmazonCFNDumper,
                 default_flow_style=False,
                 explicit_start=True,
             )
@@ -310,6 +310,10 @@ class Stack(AWSObject):
             elif len(matches) == 1:
                 return matches[0]
         raise ValueError("Object is not part of this stack: {}".format(resource))
+
+    def as_yaml_node(self, dumper):
+        dumper.cfn_stack = self
+        return super().as_yaml_node(dumper)
 
 
 class Resource(AWSObject):
