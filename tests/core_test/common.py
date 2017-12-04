@@ -3,7 +3,7 @@
 from flyingcircus.core import AWSObject
 
 
-class CommonAWSOBjectTests:
+class CommonAWSObjectTests:
     """Shared tests to be applied to all AWSObject implementations."""
 
     def test_init_should_only_have_named_parameters_in_spec(self):
