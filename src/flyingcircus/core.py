@@ -285,6 +285,8 @@ class Stack(AWSObject):
             self.Conditions = {}
         if not hasattr(self, "Mappings"):
             self.Mappings = {}
+        if not hasattr(self, "Metadata"):
+            self.Metadata = {}
         if not hasattr(self, "Outputs"):
             self.Outputs = {}
         if not hasattr(self, "Parameters"):

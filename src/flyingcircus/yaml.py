@@ -112,3 +112,17 @@ class AmazonCFNDumper(NonAliasingDumper, yaml.Dumper):
 
         # Set value
         self.__cloud_formation_stack = value
+
+    def choose_scalar_style(self):
+        if self.analysis is None:
+            self.analysis = self.analyze_scalar(self.event.value)
+
+        # If an explicit tag is present on a scalar (eg. because it is a Cloud
+        # Formation intrinsic function), try to honour a request for plain
+        # scalar style. The default behaviour will always clobber this,
+        # which is strange.
+        if self.event.style == "" and self.event.tag.startswith("!"):
+            if not (self.analysis.empty or self.analysis.multiline):
+                return ""
+
+        return super().choose_scalar_style()
