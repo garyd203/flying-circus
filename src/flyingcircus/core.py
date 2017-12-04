@@ -281,6 +281,35 @@ class Stack(AWSObject):
         AWSObject.__init__(**locals())
 
         # TODO We really want issue #45 to auto-initialise all the sets
+        if not hasattr(self, "Conditions"):
+            self.Conditions = {}
+        if not hasattr(self, "Mappings"):
+            self.Mappings = {}
+        if not hasattr(self, "Outputs"):
+            self.Outputs = {}
+        if not hasattr(self, "Parameters"):
+            self.Parameters = {}
+        if not hasattr(self, "Resources"):
+            self.Resources = {}
+        if not hasattr(self, "Transform"):
+            self.Transform = {}
+
+    def get_logical_name(self, resource):
+        """Get the logical name used for this object in this stack.
+
+        Raises ValueError if the object is not in this stack.
+        """
+        # The lazy and non-performant approach is to iterate through all
+        # the objects in this stack until we find the supplied object.
+        # That should do for now, really.
+        for object_type in ["Resources", "Parameters"]:
+            objects = getattr(self, object_type, {})
+            matches = [name for name, data in objects.items() if data is resource]
+            if len(matches) > 1:
+                raise ValueError("Object has multiple names in this stack: {}".format(resource))
+            elif len(matches) == 1:
+                return matches[0]
+        raise ValueError("Object is not part of this stack: {}".format(resource))
 
 
 class Resource(AWSObject):
