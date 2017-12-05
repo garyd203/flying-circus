@@ -1,5 +1,6 @@
 """General-use classes to interact with the AutoScaling service through CloudFormation."""
 
+from flyingcircus import fn
 from flyingcircus.core import Stack, dedent
 from . import cloudwatch
 from .._raw import autoscaling as raw
@@ -48,7 +49,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
     asg = AutoScalingGroup(
         Properties=dict(
             AvailabilityZones="Fn::GetAZs: !Ref AWS::Region",  # FIXME need real functions
-            LaunchConfigurationName="!Ref LaunchConfiguration",  # FIXME need real !Ref
+            LaunchConfigurationName=fn.Ref(launch_config),
             MinSize=1,
             MaxSize=3,
         ),
@@ -58,7 +59,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
     scale_up_policy = ScalingPolicy(
         Properties=dict(
             AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
-            AutoScalingGroupName="!Ref AutoScalingGroup",  # FIXME need real !Ref
+            AutoScalingGroupName=fn.Ref(asg),
             Cooldown=1,
             ScalingAdjustment=1,
         ),
@@ -67,12 +68,12 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
     high_alarm = cloudwatch.Alarms.high_cpu(threshold=high)
     # FIXME need properties to be a real object (not a dict), and to auto-create empty lists. Then we can do an append here, rather than setting the list
-    high_alarm.Properties['AlarmActions'] = ["!Ref ScaleUpPolicy"]  # FIXME need real !Ref
+    high_alarm.Properties['AlarmActions'] = [fn.Ref(scale_up_policy)]
     high_alarm.Properties['Dimensions'] = [
         # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
         dict(
             Name="AutoScalingGroupName",
-            Value="!Ref AutoScalingGroup",  # FIXME need real !Ref
+            Value=fn.Ref(asg),
         )
     ]
     stack.Resources["CPUAlarmHigh"] = high_alarm
@@ -80,7 +81,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
     scale_down_policy = ScalingPolicy(
         Properties=dict(
             AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
-            AutoScalingGroupName="!Ref AutoScalingGroup",  # FIXME need real !Ref
+            AutoScalingGroupName=fn.Ref(asg),
             Cooldown=1,
             ScalingAdjustment=-1,
         ),
@@ -89,12 +90,12 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
     low_alarm = cloudwatch.Alarms.low_cpu(threshold=low)
     # FIXME need properties to be a real object (not a dict), and to auto-create empty lists. Then we can do an append here, rather than setting the list
-    low_alarm.Properties['AlarmActions'] = ["!Ref ScaleDownPolicy"]  # FIXME need real !Ref
+    low_alarm.Properties['AlarmActions'] = [fn.Ref(scale_down_policy)]
     low_alarm.Properties['Dimensions'] = [
         # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
         dict(
             Name="AutoScalingGroupName",
-            Value="!Ref AutoScalingGroup",  # FIXME need real !Ref
+            Value=fn.Ref(asg),
         )
     ]
     stack.Resources["CPUAlarmLow"] = low_alarm
@@ -104,7 +105,6 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
 def simple_scaling_policy(alarm, asg_name, downscale=False):
     """Create a simple scaling policy using the supplied alarm."""
-    # TODO need !Ref to work before we can do this
     # TODO need stack merge to work before this is useful
     # TODO need to use this
     stack = Stack(
@@ -122,7 +122,8 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
     )
     stack.Resources["ScalingPolicy"] = scaling_policy
 
-    alarm.Properties.AlarmActions.append("!Ref ScalingPolicy")  # FIXME need real !Ref
+    alarm.Properties.AlarmActions.append(fn.Ref(scaling_policy))
+    alarm.Properties.AlarmActions.append(fn.Ref(scaling_policy))
     stack.Resources["ScalingAlarm"] = alarm  # TODO need to override the implicit resource name on `alarm`
 
     return stack
