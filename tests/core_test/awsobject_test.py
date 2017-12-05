@@ -8,8 +8,8 @@ import pytest
 from hypothesis import given
 
 from flyingcircus.core import AWSObject
-from .common import SingleAttributeObject
 from .common import DualAttributeObject
+from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
 
