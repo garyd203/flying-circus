@@ -127,7 +127,7 @@ class TestYamlBasicFormatting:
             two: 2
             """)
 
-    @pytest.mark.skip("we dont currently support filtering out empty attributes")
+    @pytest.mark.skip("#55: We dont currently support filtering out empty attributes")
     def test_empty_attributes_are_not_exported(self):
         empty_attribute = ZeroAttributeObject()
         data = DualAttributeObject(one=1, two=empty_attribute)
