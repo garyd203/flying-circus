@@ -56,25 +56,30 @@ class TestCpuAutoScalingGroup:
         Description: |
           Deploy an auto-scaling group that scales based on lower and upper CPU usage
           thresholds.
+        Metadata: {}
+        Parameters: {}
+        Mappings: {}
+        Conditions: {}
+        Transform: {}
         Resources:
           AutoScalingGroup:
             Type: AWS::AutoScaling::AutoScalingGroup
             Properties:
               AvailabilityZones: 'Fn::GetAZs: !Ref AWS::Region'
-              LaunchConfigurationName: '!Ref LaunchConfiguration'
+              LaunchConfigurationName: !Ref LaunchConfiguration
               MaxSize: 3
               MinSize: 1
           CPUAlarmHigh:
             Type: AWS::CloudWatch::Alarm
             Properties:
               AlarmActions:
-              - '!Ref ScaleUpPolicy'
+              - !Ref ScaleUpPolicy
               AlarmDescription: |-
                 Alarm if CPU too high or metric disappears indicating instance is down
               ComparisonOperator: GreaterThanThreshold
               Dimensions:
               - Name: AutoScalingGroupName
-                Value: '!Ref AutoScalingGroup'
+                Value: !Ref AutoScalingGroup
               EvaluationPeriods: 1
               MetricName: CPUUtilization
               Namespace: AWS/EC2
@@ -85,13 +90,13 @@ class TestCpuAutoScalingGroup:
             Type: AWS::CloudWatch::Alarm
             Properties:
               AlarmActions:
-              - '!Ref ScaleDownPolicy'
+              - !Ref ScaleDownPolicy
               AlarmDescription: |-
                 Alarm if CPU too low or metric disappears indicating instance is down
               ComparisonOperator: LessThanThreshold
               Dimensions:
               - Name: AutoScalingGroupName
-                Value: '!Ref AutoScalingGroup'
+                Value: !Ref AutoScalingGroup
               EvaluationPeriods: 1
               MetricName: CPUUtilization
               Namespace: AWS/EC2
@@ -108,16 +113,17 @@ class TestCpuAutoScalingGroup:
             Type: AWS::AutoScaling::ScalingPolicy
             Properties:
               AdjustmentType: ChangeInCapacity
-              AutoScalingGroupName: '!Ref AutoScalingGroup'
+              AutoScalingGroupName: !Ref AutoScalingGroup
               Cooldown: 1
               ScalingAdjustment: -1
           ScaleUpPolicy:
             Type: AWS::AutoScaling::ScalingPolicy
             Properties:
               AdjustmentType: ChangeInCapacity
-              AutoScalingGroupName: '!Ref AutoScalingGroup'
+              AutoScalingGroupName: !Ref AutoScalingGroup
               Cooldown: 1
               ScalingAdjustment: 1
+        Outputs: {}
     """)
 
     def test_yaml(self):
