@@ -274,7 +274,7 @@ class Stack(AWSObject):
                  Description=None, Mappings=None, Metadata=None, Outputs=None,
                  Parameters=None, Resources=None, Transform=None):
         # We default to the most recent format version
-        # TODO consider functionality to set defaults in a generic way. Not sure how much it would be needed, so maybe not worth the fuss
+        # TODO #55 consider functionality to set defaults in a generic way. Not sure how much it would be needed, so maybe not worth the fuss
         if AWSTemplateFormatVersion is None:
             AWSTemplateFormatVersion = "2010-09-09"
 
@@ -359,9 +359,10 @@ class Resource(AWSObject):
     RESOURCE_TYPE = None
 
     #: Set of valid property names for this Resource class
-    RESOURCE_PROPERTIES = {}
+    RESOURCE_PROPERTIES = set()
 
     # TODO classmethod to instantiate a Properties object for this resource type. Or better, have a hard-wired Properties initialised in __init__
+    # TODO implement a shortcut function for get_ref(), instead of having to bring in the fn.Ref function?
 
     def __init__(self, DeletionPolicy=None, DependsOn=None, Properties=None):
         if Properties is None:
