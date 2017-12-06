@@ -40,15 +40,15 @@ def autoscaling_group_by_cpu(low=20, high=80):
     launch_config = LaunchConfiguration(
         Properties=dict(
             ImageId="ami-1a668878",  # Amazon Linux 2017.09.01 in ap-southeast-2
-            InstanceType="t2.micro",  # FIXME make this a lookup value
+            InstanceType="t2.micro",  # TODO consider making this a lookup value
             InstanceMonitoring=False,  # Disable the costly version of monitoring
         ),
     )
-    stack.Resources["LaunchConfiguration"] = launch_config  # FIXME set+lookup intrinsic resource name
+    stack.Resources["LaunchConfiguration"] = launch_config
 
     asg = AutoScalingGroup(
         Properties=dict(
-            AvailabilityZones="Fn::GetAZs: !Ref AWS::Region",  # FIXME need real functions
+            AvailabilityZones="Fn::GetAZs: !Ref AWS::Region",  # TODO #37 need real function for GetAZs
             LaunchConfigurationName=fn.Ref(launch_config),
             MinSize=1,
             MaxSize=3,
@@ -58,7 +58,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
     scale_up_policy = ScalingPolicy(
         Properties=dict(
-            AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
+            AdjustmentType="ChangeInCapacity",  # TODO consider making this a lookup value
             AutoScalingGroupName=fn.Ref(asg),
             Cooldown=1,
             ScalingAdjustment=1,
@@ -80,7 +80,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
     scale_down_policy = ScalingPolicy(
         Properties=dict(
-            AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
+            AdjustmentType="ChangeInCapacity",  # TODO consider making this a lookup value
             AutoScalingGroupName=fn.Ref(asg),
             Cooldown=1,
             ScalingAdjustment=-1,
@@ -114,7 +114,7 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
 
     scaling_policy = ScalingPolicy(
         Properties=dict(
-            AdjustmentType="ChangeInCapacity",  # FIXME lookup constant
+            AdjustmentType="ChangeInCapacity",  # TODO consider making this a lookup value
             AutoScalingGroupName=asg_name,
             Cooldown=1,
             ScalingAdjustment=-1 if downscale else 1,
@@ -124,6 +124,6 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
 
     alarm.Properties.AlarmActions.append(fn.Ref(scaling_policy))
     alarm.Properties.AlarmActions.append(fn.Ref(scaling_policy))
-    stack.Resources["ScalingAlarm"] = alarm  # TODO need to override the implicit resource name on `alarm`
+    stack.Resources["ScalingAlarm"] = alarm
 
     return stack
