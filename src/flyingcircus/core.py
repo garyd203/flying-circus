@@ -318,6 +318,34 @@ class Stack(AWSObject):
         return super().as_yaml_node(dumper)
 
 
+class PseudoParameter(str):
+    """Represents an AWS-provided pseudo parameter.
+
+    This is simply a trivial extension of a string.
+
+    See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
+    """
+
+    ALL = []
+
+    def __new__(cls, *args, **kwargs):
+        # noinspection PyArgumentList
+        obj = super(PseudoParameter, cls).__new__(cls, *args, **kwargs)
+        cls.ALL.append(obj)
+        return obj
+
+
+# TODO not convinced about the names of the constants, or about putting them in this namespace
+AWS_AccountId = PseudoParameter("AWS::AccountId")
+AWS_NotificationARNs = PseudoParameter("AWS::NotificationARNs")
+AWS_NoValue = PseudoParameter("AWS::NoValue")
+AWS_Partition = PseudoParameter("AWS::Partition")
+AWS_Region = PseudoParameter("AWS::Region")
+AWS_StackId = PseudoParameter("AWS::StackId")
+AWS_StackName = PseudoParameter("AWS::StackName")
+AWS_URLSuffix = PseudoParameter("AWS::URLSuffix")
+
+
 class Resource(AWSObject):
     """Represents a CloudFormation Resource in a Stack.
 
