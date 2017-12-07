@@ -321,29 +321,32 @@ class Stack(AWSObject):
 class PseudoParameter(str):
     """Represents an AWS-provided pseudo parameter.
 
-    This is simply a trivial extension of a string.
+    This is simply a string with extra mixin behaviour.
 
     See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
     """
 
-    ALL = []
+    #: Set of all AWS pseudo-parameters
+    ALL = set()
 
-    def __new__(cls, *args, **kwargs):
-        # noinspection PyArgumentList
-        obj = super(PseudoParameter, cls).__new__(cls, *args, **kwargs)
-        cls.ALL.append(obj)
+    # TODO if we try to use it as a YAML scalar, then implicitly make it be a Ref? Do with as_yaml_node()
+
+    @classmethod
+    def _create_standard_parameter(cls, name):
+        obj = cls(name)
+        cls.ALL.add(obj)
         return obj
 
 
 # TODO not convinced about the names of the constants, or about putting them in this namespace
-AWS_AccountId = PseudoParameter("AWS::AccountId")
-AWS_NotificationARNs = PseudoParameter("AWS::NotificationARNs")
-AWS_NoValue = PseudoParameter("AWS::NoValue")
-AWS_Partition = PseudoParameter("AWS::Partition")
-AWS_Region = PseudoParameter("AWS::Region")
-AWS_StackId = PseudoParameter("AWS::StackId")
-AWS_StackName = PseudoParameter("AWS::StackName")
-AWS_URLSuffix = PseudoParameter("AWS::URLSuffix")
+AWS_AccountId = PseudoParameter._create_standard_parameter("AWS::AccountId")
+AWS_NotificationARNs = PseudoParameter._create_standard_parameter("AWS::NotificationARNs")
+AWS_NoValue = PseudoParameter._create_standard_parameter("AWS::NoValue")
+AWS_Partition = PseudoParameter._create_standard_parameter("AWS::Partition")
+AWS_Region = PseudoParameter._create_standard_parameter("AWS::Region")
+AWS_StackId = PseudoParameter._create_standard_parameter("AWS::StackId")
+AWS_StackName = PseudoParameter._create_standard_parameter("AWS::StackName")
+AWS_URLSuffix = PseudoParameter._create_standard_parameter("AWS::URLSuffix")
 
 
 class Resource(AWSObject):
