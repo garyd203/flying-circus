@@ -301,6 +301,12 @@ class Stack(AWSObject):
 
         Raises ValueError if the object is not in this stack.
         """
+        # Pseudo Parameters are a special case. They can be thought of as
+        # implicitly part of the current stack, so we support finding them
+        # through this function
+        if isinstance(resource, PseudoParameter):
+            return str(resource)
+
         # The lazy and non-performant approach is to iterate through all
         # the objects in this stack until we find the supplied object.
         # That should do for now, really.

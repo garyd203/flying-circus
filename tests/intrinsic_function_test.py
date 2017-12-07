@@ -6,7 +6,7 @@ from hypothesis import given
 from unittest.mock import Mock
 
 from core_test.common import SingleAttributeObject, ZeroAttributeObject
-from flyingcircus.core import Stack, dedent
+from flyingcircus.core import Stack, dedent, AWS_Region
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.yaml import AmazonCFNDumper
 
@@ -71,6 +71,20 @@ class TestRef:
         name = "Foo"
         stack = Stack(Resources={name: data})
         ref = Ref(data)
+
+        dumper = self._create_dumper(stack)
+
+        # Exercise
+        node = ref.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == name
+
+    def test_referred_object_can_be_a_pseudo_parameter(self):
+        # Setup
+        name = "Region"
+        ref = Ref(AWS_Region)
+        stack = Stack(Resources={name: ref})
 
         dumper = self._create_dumper(stack)
 

@@ -4,6 +4,7 @@ import pytest
 
 from core_test.common import SingleAttributeObject
 from core_test.common import ZeroAttributeObject
+from flyingcircus.core import AWS_Region
 from flyingcircus.core import Stack
 
 
@@ -38,6 +39,14 @@ class TestGetLogicalName:
 
         # Exercise & Verify
         assert stack.get_logical_name(data) == name
+
+    def test_find_a_pseudo_parameter(self):
+        # Setup
+        data = AWS_Region
+        stack = Stack()
+
+        # Exercise & Verify
+        assert stack.get_logical_name(data) == "AWS::Region"
 
     def test_find_a_resource_which_is_a_plain_dict(self):
         # Setup
