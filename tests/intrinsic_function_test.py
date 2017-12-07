@@ -5,14 +5,19 @@ import pytest
 from hypothesis import given
 from unittest.mock import Mock
 
-from core_test.common import SingleAttributeObject, ZeroAttributeObject
-from flyingcircus.core import Stack, dedent, AWS_Region
+from core_test.common import SingleAttributeObject
+from core_test.common import ZeroAttributeObject
+from flyingcircus.core import AWS_Region
+from flyingcircus.core import Stack
+from flyingcircus.core import dedent
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.yaml import AmazonCFNDumper
 
 
 class TestRef:
     """Test behaviour/output of the Ref function."""
+
+    # TODO output should be single-quote encapsulated if it contains a special character. eg. AWS::Region. Will need to tweak our yaml output (again)
 
     def _create_dumper(self, stack):
         dumper = AmazonCFNDumper(None)
@@ -82,7 +87,7 @@ class TestRef:
 
     def test_referred_object_can_be_a_pseudo_parameter(self):
         # Setup
-        name = "Region"
+        name = "SomeRegion"
         ref = Ref(AWS_Region)
         stack = Stack(Resources={name: ref})
 
@@ -92,7 +97,19 @@ class TestRef:
         node = ref.as_yaml_node(dumper)
 
         # Verify
-        assert node.value == name
+        assert node.value == "AWS::Region"
+
+    def test_referred_object_that_is_a_string_is_rejected_immediately(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        name = "Foo"
+        stack = Stack(Resources={name: data})
+
+        # Exercise & Verify
+        with pytest.raises(TypeError) as excinfo:
+            _ = Ref(name)
+
+        assert "directly create a Ref to a name" in str(excinfo.value)
 
     @pytest.mark.parametrize('object_type', ["Parameters", "Resources"])
     def test_all_valid_stack_object_types_can_be_found(self, object_type):
