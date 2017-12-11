@@ -296,6 +296,10 @@ class Stack(AWSObject):
         if not hasattr(self, "Transform"):
             self.Transform = {}
 
+    def as_yaml_node(self, dumper):
+        dumper.cfn_stack = self
+        return super().as_yaml_node(dumper)
+
     def get_logical_name(self, resource):
         """Get the logical name used for this object in this stack.
 
@@ -318,10 +322,6 @@ class Stack(AWSObject):
             elif len(matches) == 1:
                 return matches[0]
         raise ValueError("Object is not part of this stack: {}".format(resource))
-
-    def as_yaml_node(self, dumper):
-        dumper.cfn_stack = self
-        return super().as_yaml_node(dumper)
 
 
 class PseudoParameter(str):
