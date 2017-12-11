@@ -11,51 +11,6 @@ class TestCpuAutoScalingGroup:
         Description: |
           Deploy an auto-scaling group that scales based on lower and upper CPU usage
           thresholds.
-        Resources:
-          AutoScalingGroup:
-            Type: AWS::AutoScaling::AutoScalingGroup
-            Properties:
-              AvailabilityZones:
-                Fn::GetAZs: !Ref AWS::Region
-              LaunchConfigurationName: !Ref LaunchConfiguration
-              MaxSize: 3
-              MinSize: 1
-          LaunchConfiguration:
-            Type: AWS::AutoScaling::LaunchConfiguration
-            Properties:
-              ImageId: ami-1a668878
-              InstanceType: t2.micro
-              InstanceMonitoring: false
-          CPUAlarmHigh:
-            Type: AWS::CloudWatch::Alarm
-            Properties:
-              EvaluationPeriods: 1
-              Statistic: Average
-              Threshold: 75
-              AlarmDescription: Alarm if CPU too high or metric disappears indicating instance is down
-              Period: 60
-              AlarmActions:
-                - !Ref ScaleUpPolicy
-              Namespace: AWS/EC2
-              Dimensions:
-              - Name: AutoScalingGroupName
-                Value: !Ref AutoScalingGroup
-              ComparisonOperator: GreaterThanThreshold
-              MetricName: CPUUtilization
-          ScaleUpPolicy:
-            Type: AWS::AutoScaling::ScalingPolicy
-            Properties:
-              AdjustmentType: ChangeInCapacity
-              AutoScalingGroupName: !Ref AutoScalingGroup
-              Cooldown: 1
-              ScalingAdjustment: 1
-    """)
-    ASG_WITH_CPU_YAML_MUNGED_DELETEME = dedent("""
-        ---
-        AWSTemplateFormatVersion: '2010-09-09'
-        Description: |
-          Deploy an auto-scaling group that scales based on lower and upper CPU usage
-          thresholds.
         Metadata: {}
         Parameters: {}
         Mappings: {}
@@ -65,7 +20,8 @@ class TestCpuAutoScalingGroup:
           AutoScalingGroup:
             Type: AWS::AutoScaling::AutoScalingGroup
             Properties:
-              AvailabilityZones: 'Fn::GetAZs: !Ref AWS::Region'
+              AvailabilityZones:
+                Fn::GetAZs: !Ref AWS::Region
               LaunchConfigurationName: !Ref LaunchConfiguration
               MaxSize: 3
               MinSize: 1
@@ -131,5 +87,4 @@ class TestCpuAutoScalingGroup:
 
         template = stack.export("yaml")
 
-        assert template == self.ASG_WITH_CPU_YAML_MUNGED_DELETEME  # FIXME use the real version instead whne we get basic intrinsic functions working
-        # assert template == self.ASG_WITH_CPU_YAML  # FIXME
+        assert template == self.ASG_WITH_CPU_YAML

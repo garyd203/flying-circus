@@ -46,8 +46,6 @@ class Ref(_Function):
     See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html
     """
 
-    # TODO should we provide a version where you just give the logical name (perhaps check it at export time if we are keen)?
-
     def __init__(self, data):
         """Create a reference to a Resource or Parameter.
 

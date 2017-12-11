@@ -1,7 +1,9 @@
 """General-use classes to interact with the AutoScaling service through CloudFormation."""
 
 from flyingcircus import fn
-from flyingcircus.core import Stack, dedent
+from flyingcircus.core import AWS_Region
+from flyingcircus.core import Stack
+from flyingcircus.core import dedent
 from . import cloudwatch
 from .._raw import autoscaling as raw
 
@@ -34,7 +36,6 @@ def autoscaling_group_by_cpu(low=20, high=80):
             Deploy an auto-scaling group that scales based on lower and upper CPU usage
             thresholds.
             """),
-        Resources={},  # TODO #45: shouldn't need to initialise this explicitly to an empty dict
     )
 
     launch_config = LaunchConfiguration(
@@ -48,7 +49,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
     asg = AutoScalingGroup(
         Properties=dict(
-            AvailabilityZones="Fn::GetAZs: !Ref AWS::Region",  # TODO #37 need real function for GetAZs
+            AvailabilityZones=fn.GetAZs(fn.Ref(AWS_Region)),
             LaunchConfigurationName=fn.Ref(launch_config),
             MinSize=1,
             MaxSize=3,
@@ -107,10 +108,7 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
     """Create a simple scaling policy using the supplied alarm."""
     # TODO need stack merge to work before this is useful
     # TODO need to use this
-    stack = Stack(
-        Description="""Resources for a single scaling policy.""",
-        Resources={},  # TODO #45: shouldn't need to initialise this explicitly to an empty dict
-    )
+    stack = Stack(Description="Resources for a single scaling policy.")
 
     scaling_policy = ScalingPolicy(
         Properties=dict(
