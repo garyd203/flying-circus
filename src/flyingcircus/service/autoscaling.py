@@ -14,20 +14,6 @@ Resource = raw.Resource
 ScalingPolicy = raw.ScalingPolicy
 
 
-# TODO note on how convenience functions will work.
-#   We should expect that they will create more than one object, which will not necessarily
-#   be a resource. Hence the best interface is for them to return a stack.
-#
-#   This implies that we will need functionality to combine stacks, eg if we want a stack composed
-#   out of 2 convenience functions. Stack combining should:
-#       - merge all stack components together and erro on namespace clash
-#       - create a new stack, rather than merge into an existing
-#           eg. new_stack = stack1 + stack2
-#       - have option to add namespace prefix to all (some???) objects in each stack, in order to improve disambiguation
-#           eg. new_stack = combine_stacks(stack1, stack2, MagicVariableNameThatBecomesNamespacePrefixForThisStack=stack3)
-#           or. new_stack = stack1 + stack2 + stack3.add_namespace_prefix("Prefix")
-
-
 def autoscaling_group_by_cpu(low=20, high=80):
     """Create an auto-scaling group that scales based on it's CPU load."""
     stack = Stack(
@@ -106,8 +92,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
 def simple_scaling_policy(alarm, asg_name, downscale=False):
     """Create a simple scaling policy using the supplied alarm."""
-    # TODO need stack merge to work before this is useful
-    # TODO need to use this
+    # TODO #61: need stack merge to work before this is usable
     stack = Stack(Description="Resources for a single scaling policy.")
 
     scaling_policy = ScalingPolicy(
@@ -120,8 +105,8 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
     )
     stack.Resources["ScalingPolicy"] = scaling_policy
 
-    alarm.Properties.AlarmActions.append(fn.Ref(scaling_policy))
-    alarm.Properties.AlarmActions.append(fn.Ref(scaling_policy))
+    # TODO need properties to be a real object (not a dict), and to auto-create empty lists.
+    alarm.Properties.setdefault("AlarmActions", []).append(fn.Ref(scaling_policy))
     stack.Resources["ScalingAlarm"] = alarm
 
     return stack
