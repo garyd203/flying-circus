@@ -1,0 +1,27 @@
+---
+# TODO generate this with flying circus :-)
+AWSTemplateFormatVersion: '2010-09-09'
+Description:
+  CloudFormation template to describe users and policies for executing
+  integration tests.
+Resources:
+  FlyingCircusIntegrationTestPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: FlyingCircusIntegrationTestPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowCloudFormationValidation
+            Effect: Allow
+            Action:
+            - cloudformation:ValidateTemplate
+            Resource: "*"
+      Users:
+        - !Ref FlyingCircusIntegrationTestUser
+  FlyingCircusIntegrationTestUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: flying-circus-integration-test
+      # The FlyingCircusIntegrationTestPolicy policy above is attached to
+      # this user
