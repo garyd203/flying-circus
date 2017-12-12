@@ -11,11 +11,7 @@ class TestCpuAutoScalingGroup:
         Description: |
           Deploy an auto-scaling group that scales based on lower and upper CPU usage
           thresholds.
-        Metadata: {}
         Parameters: {}
-        Mappings: {}
-        Conditions: {}
-        Transform: {}
         Resources:
           AutoScalingGroup:
             Type: AWS::AutoScaling::AutoScalingGroup
@@ -79,7 +75,6 @@ class TestCpuAutoScalingGroup:
               AutoScalingGroupName: !Ref AutoScalingGroup
               Cooldown: 1
               ScalingAdjustment: 1
-        Outputs: {}
     """)
 
     def test_yaml(self):

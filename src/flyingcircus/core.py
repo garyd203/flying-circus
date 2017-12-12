@@ -281,20 +281,10 @@ class Stack(AWSObject):
         AWSObject.__init__(**locals())
 
         # TODO We really want issue #45 to auto-initialise all the sets
-        if not hasattr(self, "Conditions"):
-            self.Conditions = {}
-        if not hasattr(self, "Mappings"):
-            self.Mappings = {}
-        if not hasattr(self, "Metadata"):
-            self.Metadata = {}
-        if not hasattr(self, "Outputs"):
-            self.Outputs = {}
         if not hasattr(self, "Parameters"):
             self.Parameters = {}
         if not hasattr(self, "Resources"):
             self.Resources = {}
-        if not hasattr(self, "Transform"):
-            self.Transform = {}
 
     def as_yaml_node(self, dumper):
         dumper.cfn_stack = self

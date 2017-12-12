@@ -110,16 +110,11 @@ class TestGetAZs:
         assert output == dedent("""
             ---
             AWSTemplateFormatVersion: '2010-09-09'
-            Metadata: {}
             Parameters: {}
-            Mappings: {}
-            Conditions: {}
-            Transform: {}
             Resources:
               SomeResource:
                 one:
                   Fn::GetAZs: !Ref AWS::Region
-            Outputs: {}
             """)
 
     def test_empty_region_becomes_explicit_aws_region_reference(self):
@@ -199,16 +194,11 @@ class TestRef:
         assert output == dedent("""
             ---
             AWSTemplateFormatVersion: '2010-09-09'
-            Metadata: {}
             Parameters: {}
-            Mappings: {}
-            Conditions: {}
-            Transform: {}
             Resources:
               Bar: !Ref Foo
               Foo:
                 one: 42
-            Outputs: {}
             """)
 
     def test_referred_object_can_be_a_plain_dict(self):
@@ -275,7 +265,7 @@ class TestRef:
         data = SingleAttributeObject(one=42)
         name = "Foo"
         stack = Stack()
-        stack[object_type][name] = data
+        setattr(stack, object_type, {name: data})
         ref = Ref(data)
 
         dumper = _create_refsafe_dumper(stack)

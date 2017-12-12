@@ -64,7 +64,7 @@ class TestGetLogicalName:
         stack = Stack()
         data = ZeroAttributeObject()
         for attribute_name in ["Mappings", "Conditions", "Transform", "Outputs"]:
-            stack[attribute_name][name] = data
+            setattr(stack, attribute_name, {name: data})
 
         # Exercise & Verify
         with pytest.raises(ValueError) as excinfo:
