@@ -1,5 +1,6 @@
 from flyingcircus.core import dedent
 from flyingcircus.service.autoscaling import autoscaling_group_by_cpu
+from validation_helper import AwsTemplateValidation
 
 
 class TestCpuAutoScalingGroup:
@@ -83,3 +84,15 @@ class TestCpuAutoScalingGroup:
         template = stack.export("yaml")
 
         assert template == self.ASG_WITH_CPU_YAML
+
+
+class TestValidateAutoScalingService(AwsTemplateValidation):
+    """Verify that all convenience functions Autoscaling service module
+    produce stacks that are valid.
+    """
+
+    def get_stacks_under_test(self):
+        return [
+            autoscaling_group_by_cpu(),
+            # TODO simple_scaling_policy
+        ]
