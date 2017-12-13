@@ -12,8 +12,8 @@ class AwsTemplateValidation:
         """Return a list of concrete stack objects that need to be validated."""
         return []
 
+    @pytest.mark.aws_integration
     def test_validate_stacks(self):
-        # TODO add pytest config and conditional skip so that this only runs if you want it to
         # Setup
         cfclient = boto3.client("cloudformation")
 
