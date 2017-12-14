@@ -24,25 +24,25 @@ Name ideas
 • Thor. He controls clouds.
 • Zeus. God of the clouds, etc
 • Some God or cloud allusion from Monty python
-• (flying circus). Allusion to Monty python. Allusion to ww1 German fighter "formation".  Mis spelling of cirrus
+*(flying circus). Allusion to Monty python. Allusion to ww1 German fighter "formation".  Mis spelling of cirrus
 
-What it is :
-• A representation of an AWS cloud formation stack using python (rather than, say, JSON or YAML)
-• Enables easy use of coding constructs for code reuse, looping, conditionals, etc.
-• Produces good practice, human readable YAML
+## What's With The Name
 
-What it isn't:
-• Interface to non-AWS cloud providers
-• An abstraction layer
-• A new implementation of AWS stacks
-• Direct interface to AWS stacks (not yet anyway)
-• YAML
+Good question!
+Flying Circus is primarily a reference to the Monty Python TV show, since
+Monty Python references are expected behaviour in the Python community.
+Additionally, during World War 1 the German fighter units organised themselves
+into large units of colourful planes, the most famous of which was
+called a Flying Circus [wikipedia]. The imagery of lots of diverse things
+working together was strking
+
+Oh, and all the good cloud-related names were already in use.
 
 Classes we need
 1. Base class to represent an AWS CFN resource, plus other low level primitives
 2. Base classes to represent all AWS services as resources, with well-defined fields. A bug-for-bug pass-through implementation of existing functionality, complete with quirky names
 3. Library of best practice default implementations of all services
-4. Library of good practice implementations of common multi-service patterns
+4. Library of good practice implementations of common multi-resource patterns
 5. Multiple (internal) libraries of localised services
 6. Concrete stacks built on top of the library classes
 
