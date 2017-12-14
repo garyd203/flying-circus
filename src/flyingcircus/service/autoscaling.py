@@ -10,7 +10,6 @@ from .._raw import autoscaling as raw
 # TODO rethink this approach. maybe an __all__, or a from _raw import * ?
 AutoScalingGroup = raw.AutoScalingGroup
 LaunchConfiguration = raw.LaunchConfiguration
-Resource = raw.Resource
 ScalingPolicy = raw.ScalingPolicy
 
 
