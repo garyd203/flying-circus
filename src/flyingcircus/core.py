@@ -345,6 +345,27 @@ AWS_StackName = PseudoParameter._create_standard_parameter("AWS::StackName")
 AWS_URLSuffix = PseudoParameter._create_standard_parameter("AWS::URLSuffix")
 
 
+class FlattenedObject(AWSObject):
+    """An AWS object that flattens a child object into a trivial top-level object.
+
+    The original AWS interface with access to the child object is maintained,
+    but the attributes on the child object are also mapped to the parent
+    object.
+
+    The most prevalent example of this is Resource objects in a CloudFormation
+    Stack, where most of the configuration exists as attributes of the
+    Properties attributes.
+    """
+
+    #: Name of the attribute that will be flattened onto this object's namespace
+    FLATTENED_ATTRIBUTE = None
+
+    # TODO get/set/container need to change, and probably the list/export too. i think we can just extedn getattr/setattr, and also override _is_normal_aws_attribute() to catch most other cases
+    # TODO breaks if any attribs on the child exist on the parent. can check this at compile/creation time.
+
+    # TODO why *are* we doign this? Is it sensible to do it now, or leave for another day?
+
+
 class Resource(AWSObject):
     """Represents a CloudFormation Resource in a Stack.
 
