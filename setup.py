@@ -28,12 +28,15 @@ setup(
     keywords="cloud formation",
     url="https://github.com/garyd203/flying-circus",
     classifiers=[
-        # TODO add more classifiers
-        'Development Status :: 1 - Planning',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
         'Natural Language :: English',
         'Operating System :: OS Independent',
+        'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        #'Topic :: Software Development :: Pre-processors',
+        'Topic :: System :: Systems Administration',
     ],
 )
