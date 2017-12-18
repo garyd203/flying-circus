@@ -1,3 +1,9 @@
+<div style="text-align: right">
+  <a href='http://flying-circus.readthedocs.io/en/latest/?badge=latest'>
+    <img src='https://readthedocs.org/projects/flying-circus/badge/?version=latest' alt='Documentation Status' />
+  </a>
+</div>
+
 # flying-circus
 
 Flying Circus is a tool for describing AWS infrastructure.
