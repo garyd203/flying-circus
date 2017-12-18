@@ -1,8 +1,5 @@
-<div style="text-align: right">
-  <a href='http://flying-circus.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/flying-circus/badge/?version=latest' alt='Documentation Status' />
-  </a>
-</div>
+[![Documentation Status](https://readthedocs.org/projects/flying-circus/badge/?version=latest)](http://flying-circus.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/flying-circus.svg)](https://badge.fury.io/py/flying-circus)
 
 # flying-circus
 
