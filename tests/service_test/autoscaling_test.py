@@ -1,6 +1,8 @@
+"""Tests for AutoScalingGroup functionality."""
+
 from flyingcircus.core import dedent
 from flyingcircus.service.autoscaling import autoscaling_group_by_cpu
-from validation_helper import AwsTemplateValidation
+from ..validation_helper import AwsTemplateValidation
 
 
 class TestCpuAutoScalingGroup:

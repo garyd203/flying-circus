@@ -1,11 +1,12 @@
 """Tests for Parameters and PseudoParameters"""
+
 import pytest
 
-from core_test.common import SingleAttributeObject
 from flyingcircus.core import AWSObject
 from flyingcircus.core import PseudoParameter
 from flyingcircus.core import dedent
 from flyingcircus.yaml import CustomYamlObject
+from .common import SingleAttributeObject
 
 
 class TestPseudoParameter:
