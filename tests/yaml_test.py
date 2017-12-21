@@ -2,9 +2,9 @@
 
 import pytest
 
-from core_test.common import ZeroAttributeObject
 from flyingcircus.core import Stack
 from flyingcircus.yaml import AmazonCFNDumper
+from .core_test.common import ZeroAttributeObject
 
 
 class TestCloudFormationStackProperty:

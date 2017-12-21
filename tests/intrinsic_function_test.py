@@ -1,18 +1,19 @@
 """Tests for the implementation of intrinsic functions"""
 
+from unittest.mock import Mock
+
 import hypothesis.strategies as st
 import pytest
 from hypothesis import given
-from unittest.mock import Mock
 
-from core_test.common import SingleAttributeObject
-from core_test.common import ZeroAttributeObject
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
 from flyingcircus.intrinsic_function import GetAZs
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.yaml import AmazonCFNDumper
+from .core_test.common import SingleAttributeObject
+from .core_test.common import ZeroAttributeObject
 
 
 def _create_refsafe_dumper(stack):

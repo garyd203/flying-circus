@@ -2,10 +2,10 @@
 
 import pytest
 
-from core_test.common import SingleAttributeObject
-from core_test.common import ZeroAttributeObject
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Stack
+from .common import SingleAttributeObject
+from .common import ZeroAttributeObject
 
 
 class TestBasicStackBehaviour:
