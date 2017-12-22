@@ -1,5 +1,5 @@
 boto3==1.4.8
 hypothesis==3.33.0
 pytest==3.2.2
-pyyaml==3.12
+PyYAML==3.12
 semver==2.7.9

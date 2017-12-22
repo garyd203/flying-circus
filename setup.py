@@ -18,7 +18,7 @@ setup(
     packages=find_packages(where="src"),
     install_requires=[
         'boto3',
-        'pyyaml',
+        'PyYAML',
     ],
 
     # metadata for upload to PyPI
