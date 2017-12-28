@@ -55,8 +55,10 @@ for soem background and guidance. Or just do the following steps
     ```
 11. Bump version in _about.py in order to avoid unfortunate mistakes :-)
 12. Close any relevant github issue and milestone
-13. Announce the exciting new release:
+13. Make a github release. This seems to magically work from our tag name
+    format
+14. Announce the exciting new release:
     * Python announcement lists
     * Twitter
     * Gary's personal mailing list
-14. Sit back for a moment and revel in your excellent-ness
+15. Sit back for a moment and revel in your excellent-ness
