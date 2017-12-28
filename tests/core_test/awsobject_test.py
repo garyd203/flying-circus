@@ -49,9 +49,9 @@ class TestInitMethod:
 
         data = InitTestObject(foo_value, Bar=bar_value)
 
-        assert data.Foo == foo_value
-        assert data.ValueWithDefault == default_value
-        assert data.Bar == bar_value
+        assert data.Foo is foo_value
+        assert data.ValueWithDefault is default_value
+        assert data.Bar is bar_value
 
     @given(st.text())
     def test_init_should_only_accept_keyword_args_that_are_known_aws_attributes(self, value):
@@ -126,9 +126,9 @@ class TestAttributeAccess:
         data.bar = bar_value
 
         assert hasattr(data, "Foo")
-        assert data.Foo == foo_value
+        assert data.Foo is foo_value
         assert hasattr(data, "bar")
-        assert data.bar == bar_value
+        assert data.bar is bar_value
 
     @given(st.text())
     def test_internal_attributes_can_be_set_and_read(self, value):
@@ -137,7 +137,7 @@ class TestAttributeAccess:
         data._internal_value = value
 
         assert hasattr(data, "_internal_value")
-        assert data._internal_value == value
+        assert data._internal_value is value
 
     def test_unknown_attributes_cannot_be_set_directly(self):
         data = self.SimpleObject()
@@ -154,7 +154,7 @@ class TestAttributeAccess:
         data.set_unknown_aws_attribute("WeirdValue", value)
 
         assert hasattr(data, "WeirdValue")
-        assert data.WeirdValue == value
+        assert data.WeirdValue is value
 
     def test_valid_aws_attributes_cannot_be_explicitly_set(self):
         data = self.SimpleObject()
@@ -215,8 +215,8 @@ class TestAttributeAccess:
         data.Foo = foo_value_new
 
         # Verify
-        assert data.Foo == foo_value_new
-        assert data.bar == bar_value
+        assert data.Foo is foo_value_new
+        assert data.bar is bar_value
 
     @given(st.text(), st.text())
     def test_internal_attributes_can_be_updated(self, old_value, new_value):
@@ -225,7 +225,7 @@ class TestAttributeAccess:
 
         data._internal_value = new_value
 
-        assert data._internal_value == new_value
+        assert data._internal_value is new_value
 
     @given(st.text(), st.text())
     def test_unknown_aws_attributes_can_be_updated_directly(self, old_value, new_value):
@@ -234,7 +234,7 @@ class TestAttributeAccess:
 
         data.WeirdValue = new_value
 
-        assert data.WeirdValue == new_value
+        assert data.WeirdValue is new_value
 
     @given(st.text(), st.text())
     def test_unknown_aws_attributes_can_be_updated_via_explicit_setter(self, old_value, new_value):
@@ -243,7 +243,7 @@ class TestAttributeAccess:
 
         data.set_unknown_aws_attribute("WeirdValue", new_value)
 
-        assert data.WeirdValue == new_value
+        assert data.WeirdValue is new_value
 
     # Delete
     # ------
@@ -340,13 +340,13 @@ class TestDictionaryAccess:
         data["one"] = value
 
         assert hasattr(data, "one")
-        assert data.one == value
+        assert data.one is value
 
     @given(st.text())
     def test_aws_attributes_can_be_read(self, value):
         data = SingleAttributeObject(one=value)
 
-        assert data["one"] == value
+        assert data["one"] is value
 
     @given(st.text(), st.text())
     def test_aws_attributes_can_be_updated(self, old_value, new_value):
@@ -354,8 +354,8 @@ class TestDictionaryAccess:
 
         data["one"] = new_value
 
-        assert data["one"] == new_value
-        assert data.one == new_value
+        assert data["one"] is new_value
+        assert data.one is new_value
 
     @given(st.text())
     def test_aws_attributes_can_be_deleted(self, value):
@@ -412,7 +412,7 @@ class TestDictionaryAccess:
             data["_internal_value"] = new_value
 
         assert "_internal_value" in str(excinfo.value)
-        assert data._internal_value == old_value
+        assert data._internal_value is old_value
 
     @given(st.text())
     def test_internal_attributes_cannot_be_deleted(self, value):
@@ -423,7 +423,7 @@ class TestDictionaryAccess:
             _ = data["_internal_value"]
 
         assert "_internal_value" in str(excinfo.value)
-        assert data._internal_value == value
+        assert data._internal_value is value
 
     # CRUD Access For Unknown AWS Attributes
     # --------------------------------------
@@ -442,7 +442,7 @@ class TestDictionaryAccess:
         data = SingleAttributeObject()
         data.set_unknown_aws_attribute("WeirdValue", value)
 
-        assert data["WeirdValue"] == value
+        assert data["WeirdValue"] is value
 
     @given(st.text(), st.text())
     def test_unknown_aws_attributes_can_be_updated(self, old_value, new_value):
@@ -451,8 +451,8 @@ class TestDictionaryAccess:
 
         data["WeirdValue"] = new_value
 
-        assert data["WeirdValue"] == new_value
-        assert data.WeirdValue == new_value
+        assert data["WeirdValue"] is new_value
+        assert data.WeirdValue is new_value
 
     @given(st.text())
     def test_unknown_aws_attributes_can_be_deleted(self, value):

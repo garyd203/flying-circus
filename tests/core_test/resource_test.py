@@ -58,9 +58,10 @@ class TestResourceUnusualAttributes:
     def test_metadata_attribute_can_be_set_and_read(self):
         data = SimpleResource()
 
-        data.Metadata = {'foo': 'bar'}
+        foo_value = 'bar'
+        data.Metadata = {'foo': foo_value}
 
-        assert data.Metadata['foo'] == 'bar'
+        assert data.Metadata['foo'] is foo_value
 
     def test_metadata_cannot_be_set_in_constructor(self):
         with pytest.raises(TypeError) as excinfo:

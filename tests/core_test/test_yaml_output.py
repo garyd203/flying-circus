@@ -1,4 +1,5 @@
 """Tests for YAML output from the AWSObject base class."""
+
 import pytest
 
 from flyingcircus.core import AWSObject
