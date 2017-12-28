@@ -62,7 +62,6 @@ class TestCpuAutoScalingGroup:
             Type: AWS::AutoScaling::LaunchConfiguration
             Properties:
               ImageId: ami-1a668878
-              InstanceMonitoring: false
               InstanceType: t2.micro
           ScaleDownPolicy:
             Type: AWS::AutoScaling::ScalingPolicy
