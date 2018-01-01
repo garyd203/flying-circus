@@ -1,5 +1,7 @@
 """Common base test classes and helper methods."""
 
+import hypothesis.strategies as st
+
 from flyingcircus.core import AWSObject
 
 
@@ -37,3 +39,27 @@ class DualAttributeObject(AWSObject):
 
     def __init__(self, one=None, two=None):
         AWSObject.__init__(self, one=one, two=two)
+
+
+@st.composite
+def aws_attribute_strategy(draw):
+    """A strategy that produces an attribute for an AWS CFN object."""
+    return draw(st.one_of(
+        st.text(),
+        st.integers(),
+        st.floats(),
+        st.booleans(),
+        st.dictionaries(st.text(), st.text()),
+        aws_object_strategy(),
+    ))
+
+
+@st.composite
+def aws_object_strategy(draw):
+    """A strategy that produces an AWS CFN object."""
+    attributes = draw(st.sets(st.text()))
+
+    class HypothesisedAWSObject(AWSObject):
+        AWS_ATTRIBUTES = attributes
+
+    return draw(st.builds(HypothesisedAWSObject, **{name: aws_attribute_strategy() for name in attributes}))

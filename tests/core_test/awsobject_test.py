@@ -2,8 +2,10 @@
 
 This functionality forms the core of Flying Circus.
 """
-import hypothesis.strategies as st
+
 import inspect
+
+import hypothesis.strategies as st
 import pytest
 from hypothesis import given
 
@@ -11,6 +13,7 @@ from flyingcircus.core import AWSObject
 from .common import DualAttributeObject
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
+from .common import aws_attribute_strategy
 
 
 class TestInitMethod:
@@ -38,7 +41,7 @@ class TestInitMethod:
                 continue
             assert param.kind == param.VAR_KEYWORD
 
-    @given(st.text(), st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy(), aws_attribute_strategy())
     def test_init_should_map_keyword_args_to_attributes(self, foo_value, default_value, bar_value):
         # noinspection PyPep8Naming
         class InitTestObject(AWSObject):
@@ -53,7 +56,7 @@ class TestInitMethod:
         assert data.ValueWithDefault is default_value
         assert data.Bar is bar_value
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_init_should_only_accept_keyword_args_that_are_known_aws_attributes(self, value):
         # noinspection PyPep8Naming
         class InitTestObject(AWSObject):
@@ -118,7 +121,7 @@ class TestAttributeAccess:
     # Set and Read
     # ------------
 
-    @given(st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy())
     def test_valid_aws_attributes_can_be_set_and_read(self, foo_value, bar_value):
         data = self.SimpleObject()
 
@@ -147,7 +150,7 @@ class TestAttributeAccess:
         assert "WeirdValue" in str(excinfo.value)
         assert not hasattr(data, "WeirdValue")
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_unknown_aws_attributes_can_be_explicitly_set_and_read_normally(self, value):
         data = self.SimpleObject()
 
@@ -203,7 +206,7 @@ class TestAttributeAccess:
     # Update
     # ------
 
-    @given(st.text(), st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy(), aws_attribute_strategy())
     def test_aws_attributes_can_be_updated(self, foo_value_old, foo_value_new, bar_value):
         data = self.SimpleObject()
 
@@ -227,7 +230,7 @@ class TestAttributeAccess:
 
         assert data._internal_value is new_value
 
-    @given(st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy())
     def test_unknown_aws_attributes_can_be_updated_directly(self, old_value, new_value):
         data = self.SimpleObject()
         data.set_unknown_aws_attribute("WeirdValue", old_value)
@@ -236,7 +239,7 @@ class TestAttributeAccess:
 
         assert data.WeirdValue is new_value
 
-    @given(st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy())
     def test_unknown_aws_attributes_can_be_updated_via_explicit_setter(self, old_value, new_value):
         data = self.SimpleObject()
         data.set_unknown_aws_attribute("WeirdValue", old_value)
@@ -248,7 +251,7 @@ class TestAttributeAccess:
     # Delete
     # ------
 
-    @given(st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy())
     def test_aws_attributes_can_be_deleted(self, foo_value, bar_value):
         data = self.SimpleObject()
 
@@ -273,7 +276,7 @@ class TestAttributeAccess:
 
         assert not hasattr(data, "_internal_value")
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_unknown_aws_attributes_can_be_deleted(self, value):
         data = self.SimpleObject()
         data.set_unknown_aws_attribute("WeirdValue", value)
@@ -281,15 +284,6 @@ class TestAttributeAccess:
         del data.WeirdValue
 
         assert not hasattr(data, "WeirdValue")
-
-    @given(st.text())
-    def test_internal_attributes_can_be_deleted(self, value):
-        data = self.SimpleObject()
-        data._internal_value = value
-
-        del data._internal_value
-
-        assert not hasattr(data, "_internal_value")
 
     def test_delete_nonexistent_attribute_raises_error(self):
         data = self.SimpleObject()
@@ -315,7 +309,7 @@ class TestAttributeAccess:
 
         assert "_internal_value" in str(excinfo.value)
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_delete_already_deleted_unknown_aws_attribute_raises_error(self, value):
         data = self.SimpleObject()
         data.set_unknown_aws_attribute("WeirdValue", value)
@@ -333,7 +327,7 @@ class TestDictionaryAccess:
     # CRUD Access for AWS Attributes
     # ------------------------------
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_aws_attributes_can_be_set(self, value):
         data = SingleAttributeObject()
 
@@ -342,13 +336,13 @@ class TestDictionaryAccess:
         assert hasattr(data, "one")
         assert data.one is value
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_aws_attributes_can_be_read(self, value):
         data = SingleAttributeObject(one=value)
 
         assert data["one"] is value
 
-    @given(st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy())
     def test_aws_attributes_can_be_updated(self, old_value, new_value):
         data = SingleAttributeObject(one=old_value)
 
@@ -357,7 +351,7 @@ class TestDictionaryAccess:
         assert data["one"] is new_value
         assert data.one is new_value
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_aws_attributes_can_be_deleted(self, value):
         data = SingleAttributeObject(one=value)
 
@@ -420,7 +414,7 @@ class TestDictionaryAccess:
         data._internal_value = value
 
         with pytest.raises(KeyError) as excinfo:
-            _ = data["_internal_value"]
+            del data["_internal_value"]
 
         assert "_internal_value" in str(excinfo.value)
         assert data._internal_value is value
@@ -428,8 +422,8 @@ class TestDictionaryAccess:
     # CRUD Access For Unknown AWS Attributes
     # --------------------------------------
 
-    @given(st.text())
-    def test_unknown_aws_attributes_cannot_be_set(self, value):
+    @given(aws_attribute_strategy())
+    def test_unknown_aws_attributes_cannot_be_set_directly(self, value):
         data = SingleAttributeObject()
 
         with pytest.raises(KeyError) as excinfo:
@@ -437,14 +431,14 @@ class TestDictionaryAccess:
 
         assert "WeirdValue" in str(excinfo.value)
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_unknown_aws_attributes_can_be_read(self, value):
         data = SingleAttributeObject()
         data.set_unknown_aws_attribute("WeirdValue", value)
 
         assert data["WeirdValue"] is value
 
-    @given(st.text(), st.text())
+    @given(aws_attribute_strategy(), aws_attribute_strategy())
     def test_unknown_aws_attributes_can_be_updated(self, old_value, new_value):
         data = SingleAttributeObject()
         data.set_unknown_aws_attribute("WeirdValue", old_value)
@@ -454,7 +448,7 @@ class TestDictionaryAccess:
         assert data["WeirdValue"] is new_value
         assert data.WeirdValue is new_value
 
-    @given(st.text())
+    @given(aws_attribute_strategy())
     def test_unknown_aws_attributes_can_be_deleted(self, value):
         data = SingleAttributeObject()
         data.set_unknown_aws_attribute("WeirdValue", value)
