@@ -274,7 +274,7 @@ class Stack(AWSObject):
                  Description=None, Mappings=None, Metadata=None, Outputs=None,
                  Parameters=None, Resources=None, Transform=None):
         # We default to the most recent format version
-        # TODO #55 consider functionality to set defaults in a generic way. Not sure how much it would be needed, so maybe not worth the fuss
+        # TODO #56 consider functionality to set defaults in a generic way. Not sure how much it would be needed, so maybe not worth the fuss
         if AWSTemplateFormatVersion is None:
             AWSTemplateFormatVersion = "2010-09-09"
 
