@@ -458,6 +458,84 @@ class TestDictionaryAccess:
         assert not hasattr(data, "WeirdValue")
 
 
+class TestIteratorAccess:
+    """Verify behaviour of attribute iteration on a Flying Circus AWS object"""
+
+    # TODO test cases for __len__
+    #    same as for iteration. just add an extra assertion
+    # TODO Test cases for empty tests on an object (ie. object has length 0)
+    #   object with no attributes
+    #   object with no attributes set (ie. empty)
+    #   non-empty object with some/all attributes that are empty
+    # TODO consider cleaning up existing test cases that indirectly reference this behaviour. eg. map entry ordering tests in TestYamlBasicFormatting
+
+    def test_object_iteration_returns_attribute_names(self):
+        # Setup
+        data = DualAttributeObject(one=42, two='hello world')
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['one', 'two']
+
+    def test_object_iteration_includes_unknown_attributes(self):
+        # Setup
+        data = DualAttributeObject(one=42, two='hello world')
+        data.set_unknown_aws_attribute("special", 8)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['one', 'special', 'two']
+
+    def test_object_iteration_includes_attributes_set_to_none(self):
+        # Setup
+        data = DualAttributeObject(one=42, two='hello world')
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['one', 'two']
+
+    def test_object_iteration_excludes_unset_attributes(self):
+        # Setup
+        data = DualAttributeObject(one=42)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['one']
+
+    def test_object_iteration_excludes_internal_attributes(self):
+        # Setup
+        data = DualAttributeObject(one=42, two='hello world')
+        data._internal_value = 7
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['one', 'two']
+
+    def test_object_iteration_uses_export_sorting(self):
+        class OrderedObject(AWSObject):
+            AWS_ATTRIBUTES = {"one", "two"}
+            EXPORT_ORDER = ["two", "one"]
+
+        # Setup
+        data = OrderedObject(one=42, two='hello world')
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['two', 'one']
+
+
 class _NestedObject(DualAttributeObject):
     """Test object that is a grandchild of AWSObject."""
     AWS_ATTRIBUTES = {"one", "two", "three", "four"}
