@@ -180,7 +180,7 @@ class AWSObject(CustomYamlObject):
             raise KeyError(
                 "'{}' is not an AWS attribute, and cannot be deleted with the dictionary interface".format(key))
 
-    # TODO implement other container functions: __len__, __iter__, __reversed__, __contains__
+    # TODO implement other container functions: __length_hint__, __reversed__, __contains__
 
     # TODO implement "is_empty" test. Filter attributes based on type and len, and simultaneously implement iterator protocol and __len__
 
@@ -190,6 +190,13 @@ class AWSObject(CustomYamlObject):
         for key in self._get_export_order():
             if hasattr(self, key):
                 yield key
+
+    def __len__(self):
+        # The length of the object is the number of attributes currently set
+        return len(
+            [key for key in self.AWS_ATTRIBUTES if hasattr(self, key)] +
+            [key for key in self._known_unknown_aws_attributes if hasattr(self, key)]
+        )
 
     # Export Data
     # -----------

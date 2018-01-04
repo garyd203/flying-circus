@@ -459,10 +459,12 @@ class TestDictionaryAccess:
 
 
 class TestIteratorAccess:
-    """Verify behaviour of attribute iteration on a Flying Circus AWS object"""
+    """Verify behaviour of attribute iteration on a Flying Circus AWS object.
 
-    # TODO test cases for __len__
-    #    same as for iteration. just add an extra assertion
+    Note that attribute length is highly coupled functionality, so we verify
+    the behaviour of both `__iter__` and `__len__` together.
+    """
+
     # TODO Test cases for empty tests on an object (ie. object has length 0)
     #   object with no attributes
     #   object with no attributes set (ie. empty)
@@ -478,6 +480,7 @@ class TestIteratorAccess:
 
         # Verify
         assert list(attribs) == ['one', 'two']
+        assert len(data) == 2
 
     def test_object_iteration_includes_unknown_attributes(self):
         # Setup
@@ -489,16 +492,19 @@ class TestIteratorAccess:
 
         # Verify
         assert list(attribs) == ['one', 'special', 'two']
+        assert len(data) == 3
 
     def test_object_iteration_includes_attributes_set_to_none(self):
         # Setup
-        data = DualAttributeObject(one=42, two='hello world')
+        data = DualAttributeObject(one=42)
+        data.two = None
 
         # Exercise
         attribs = iter(data)
 
         # Verify
         assert list(attribs) == ['one', 'two']
+        assert len(data) == 2
 
     def test_object_iteration_excludes_unset_attributes(self):
         # Setup
@@ -509,6 +515,7 @@ class TestIteratorAccess:
 
         # Verify
         assert list(attribs) == ['one']
+        assert len(data) == 1
 
     def test_object_iteration_excludes_internal_attributes(self):
         # Setup
@@ -520,6 +527,7 @@ class TestIteratorAccess:
 
         # Verify
         assert list(attribs) == ['one', 'two']
+        assert len(data) == 2
 
     def test_object_iteration_uses_export_sorting(self):
         class OrderedObject(AWSObject):
@@ -534,6 +542,7 @@ class TestIteratorAccess:
 
         # Verify
         assert list(attribs) == ['two', 'one']
+        assert len(data) == 2
 
 
 class _NestedObject(DualAttributeObject):
