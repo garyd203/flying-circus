@@ -98,15 +98,6 @@ class TestYamlBasicFormatting:
         assert "&" not in output, "We don't want anchors, which are marked with an ampersand"
         assert "*" not in output, "We don't want aliases to anchors, which are indicated by an asterisk"
 
-    def test_empty_top_level_object_is_exported_as_empty_dict(self):
-        data = ZeroAttributeObject()
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            --- {}
-            """)
-
     def test_single_entry_object_is_exported_in_block_style(self):
         data = SingleAttributeObject(one=1)
 
@@ -128,18 +119,6 @@ class TestYamlBasicFormatting:
             two: 2
             """)
 
-    @pytest.mark.skip("#55: We dont currently support filtering out empty attributes")
-    def test_empty_attributes_are_not_exported(self):
-        empty_attribute = ZeroAttributeObject()
-        data = DualAttributeObject(one=1, two=empty_attribute)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            one: 1
-            """)
-
     def test_none_values_are_exported_as_null(self):
         data = SingleAttributeObject()
         data.one = None
@@ -149,6 +128,16 @@ class TestYamlBasicFormatting:
         assert output == dedent("""
             ---
             one: null
+            """)
+
+    def test_false_values_are_exported(self):
+        data = SingleAttributeObject(one=False)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: false
             """)
 
     def test_complex_attributes_that_dont_extend_the_base_class_should_raise_an_error(self):
@@ -318,16 +307,6 @@ class TestYamlBasicFormatting:
                 - 2
                 """)
 
-    def test_empty_list_is_exported_in_flow_style(self):
-        data = SingleAttributeObject(one=[])
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-                ---
-                one: []
-                """)
-
     def test_nested_lists_are_readable(self):
         data = SingleAttributeObject(one=[[2, 3, 4], [5], [6, 7], 8])
 
@@ -358,6 +337,16 @@ class TestYamlStringFormatting:
         assert output == dedent("""
             ---
             one: Hello world. Here is a namespace AWS::service::Resource
+            """)
+
+    def test_empty_string_has_simple_representation(self):
+        data = SingleAttributeObject(one="")
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: ''
             """)
 
     def test_leading_and_trailing_whitespace_is_not_stripped(self):
@@ -398,3 +387,48 @@ class TestYamlStringFormatting:
               
                 We should retain indenting too
             """)
+
+
+class TestYamlEmptyAttributeFormatting:
+    """Verify formatting of empty attributes in YAML output"""
+
+    # TODO test scenarios.
+    #   empty dict
+    #   empty object
+    #   empty list
+    #   can force output of an empty dict by supplying signal value
+    #   can force output of an empty list by supplying signal value
+    #   X empty string still gets exported
+    #   X None still gets exported
+    #   X False still gets exported
+
+    @pytest.mark.skip("#55: We dont currently support filtering out empty attributes")
+    def test_empty_attributes_are_not_exported(self):
+        empty_attribute = ZeroAttributeObject()
+        data = DualAttributeObject(one=1, two=empty_attribute)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 1
+            """)
+
+    def test_empty_top_level_object_is_exported_as_empty_dict(self):
+        data = ZeroAttributeObject()
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            --- {}
+            """)
+
+    def test_empty_list_is_exported_in_flow_style(self):
+        data = SingleAttributeObject(one=[])
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+                ---
+                one: []
+                """)
