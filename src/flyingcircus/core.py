@@ -1,5 +1,7 @@
 """Core classes for composing AWS Cloud Formation Stacks."""
+
 import textwrap
+
 import yaml
 import yaml.resolver
 
@@ -180,6 +182,15 @@ class AWSObject(CustomYamlObject):
 
     # TODO implement other container functions: __len__, __iter__, __reversed__, __contains__
 
+    # TODO implement "is_empty" test. Filter attributes based on type and len, and simultaneously implement iterator protocol and __len__
+
+    def __iter__(self):
+        # We treat the object like a dictionary for iteration. This means
+        # we return a sorted list of attribute names that currently exist
+        for key in self._get_export_order():
+            if hasattr(self, key):
+                yield key
+
     # Export Data
     # -----------
 
@@ -207,7 +218,7 @@ class AWSObject(CustomYamlObject):
         # TODO investigate hacking a Dumper subclass like we did for aliasing
         tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
-        # Get all attributes for export
+        # Get all attributes for export, honouring our sort order
         # TODO use the class iterator, to handle ordering and missing attributes transparently
         attributes = [
             (key, getattr(self, key))
@@ -225,7 +236,7 @@ class AWSObject(CustomYamlObject):
         # All valid AWS attributes
         trailing_attribs = self.AWS_ATTRIBUTES.union(self._known_unknown_aws_attributes)
 
-        # Some attributes need to b explicitly listed in a particular order
+        # Some attributes need to be explicitly listed in a particular order
         # at the beginning of the map output
         for name in self.EXPORT_ORDER:
             try:
