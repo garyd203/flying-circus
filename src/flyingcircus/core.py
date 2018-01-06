@@ -180,15 +180,16 @@ class AWSObject(CustomYamlObject):
             raise KeyError(
                 "'{}' is not an AWS attribute, and cannot be deleted with the dictionary interface".format(key))
 
-    # TODO implement other container functions: __length_hint__, __reversed__, __contains__
+    # TODO implement other container functions: __reversed__, __contains__
 
-    # TODO implement "is_empty" test. Filter attributes based on type and len, and simultaneously implement iterator protocol and __len__
+    # TODO probably need __reversed__ otherwise an attempt to reverse the object will break like crazy (int item lookups)
 
     def __iter__(self):
         # We treat the object like a dictionary for iteration. This means
         # we return a sorted list of attribute names that currently exist
         for key in self._get_export_order():
             if hasattr(self, key):
+                # TODO implement "is_empty" test. Filter attributes based on type and len
                 yield key
 
     def __len__(self):
@@ -225,13 +226,8 @@ class AWSObject(CustomYamlObject):
         # TODO investigate hacking a Dumper subclass like we did for aliasing
         tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
-        # Get all attributes for export, honouring our sort order
-        # TODO use the class iterator, to handle ordering and missing attributes transparently
-        attributes = [
-            (key, getattr(self, key))
-            for key in self._get_export_order()
-            if hasattr(self, key)
-        ]
+        # Get all attributes for export in our customised sort order
+        attributes = [(key, self[key]) for key in self]
 
         # Represent this object as a mapping of it's AWS attributes
         return dumper.represent_mapping(tag, attributes)
