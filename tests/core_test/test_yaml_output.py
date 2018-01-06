@@ -157,52 +157,7 @@ class TestYamlBasicFormatting:
     # Object/Dictionary Export Order
     # ------------------------------
 
-    def test_map_entries_are_ordered_alphabetically(self):
-        class MegaObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b", "c", "A", "Bad", "bad", "42", "4", "1", "z", "ZoologicalSpecimen"}
-
-        data = MegaObject(
-            a=1,
-            b=2,
-            c=3,
-            A=4,
-            Bad=5,
-            bad=6,
-            # NB: You can't set numeric string keys in the constructor
-            # 42=7,
-            # 4=8,
-            # 1=9,
-            z=10,
-            ZoologicalSpecimen=11,
-        )
-
-        setattr(data, "42", 7)
-        setattr(data, "4", 8)
-        setattr(data, "1", 9)
-
-        data.set_unknown_aws_attribute("badness", 12)
-        data.set_unknown_aws_attribute("baddie", 13)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            '1': 9
-            '4': 8
-            '42': 7
-            A: 4
-            a: 1
-            b: 2
-            Bad: 5
-            bad: 6
-            baddie: 13
-            badness: 12
-            c: 3
-            z: 10
-            ZoologicalSpecimen: 11
-            """)
-
-    def test_some_map_entries_can_have_an_explicit_order(self):
+    def test_map_entries_are_sorted(self):
         class OrderedObject(AWSObject):
             AWS_ATTRIBUTES = {"a", "b"}
             EXPORT_ORDER = ["b", "a"]
@@ -215,69 +170,6 @@ class TestYamlBasicFormatting:
             ---
             b: 2
             a: 1
-            """)
-
-    def test_explicit_map_entry_ordering_should_ignore_unset_attributes(self):
-        class OrderedObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b"}
-            EXPORT_ORDER = ["b", "a"]
-
-        data = OrderedObject(b=2)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            b: 2
-            """)
-
-    def test_explicit_map_entry_ordering_should_silently_ignore_attributes_that_dont_exist(self):
-        class OrderedObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b"}
-            EXPORT_ORDER = ["b", "c", "a"]
-
-        data = OrderedObject(a=1, b=2)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            b: 2
-            a: 1
-            """)
-
-    def test_explicit_map_entry_ordering_can_use_unknown_aws_attributes(self):
-        class OrderedObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b"}
-            EXPORT_ORDER = ["b", "c", "a"]
-
-        data = OrderedObject(a=1, b=2)
-        data.set_unknown_aws_attribute("c", 3)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            b: 2
-            c: 3
-            a: 1
-            """)
-
-    def test_explicit_map_entry_ordering_can_list_only_some_attributes(self):
-        class OrderedObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b", "c", "d"}
-            EXPORT_ORDER = ["b", "a"]
-
-        data = OrderedObject(a=1, b=2, c=3, d=4)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            b: 2
-            a: 1
-            c: 3
-            d: 4
             """)
 
     # List Export Style
