@@ -469,7 +469,6 @@ class TestIteratorAccess:
     #   object with no attributes
     #   object with no attributes set (ie. empty)
     #   non-empty object with some/all attributes that are empty
-    # TODO consider cleaning up existing test cases that indirectly reference this behaviour. eg. map entry ordering tests in TestYamlBasicFormatting
 
     def test_object_iteration_returns_attribute_names(self):
         # Setup
@@ -543,6 +542,128 @@ class TestIteratorAccess:
         # Verify
         assert list(attribs) == ['two', 'one']
         assert len(data) == 2
+
+
+class TestIteratorSortOrder:
+    """Verify that the attribute iteration follows complex attribute sorting rules."""
+
+    def test_attributes_are_ordered_alphabetically_by_default(self):
+        # Setup
+        class MegaObject(AWSObject):
+            AWS_ATTRIBUTES = {"a", "b", "c", "A", "Bad", "bad", "42", "4", "1", "z", "ZoologicalSpecimen"}
+
+        data = MegaObject(
+            a=1,
+            b=2,
+            c=3,
+            A=4,
+            Bad=5,
+            bad=6,
+            # NB: You can't set numeric string keys in the constructor
+            # 42=7,
+            # 4=8,
+            # 1=9,
+            z=10,
+            ZoologicalSpecimen=11,
+        )
+
+        setattr(data, "42", 7)
+        setattr(data, "4", 8)
+        setattr(data, "1", 9)
+
+        data.set_unknown_aws_attribute("badness", 12)
+        data.set_unknown_aws_attribute("baddie", 13)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == [
+            '1',
+            '4',
+            '42',
+            'A',
+            'a',
+            'b',
+            'Bad',
+            'bad',
+            'baddie',
+            'badness',
+            'c',
+            'z',
+            'ZoologicalSpecimen',
+        ]
+
+    def test_some_attributes_can_have_an_explicit_order(self):
+        # Setup
+        class OrderedObject(AWSObject):
+            AWS_ATTRIBUTES = {"a", "b"}
+            EXPORT_ORDER = ["b", "a"]
+
+        data = OrderedObject(a=1, b=2)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['b', 'a']
+
+    def test_explicit_attribute_ordering_should_ignore_unset_attributes(self):
+        # Setup
+        class OrderedObject(AWSObject):
+            AWS_ATTRIBUTES = {"a", "b"}
+            EXPORT_ORDER = ["b", "a"]
+
+        data = OrderedObject(b=2)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['b']
+
+    def test_explicit_attribute_ordering_should_silently_ignore_attributes_that_dont_exist(self):
+        # Setup
+        class OrderedObject(AWSObject):
+            AWS_ATTRIBUTES = {"a", "b"}
+            EXPORT_ORDER = ["b", "c", "a"]
+
+        data = OrderedObject(a=1, b=2)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['b', 'a']
+
+    def test_explicit_attribute_ordering_can_use_unknown_aws_attributes(self):
+        # Setup
+        class OrderedObject(AWSObject):
+            AWS_ATTRIBUTES = {"a", "b"}
+            EXPORT_ORDER = ["b", "c", "a"]
+
+        data = OrderedObject(a=1, b=2)
+        data.set_unknown_aws_attribute("c", 3)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['b', 'c', 'a']
+
+    def test_explicit_attribute_ordering_may_list_only_some_attributes(self):
+        # Setup
+        class OrderedObject(AWSObject):
+            AWS_ATTRIBUTES = {"a", "b", "c", "d"}
+            EXPORT_ORDER = ["b", "a"]
+
+        data = OrderedObject(a=1, b=2, c=3, d=4)
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['b', 'a', 'c', 'd']
 
 
 class _NestedObject(DualAttributeObject):
