@@ -1,6 +1,6 @@
 """Tests for the emptiness helper functions."""
 
-from flyingcircus.core import is_non_empty_attribute, remove_empty_values_from_attribute
+from flyingcircus.core import is_non_empty_attribute, remove_empty_values_from_attribute, EMPTY_LIST, EMPTY_DICT
 from .common import DualAttributeObject
 from .common import ZeroAttributeObject
 
@@ -44,14 +44,25 @@ class TestEmptyAttribute:
     def test_awsobject_with_no_attributes_is_empty(self):
         assert is_non_empty_attribute(ZeroAttributeObject()) is False
 
-    def test_awsobject_with_some_attributes_is_empty(self):
+    def test_awsobject_with_some_attributes_is_not_empty(self):
         assert is_non_empty_attribute(DualAttributeObject(one=42)) is True
 
     def test_awsobject_with_no_attributes_set_is_empty(self):
         assert is_non_empty_attribute(DualAttributeObject()) is False
 
+    def test_awsobject_with_no_attributes_but_unknown_attributes_set_is_not_empty(self):
+        data = ZeroAttributeObject()
+        data.set_unknown_aws_attribute("foo", "bar")
+        assert is_non_empty_attribute(data) is True
+
     def test_awsobject_with_only_empty_attributes_is_empty(self):
         assert is_non_empty_attribute(DualAttributeObject(one=[], two={})) is False
+
+    def test_empty_list_signal_value_is_not_empty(self):
+        assert is_non_empty_attribute(EMPTY_LIST) is True
+
+    def test_empty_dictionary_signal_value_is_not_empty(self):
+        assert is_non_empty_attribute(EMPTY_DICT) is True
 
 
 class TestRemoveEmptyAttributes:
