@@ -14,7 +14,6 @@ class TestCpuAutoScalingGroup:
         Description: |
           Deploy an auto-scaling group that scales based on lower and upper CPU usage
           thresholds.
-        Parameters: {}
         Resources:
           AutoScalingGroup:
             Type: AWS::AutoScaling::AutoScalingGroup
