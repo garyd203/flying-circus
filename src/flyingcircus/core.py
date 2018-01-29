@@ -267,6 +267,52 @@ class AWSObject(CustomYamlObject):
         return st.lower(), st
 
 
+def remove_empty_values_from_attribute(data):
+    """If this attribute is a list or dictionary, return a copy with empty entries recursively removed."""
+    if isinstance(data, list):
+        cleaned = map(remove_empty_values_from_attribute, data)
+        cleaned = filter(is_non_empty_attribute, cleaned)
+        return list(cleaned)
+    elif isinstance(data, dict):
+        cleaned = {key: remove_empty_values_from_attribute(value) for key, value in data.items()}
+        cleaned = {key: value for key, value in cleaned.items() if is_non_empty_attribute(value)}
+        return dict(cleaned)
+
+    # Don't modify other types
+    return data
+
+
+def is_non_empty_attribute(data):
+    """Is this attribute of an AWS object non-empty?
+
+    The purpose of this function is to provide clean output by not exporting
+    data that has no semantic meaning. It is worth noting that empty-ish
+    values like None and "" do actually have a meaning.
+
+    A non-empty object is defined recursively as:
+      - not a block-like object
+      - a block-like object that contains at least one non-empty attribute.
+    """
+    if isinstance(data, (tuple, list)):
+        for value in data:
+            if is_non_empty_attribute(value):
+                return True
+        return False
+    elif isinstance(data, dict):
+        for value in data.values():
+            if is_non_empty_attribute(value):
+                return True
+        return False
+    elif isinstance(data, AWSObject):
+        for key in data:
+            if is_non_empty_attribute(data[key]):
+                return True
+        return False
+
+    # Other types of object are never empty
+    return True
+
+
 class Stack(AWSObject):
     """Represents a CloudFormation Stack, the top-level template object.
 
