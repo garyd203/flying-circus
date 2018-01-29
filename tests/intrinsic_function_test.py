@@ -107,11 +107,9 @@ class TestGetAZs:
         output = stack.export("yaml")
 
         # Verify
-        # TODO "#45: clean up the unnecessary empty top-level stack attributes
         assert output == dedent("""
             ---
             AWSTemplateFormatVersion: '2010-09-09'
-            Parameters: {}
             Resources:
               SomeResource:
                 one:
@@ -191,11 +189,9 @@ class TestRef:
         output = stack.export("yaml")
 
         # Verify
-        # TODO "#45: clean up the unnecessary empty top-level stack attributes
         assert output == dedent("""
             ---
             AWSTemplateFormatVersion: '2010-09-09'
-            Parameters: {}
             Resources:
               Bar: !Ref Foo
               Foo:
