@@ -3,6 +3,8 @@
 import pytest
 
 from flyingcircus.core import AWSObject
+from flyingcircus.core import EMPTY_DICT
+from flyingcircus.core import EMPTY_LIST
 from flyingcircus.core import dedent
 from .common import DualAttributeObject
 from .common import SingleAttributeObject
@@ -47,7 +49,7 @@ class TestYamlAttributeExport:
             --- {}
             """)
 
-    def test_unknown_attributes_are_exported_when_no_known_attributes(self):
+    def test_unknown_attributes_are_exported_even_when_no_known_attributes(self):
         data = ZeroAttributeObject()
         data.set_unknown_aws_attribute("special", 8)
 
@@ -199,6 +201,16 @@ class TestYamlBasicFormatting:
                 - 2
                 """)
 
+    def test_empty_list_is_exported_in_flow_style(self):
+        data = SingleAttributeObject(one=EMPTY_LIST)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+                ---
+                one: []
+                """)
+
     def test_nested_lists_are_readable(self):
         data = SingleAttributeObject(one=[[2, 3, 4], [5], [6, 7], 8])
 
@@ -284,28 +296,6 @@ class TestYamlStringFormatting:
 class TestYamlEmptyAttributeFormatting:
     """Verify formatting of empty attributes in YAML output"""
 
-    # TODO test scenarios.
-    #   empty dict
-    #   empty object
-    #   empty list
-    #   can force output of an empty dict by supplying signal value
-    #   can force output of an empty list by supplying signal value
-    #   X empty string still gets exported
-    #   X None still gets exported
-    #   X False still gets exported
-
-    @pytest.mark.skip("#55: We dont currently support filtering out empty attributes")
-    def test_empty_attributes_are_not_exported(self):
-        empty_attribute = ZeroAttributeObject()
-        data = DualAttributeObject(one=1, two=empty_attribute)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            one: 1
-            """)
-
     def test_empty_top_level_object_is_exported_as_empty_dict(self):
         data = ZeroAttributeObject()
 
@@ -315,12 +305,82 @@ class TestYamlEmptyAttributeFormatting:
             --- {}
             """)
 
-    def test_empty_list_is_exported_in_flow_style(self):
-        data = SingleAttributeObject(one=[])
+    def test_attribute_set_to_emptyish_list_is_not_exported(self):
+        data = DualAttributeObject(one=42, two=[{}])
 
         output = data.export("yaml")
 
         assert output == dedent("""
-                ---
-                one: []
-                """)
+            ---
+            one: 42
+            """)
+
+    def test_attribute_set_to_list_has_empty_entries_removed_in_export(self):
+        data = DualAttributeObject(one=42, two=["a", {}])
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            two:
+            - a
+            """)
+
+    def test_attribute_set_to_emptyish_dictionary_is_not_exported(self):
+        data = DualAttributeObject(one=42, two={'a': []})
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            """)
+
+    def test_attribute_set_to_dictionary_has_empty_values_removed_in_export(self):
+        data = DualAttributeObject(one=42, two={'a': [], 'b': 13})
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            two:
+              b: 13
+            """)
+
+    def test_attribute_set_to_emptyish_object_is_not_exported(self):
+        data = DualAttributeObject(one=42, two=SingleAttributeObject(one=[]))
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            """)
+
+    def test_attribute_can_export_an_empty_list_by_using_signal_value(self):
+        data = DualAttributeObject(one=42, two=EMPTY_LIST)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            two: []
+            """)
+
+    def test_attribute_can_export_an_empty_dictionary_by_using_signal_value(self):
+        data = DualAttributeObject(one=42, two=EMPTY_DICT)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            two: {}
+            """)
+
+    test_attribute_set_to_empty_string_is_exported_normally = TestYamlStringFormatting.test_empty_string_has_simple_representation
+    test_attribute_set_to_none_is_exported_normally = TestYamlBasicFormatting.test_none_values_are_exported_as_null
+    test_attribute_set_to_false_is_exported_normally = TestYamlBasicFormatting.test_false_values_are_exported

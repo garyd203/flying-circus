@@ -465,11 +465,6 @@ class TestIteratorAccess:
     the behaviour of both `__iter__` and `__len__` together.
     """
 
-    # TODO Test cases for empty tests on an object (ie. object has length 0)
-    #   object with no attributes
-    #   object with no attributes set (ie. empty)
-    #   non-empty object with some/all attributes that are empty
-
     def test_object_iteration_returns_attribute_names(self):
         # Setup
         data = DualAttributeObject(one=42, two='hello world')
@@ -497,6 +492,17 @@ class TestIteratorAccess:
         # Setup
         data = DualAttributeObject(one=42)
         data.two = None
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ['one', 'two']
+        assert len(data) == 2
+
+    def test_object_iteration_includes_attributes_set_to_an_empty_object(self):
+        # Setup
+        data = DualAttributeObject(one=42, two={})
 
         # Exercise
         attribs = iter(data)
@@ -544,8 +550,12 @@ class TestIteratorAccess:
         assert len(data) == 2
 
 
-class TestIteratorSortOrder:
-    """Verify that the attribute iteration follows complex attribute sorting rules."""
+class TestSortOrder:
+    """Verify our complex attribute sorting rules.
+
+    The most direct interface to the sorting output is via the object's
+    attribute iteration.
+    """
 
     def test_attributes_are_ordered_alphabetically_by_default(self):
         # Setup

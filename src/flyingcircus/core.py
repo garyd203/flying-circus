@@ -186,10 +186,9 @@ class AWSObject(CustomYamlObject):
 
     def __iter__(self):
         # We treat the object like a dictionary for iteration. This means
-        # we return a sorted list of attribute names that currently exist
+        # we return a sorted list of AWS attribute names that are currently set
         for key in self._get_export_order():
             if hasattr(self, key):
-                # TODO implement "is_empty" test. Filter attributes based on type and len
                 yield key
 
     def __len__(self):
@@ -229,11 +228,18 @@ class AWSObject(CustomYamlObject):
         # Get all attributes for export in our customised sort order
         attributes = [(key, self[key]) for key in self]
 
+        # Create neater YAML by filtering out empty blocks at this level
+        attributes = [(key, value) for key, value in attributes if is_non_empty_attribute(value)]
+
+        # Create neater YAML by filtering out empty entries in sub-lists
+        attributes = [(key, remove_empty_values_from_attribute(value)) for key, value in attributes]
+
         # Represent this object as a mapping of it's AWS attributes
         return dumper.represent_mapping(tag, attributes)
 
     def _get_export_order(self):
         """Get ordered list of all attribute names that might exist on this object."""
+        # TODO Rename - not just export order, but iteration order
         result = []
 
         # All valid AWS attributes
@@ -311,6 +317,36 @@ def is_non_empty_attribute(data):
 
     # Other types of object are never empty
     return True
+
+
+class _EmptyList(CustomYamlObject):
+    """Represents an immutable YAML-isable list with no entries."""
+
+    def as_yaml_node(self, dumper):
+        return dumper.represent_list([])
+
+
+#: Signal value for an empty list.
+#:
+#: Normally empty lists are trimmed from the AWSObject's export, in
+#: order to produce cleaner YAML. This special object will allow you to
+#: force the export of an empty list.
+EMPTY_LIST = _EmptyList()
+
+
+class _EmptyDict(CustomYamlObject):
+    """Represents an immutable YAML-isable dictionary with no items."""
+
+    def as_yaml_node(self, dumper):
+        return dumper.represent_dict({})
+
+
+#: Signal value for an empty dictionary.
+#:
+#: Normally empty dictionaries are trimmed from the AWSObject's export, in
+#: order to produce cleaner YAML. This special object will allow you to
+#: force the export of an empty dictionary.
+EMPTY_DICT = _EmptyDict()
 
 
 class Stack(AWSObject):
