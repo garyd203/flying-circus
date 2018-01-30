@@ -3,6 +3,7 @@
 import pytest
 
 from flyingcircus.core import AWS_Region
+from flyingcircus.core import Parameter
 from flyingcircus.core import Stack
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
@@ -24,7 +25,7 @@ class TestGetLogicalName:
         # Setup
         name = "Foo"
         stack = Stack()
-        data = ZeroAttributeObject()
+        data = Parameter(Type="String")
         stack.Parameters[name] = data
 
         # Exercise & Verify
@@ -102,7 +103,7 @@ class TestGetLogicalName:
         name1 = "Foo"
         name2 = "Bar"
         stack = Stack()
-        data = ZeroAttributeObject()
+        data = Parameter(Type="String")
 
         stack.Parameters[name1] = data
         stack.Parameters[name2] = data
