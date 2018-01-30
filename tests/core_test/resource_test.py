@@ -3,14 +3,8 @@
 import pytest
 
 from flyingcircus.core import Resource
-
-SIMPLE_RESOURCE_NAME = "NameSpace::Service::Resource"
-SIMPLE_RESOURCE_PROPERTIES = {"props", "kudos"}
-
-
-class SimpleResource(Resource):
-    RESOURCE_TYPE = SIMPLE_RESOURCE_NAME
-    RESOURCE_PROPERTIES = SIMPLE_RESOURCE_PROPERTIES
+from .common import SIMPLE_RESOURCE_NAME
+from .common import SimpleResource
 
 
 class TestResourceUnusualAttributes:
