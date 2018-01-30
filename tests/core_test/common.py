@@ -3,6 +3,7 @@
 import hypothesis.strategies as st
 
 from flyingcircus.core import AWSObject
+from flyingcircus.core import Resource
 
 
 class CommonAWSObjectTests:
@@ -63,3 +64,12 @@ def aws_object_strategy(draw):
         AWS_ATTRIBUTES = attributes
 
     return draw(st.builds(HypothesisedAWSObject, **{name: aws_attribute_strategy() for name in attributes}))
+
+
+SIMPLE_RESOURCE_NAME = "NameSpace::Service::Resource"
+SIMPLE_RESOURCE_PROPERTIES = {"props", "kudos"}
+
+
+class SimpleResource(Resource):
+    RESOURCE_TYPE = SIMPLE_RESOURCE_NAME
+    RESOURCE_PROPERTIES = SIMPLE_RESOURCE_PROPERTIES
