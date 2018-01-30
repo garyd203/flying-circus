@@ -410,6 +410,30 @@ class Stack(AWSObject):
         raise ValueError("Object is not part of this stack: {}".format(resource))
 
 
+class Parameter(AWSObject):
+    """Represents a CloudFormation Parameter.
+
+    https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+    """
+
+    EXPORT_ORDER = ["Type"]
+
+    AWS_ATTRIBUTES = {
+        "AllowedPattern", "AllowedValues", "ConstraintDescription", "Default",
+        "Description", "MaxLength", "MaxValue", "MinLength", "MinValue",
+        "NoEcho", "Type",
+    }
+
+    def __init__(self, AllowedPattern=None, AllowedValues=None,
+                 ConstraintDescription=None, Default=None, Description=None,
+                 MaxLength=None, MaxValue=None, MinLength=None, MinValue=None,
+                 NoEcho=None, Type=None,
+                 ):
+        AWSObject.__init__(**locals())
+        # TODO check Type is set to a valid value?
+        # TODO check MinLength/MaxLength are set to a valid integer value?
+
+
 class PseudoParameter(str):
     """Represents an AWS-provided pseudo parameter.
 
