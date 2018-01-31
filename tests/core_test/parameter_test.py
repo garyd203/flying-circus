@@ -3,10 +3,26 @@
 import pytest
 
 from flyingcircus.core import AWSObject
+from flyingcircus.core import Parameter
 from flyingcircus.core import PseudoParameter
 from flyingcircus.core import dedent
 from flyingcircus.yaml import CustomYamlObject
 from .common import SingleAttributeObject
+
+
+class TestBasicParameterBehaviour:
+    """Verify basic behaviour of the Parameter class"""
+
+    def test_export_basic_parameter(self):
+        """Should be able to create and export a simple parameter."""
+        param = Parameter(Type="String", Default="Hello world")
+        output = param.export("yaml")
+
+        assert output == dedent("""
+        ---
+        Type: String
+        Default: Hello world
+        """)
 
 
 class TestPseudoParameter:

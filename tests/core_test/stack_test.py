@@ -5,12 +5,28 @@ import pytest
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Parameter
 from flyingcircus.core import Stack
+from flyingcircus.core import dedent
+from .common import SimpleResource
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
 
 class TestBasicStackBehaviour:
     """Verify basic behaviour of the Stack class"""
+
+    def test_export_basic_stack(self):
+        """Should be able to create and export a simple stack example."""
+        stack = Stack()
+        stack.Resources["SomeName"] = SimpleResource()
+        output = stack.export("yaml")
+
+        assert output == dedent("""
+        ---
+        AWSTemplateFormatVersion: '2010-09-09'
+        Resources:
+          SomeName:
+            Type: NameSpace::Service::Resource
+        """)
 
     def test_template_version_defaults_to_2010(self):
         stack = Stack()

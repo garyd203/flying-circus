@@ -381,6 +381,8 @@ class Stack(AWSObject):
             self.Parameters = {}
         if not hasattr(self, "Resources"):
             self.Resources = {}
+        if not hasattr(self, "Outputs"):
+            self.Outputs = {}
 
     def as_yaml_node(self, dumper):
         dumper.cfn_stack = self
@@ -539,6 +541,21 @@ class ResourceProperties(AWSObject):
     def __init__(self, property_names, **properties):
         self.AWS_ATTRIBUTES = property_names
         AWSObject.__init__(self, **properties)
+
+
+class Output(AWSObject):
+    """Represents a CloudFormation Output.
+
+    https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
+    """
+
+    AWS_ATTRIBUTES = {
+        "Description", "Export", "Value"
+    }
+
+    def __init__(self, Description=None, Export=None, Value=None):
+        AWSObject.__init__(**locals())
+        # TODO Value is a single-entry dictionary. Should we flatten it?
 
 
 # TODO new `reflow` function that cleans a long (multi-) line string from IDE padding, and marks it as as suitable for PyYAML flow style
