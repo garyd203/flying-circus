@@ -2,8 +2,7 @@
 # TODO generate this with flying circus :-)
 AWSTemplateFormatVersion: '2010-09-09'
 Description:
-  CloudFormation template to describe users and policies for executing
-  integration tests.
+  Users and policies for executing integration tests for flying-circus.
 Resources:
   FlyingCircusIntegrationTestPolicy:
     Type: AWS::IAM::Policy
