@@ -27,7 +27,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
         Properties=dict(
             ImageId="ami-1a668878",  # Amazon Linux 2017.09.01 in ap-southeast-2
             InstanceType="t2.micro",  # TODO consider making this a lookup value
-            #TODO KeyName would probably be helpful
+            # TODO KeyName would probably be helpful
         ),
     )
     stack.Resources["LaunchConfiguration"] = launch_config
