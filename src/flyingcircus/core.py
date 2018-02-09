@@ -5,6 +5,7 @@ import textwrap
 import yaml
 import yaml.resolver
 
+from flyingcircus.exceptions import StackMergeError
 from .yaml import AmazonCFNDumper
 from .yaml import CustomYamlObject
 
@@ -402,14 +403,48 @@ class Stack(AWSObject):
         # The lazy and non-performant approach is to iterate through all
         # the objects in this stack until we find the supplied object.
         # That should do for now, really.
-        for object_type in ["Resources", "Parameters"]:
-            objects = getattr(self, object_type, {})
-            matches = [name for name, data in objects.items() if data is resource]
+        for item_type in ["Resources", "Parameters"]:
+            matches = [name for name, data in self[item_type].items() if data is resource]
             if len(matches) > 1:
                 raise ValueError("Object has multiple names in this stack: {}".format(resource))
             elif len(matches) == 1:
                 return matches[0]
         raise ValueError("Object is not part of this stack: {}".format(resource))
+
+    def merge_stack(self, other):
+        """Add a reference in this stack to all objects from the supplied stack.
+
+        Return the current stack for call-chaining purposes.
+        """
+        # Check for output's with a repeated name. The export name can be
+        # different from the logical name of the Output in the stack, so it
+        # wouldn't otherwise be checked.
+        #
+        # Duplicated export names are picked up by cloud formation when we
+        # import the template, but when merging stacks it is a lot more
+        # helpful to catch these errors early
+        # TODO what if Export is not a simple dict?
+        existing_exports = {getattr(output, "Export", {}).get("Name", "") for output in self.Outputs.values()}
+        new_exports = {getattr(output, "Export", {}).get("Name", "") for output in other.Outputs.values()}
+        shared_exports = existing_exports.intersection(new_exports)
+        shared_exports.discard("")
+        if shared_exports:
+            raise StackMergeError(
+                "The target stack already has exports named {}".format(", ".join(sorted(shared_exports)))
+            )
+
+        # Cope the name and reference for the relevant item types
+        for item_type in ["Resources", "Parameters", "Outputs"]:
+            existing_items = self[item_type]
+            new_items = other[item_type]
+            for name, value in new_items.items():
+                if name in existing_items:
+                    raise StackMergeError(
+                        "{} in this stack already has an item with the logical name {}".format(item_type, name)
+                    )
+                existing_items[name] = value
+
+        return self
 
 
 class Parameter(AWSObject):
@@ -555,7 +590,7 @@ class Output(AWSObject):
 
     def __init__(self, Description=None, Export=None, Value=None):
         AWSObject.__init__(**locals())
-        # TODO Value is a single-entry dictionary. Should we flatten it?
+        # TODO Export is a single-entry dictionary. Should we flatten it?
 
 
 # TODO new `reflow` function that cleans a long (multi-) line string from IDE padding, and marks it as as suitable for PyYAML flow style

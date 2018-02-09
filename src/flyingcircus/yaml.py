@@ -69,6 +69,7 @@ class NonAliasingDumper(yaml.Dumper):
     """
 
     # TODO what about overriding ignore_aliases() instead ?
+    # TODO duplicate instances of the same object in a single stack can be confusing, so consider having warning/error functionality if this happens
 
     def generate_anchor(self, node):
         # Don't generate anchors at all
