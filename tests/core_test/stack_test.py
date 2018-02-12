@@ -9,7 +9,7 @@ from flyingcircus.core import Parameter
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
 from flyingcircus.exceptions import StackMergeError
-from .common import SimpleResource
+from .common import SimpleResource, LOREM_IPSUM
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
@@ -182,6 +182,8 @@ class TestMergeStack:
         ("Resources", SimpleResource()),
     ]
 
+    # TODO #61 don't copy metadata/Description/etc.
+
     def test_merge_returns_target_stack(self):
         # Setup
         source = Stack(Resources={"SomeResource": SimpleResource()})
@@ -275,3 +277,163 @@ class TestMergeStack:
             target.merge_stack(source)
 
         assert "the target stack already has exports" in str(excinfo.value).lower()
+
+
+class TestPrefixedNames:
+    """Verify the object name prefixing functionality."""
+    ATTRIBUTE_PARAMETRIZE_NAMES = 'stack_attribute,item'
+    PREFIXABLE_ATTRIBUTE_EXAMPLES = [
+        ("Parameters", Parameter(Type="String")),
+        ("Resources", SimpleResource()),
+        # TODO #87 Add Condition when we have a helper class
+        # TODO #87 Add Mapping when we have a helper class
+        # TODO #87 Add Metadata when we have a helper class. Consider whether we should retain the Metadata or just throw it away
+    ]
+    OUTPUT_EXAMPLES = [
+        ("Outputs", Output(Value="HelloWorld")),
+        ("Outputs", Output(Value="HelloWorld", Export={"Name": "SomeGloballyScopedValue"})),
+    ]
+
+    STACK_PREFIX = "NewScope"
+
+    # Basic Prefixing Behaviour
+    # -------------------------
+
+    # FIXME empty prefix, non-string prefix, stupidly long prefix, prefix that is non-alpha-numeric, prefix that is not leading capital
+    # fixme new stack is different from old stack, old stack is not modified
+
+    # Prefixable Dictionaries
+    # -----------------------
+
+    @pytest.mark.parametrize(ATTRIBUTE_PARAMETRIZE_NAMES, PREFIXABLE_ATTRIBUTE_EXAMPLES)
+    def test_item_is_prefixed_in_the_new_stack(self, stack_attribute, item):
+        # Setup
+        item_name = "SomeItemName"
+        stack = Stack()
+        stack[stack_attribute] = {item_name: item}
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        new_name = self.STACK_PREFIX + item_name
+
+        assert len(new_stack[stack_attribute]) == 1
+        assert item_name not in new_stack[stack_attribute]
+        assert new_stack[stack_attribute][new_name] is item
+
+    @pytest.mark.parametrize(ATTRIBUTE_PARAMETRIZE_NAMES, OUTPUT_EXAMPLES)
+    def test_output_is_prefixed_in_the_new_stack_but_not_same_object(self, stack_attribute, item):
+        # Setup
+        item_name = "SomeItemName"
+        stack = Stack()
+        stack[stack_attribute] = {item_name: item}
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        new_name = self.STACK_PREFIX + item_name
+
+        assert len(new_stack[stack_attribute]) == 1
+        assert item_name not in new_stack[stack_attribute]
+
+        new_item = new_stack[stack_attribute][new_name]
+        assert new_item is not item
+        assert getattr(new_item, "Description", None) == getattr(item, "Description", None)
+        assert getattr(new_item, "Value", None) is getattr(item, "Value",
+                                                           None), "This should be the same because it might be a Reference function or some such"
+
+    @pytest.mark.parametrize(ATTRIBUTE_PARAMETRIZE_NAMES, PREFIXABLE_ATTRIBUTE_EXAMPLES + OUTPUT_EXAMPLES)
+    def test_item_is_not_removed_from_original_stack(self, stack_attribute, item):
+        # Setup
+        item_name = "SomeItemName"
+        stack = Stack()
+        stack[stack_attribute] = {item_name: item}
+
+        # Exercise
+        _ = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        assert len(stack[stack_attribute]) == 1
+        assert stack[stack_attribute][item_name] is item
+        assert stack[stack_attribute][item_name] == item
+
+    # Special Cases
+    # -------------
+
+    def test_copy_cfn_template_version(self):
+        """AWSTemplateFormatVersion should be a string which we copy across unchanged"""
+        # Setup
+        version_string = "WhatIfThisWaSemanticallyVersioned.1.0"
+        stack = Stack(AWSTemplateFormatVersion=version_string)
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        assert new_stack.AWSTemplateFormatVersion == version_string
+        assert stack.AWSTemplateFormatVersion == version_string, "Old stack should not be modified"
+
+    def test_copy_sam_version_in_transform(self):
+        """If set, Transform should be the version of the Serverless Application Model
+        being used, which we copy across unchanged.
+        """
+        # Setup
+        version_string = "AWS::Serverless-1999-12-31"
+        stack = Stack(Transform=version_string)
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        assert new_stack.Transform == version_string
+        assert stack.Transform == version_string, "Old stack should not be modified"
+
+    def test_modify_content_of_description(self):
+        # Setup
+        stack = Stack(Description=LOREM_IPSUM)
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        assert self.STACK_PREFIX in new_stack.Description
+        assert LOREM_IPSUM in new_stack.Description
+        assert stack.Description == LOREM_IPSUM, "Old stack should not be modified"
+
+    def test_create_description_when_it_is_not_set(self):
+        # Setup
+        stack = Stack()
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        assert self.STACK_PREFIX == new_stack.Description
+        assert not hasattr(stack, "Description") or stack.Description is None, "Old stack should not be modified"
+
+    def test_prefix_export_name_for_output(self):
+        # Setup
+        name = "SomeItemName"
+        export_name = "SomeGloballyScopedValue"
+        output = Output(Value="HelloWorld", Export={"Name": export_name})
+        stack = Stack(Outputs={name: output})
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        assert new_stack.Outputs[self.STACK_PREFIX + name]["Export"]["Name"] == self.STACK_PREFIX + export_name
+
+    def test_dont_create_export_name_for_output_when_it_is_not_set(self):
+        # Setup
+        name = "SomeItemName"
+        stack = Stack(Outputs={name: (Output(Value="HelloWorld"))})
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        new_output = new_stack.Outputs[self.STACK_PREFIX + name]
+        assert getattr(new_output, "Export", None) is None

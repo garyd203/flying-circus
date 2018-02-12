@@ -1,5 +1,6 @@
 """Core classes for composing AWS Cloud Formation Stacks."""
 
+import copy
 import textwrap
 
 import yaml
@@ -433,7 +434,7 @@ class Stack(AWSObject):
                 "The target stack already has exports named {}".format(", ".join(sorted(shared_exports)))
             )
 
-        # Cope the name and reference for the relevant item types
+        # Copy the name and reference for the relevant item types
         for item_type in ["Resources", "Parameters", "Outputs"]:
             existing_items = self[item_type]
             new_items = other[item_type]
@@ -445,6 +446,53 @@ class Stack(AWSObject):
                 existing_items[name] = value
 
         return self
+
+    def with_prefixed_names(self, prefix):
+        """Create a new stack which has the same objects as the current stack,
+        but with the supplied prefix added to the logical and external names
+        of all appropriate objects.
+
+        Return the new stack.
+        """
+        # Create a new stack with copies of the static text fields
+        new_stack = Stack(
+            AWSTemplateFormatVersion=getattr(self, "AWSTemplateFormatVersion", None),
+            Transform=getattr(self, "Transform", None),
+        )
+
+        # Modify the description to refer to the prefix. This is a bit hacky,
+        # but for our use cases we don't expect the description to be
+        # retained in final output, so it's good enough for now
+        if hasattr(self, "Description"):
+            new_stack.Description = prefix + ": " + self.Description
+        else:
+            new_stack.Description = prefix
+
+        # Insert all references to standard existing objects into new stack, with modified names
+        # Copy the name and reference for the relevant item types
+        for item_type in ["Resources", "Parameters"]:
+            new_stack[item_type] = new_items = {}
+            for name, value in self[item_type].items():
+                new_items[prefix + name] = value
+
+        # Create copies of all Outputs, with modified Export name where appropriate
+        if hasattr(self, "Outputs"):
+            new_stack.Outputs = {}
+            for name, output in self.Outputs.items():
+                # Beware that a deep copy may wreck any intrinsic functions
+                # we have attached (a common use case), which is undesirable.
+                #
+                # OTOH, a shallow copy means that any modifications to the
+                # attribute's values (like Export) will affect the original,
+                # which is also undesirable. We just need to remember to
+                # allow for this
+                output = copy.copy(output)
+                if getattr(output, "Export", {}).get("Name", ""):
+                    output.Export = {"Name": prefix + output.Export["Name"]}
+
+                new_stack.Outputs[prefix + name] = output
+
+        return new_stack
 
 
 class Parameter(AWSObject):
