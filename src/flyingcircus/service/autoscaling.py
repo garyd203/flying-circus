@@ -42,56 +42,17 @@ def autoscaling_group_by_cpu(low=20, high=80):
     )
     stack.Resources["AutoScalingGroup"] = asg
 
-    scale_up_policy = ScalingPolicy(
-        Properties=dict(
-            AdjustmentType="ChangeInCapacity",  # TODO consider making this a lookup value
-            AutoScalingGroupName=fn.Ref(asg),
-            Cooldown=1,
-            ScalingAdjustment=1,
-        ),
-    )
-    stack.Resources["ScaleUpPolicy"] = scale_up_policy
+    scaleup = simple_scaling_policy(cloudwatch.Alarms.high_cpu(threshold=high), fn.Ref(asg), downscale=False)
+    stack.merge_stack(scaleup.with_prefixed_names("ScaleUp"))
 
-    high_alarm = cloudwatch.Alarms.high_cpu(threshold=high)
-    # FIXME need properties to be a real object (not a dict), and to auto-create empty lists. Then we can do an append here, rather than setting the list
-    high_alarm.Properties['AlarmActions'] = [fn.Ref(scale_up_policy)]
-    high_alarm.Properties['Dimensions'] = [
-        # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
-        dict(
-            Name="AutoScalingGroupName",
-            Value=fn.Ref(asg),
-        )
-    ]
-    stack.Resources["CPUAlarmHigh"] = high_alarm
-
-    scale_down_policy = ScalingPolicy(
-        Properties=dict(
-            AdjustmentType="ChangeInCapacity",  # TODO consider making this a lookup value
-            AutoScalingGroupName=fn.Ref(asg),
-            Cooldown=1,
-            ScalingAdjustment=-1,
-        ),
-    )
-    stack.Resources["ScaleDownPolicy"] = scale_down_policy
-
-    low_alarm = cloudwatch.Alarms.low_cpu(threshold=low)
-    # FIXME need properties to be a real object (not a dict), and to auto-create empty lists. Then we can do an append here, rather than setting the list
-    low_alarm.Properties['AlarmActions'] = [fn.Ref(scale_down_policy)]
-    low_alarm.Properties['Dimensions'] = [
-        # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
-        dict(
-            Name="AutoScalingGroupName",
-            Value=fn.Ref(asg),
-        )
-    ]
-    stack.Resources["CPUAlarmLow"] = low_alarm
+    scaledown = simple_scaling_policy(cloudwatch.Alarms.low_cpu(threshold=low), fn.Ref(asg), downscale=True)
+    stack.merge_stack(scaledown.with_prefixed_names("ScaleDown"))
 
     return stack
 
 
 def simple_scaling_policy(alarm, asg_name, downscale=False):
     """Create a simple scaling policy using the supplied alarm."""
-    # TODO #61: need stack merge to work before this is usable
     stack = Stack(Description="Resources for a single scaling policy.")
 
     scaling_policy = ScalingPolicy(
@@ -106,6 +67,13 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
 
     # TODO need properties to be a real object (not a dict), and to auto-create empty lists.
     alarm.Properties.setdefault("AlarmActions", []).append(fn.Ref(scaling_policy))
+    alarm.Properties.setdefault("Dimensions", []).append(
+        # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
+        dict(
+            Name="AutoScalingGroupName",
+            Value=asg_name,
+        )
+    )
     stack.Resources["ScalingAlarm"] = alarm
 
     return stack

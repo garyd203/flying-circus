@@ -23,28 +23,16 @@ class TestCpuAutoScalingGroup:
               LaunchConfigurationName: !Ref LaunchConfiguration
               MaxSize: 3
               MinSize: 1
-          CPUAlarmHigh:
+          LaunchConfiguration:
+            Type: AWS::AutoScaling::LaunchConfiguration
+            Properties:
+              ImageId: ami-1a668878
+              InstanceType: t2.micro
+          ScaleDownScalingAlarm:
             Type: AWS::CloudWatch::Alarm
             Properties:
               AlarmActions:
-              - !Ref ScaleUpPolicy
-              AlarmDescription: |-
-                Alarm if CPU too high or metric disappears indicating instance is down
-              ComparisonOperator: GreaterThanThreshold
-              Dimensions:
-              - Name: AutoScalingGroupName
-                Value: !Ref AutoScalingGroup
-              EvaluationPeriods: 1
-              MetricName: CPUUtilization
-              Namespace: AWS/EC2
-              Period: 60
-              Statistic: Average
-              Threshold: 74
-          CPUAlarmLow:
-            Type: AWS::CloudWatch::Alarm
-            Properties:
-              AlarmActions:
-              - !Ref ScaleDownPolicy
+              - !Ref ScaleDownScalingPolicy
               AlarmDescription: |-
                 Alarm if CPU too low or metric disappears indicating instance is down
               ComparisonOperator: LessThanThreshold
@@ -57,19 +45,31 @@ class TestCpuAutoScalingGroup:
               Period: 60
               Statistic: Average
               Threshold: 49
-          LaunchConfiguration:
-            Type: AWS::AutoScaling::LaunchConfiguration
-            Properties:
-              ImageId: ami-1a668878
-              InstanceType: t2.micro
-          ScaleDownPolicy:
+          ScaleDownScalingPolicy:
             Type: AWS::AutoScaling::ScalingPolicy
             Properties:
               AdjustmentType: ChangeInCapacity
               AutoScalingGroupName: !Ref AutoScalingGroup
               Cooldown: 1
               ScalingAdjustment: -1
-          ScaleUpPolicy:
+          ScaleUpScalingAlarm:
+            Type: AWS::CloudWatch::Alarm
+            Properties:
+              AlarmActions:
+              - !Ref ScaleUpScalingPolicy
+              AlarmDescription: |-
+                Alarm if CPU too high or metric disappears indicating instance is down
+              ComparisonOperator: GreaterThanThreshold
+              Dimensions:
+              - Name: AutoScalingGroupName
+                Value: !Ref AutoScalingGroup
+              EvaluationPeriods: 1
+              MetricName: CPUUtilization
+              Namespace: AWS/EC2
+              Period: 60
+              Statistic: Average
+              Threshold: 74
+          ScaleUpScalingPolicy:
             Type: AWS::AutoScaling::ScalingPolicy
             Properties:
               AdjustmentType: ChangeInCapacity
