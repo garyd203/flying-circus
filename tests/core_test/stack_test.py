@@ -1,7 +1,10 @@
 """Tests for the Stack base class."""
+import re
 from copy import copy
 
+import hypothesis.strategies as st
 import pytest
+from hypothesis import given
 
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Output
@@ -9,9 +12,11 @@ from flyingcircus.core import Parameter
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
 from flyingcircus.exceptions import StackMergeError
-from .common import SimpleResource, LOREM_IPSUM
+from .common import LOREM_IPSUM
+from .common import SimpleResource
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
+from .common import aws_logical_name_strategy
 
 
 class TestBasicStackBehaviour:
@@ -299,8 +304,70 @@ class TestPrefixedNames:
     # Basic Prefixing Behaviour
     # -------------------------
 
-    # FIXME empty prefix, non-string prefix, stupidly long prefix, prefix that is non-alpha-numeric, prefix that is not leading capital
-    # fixme new stack is different from old stack, old stack is not modified
+    def test_return_value_is_a_new_stack(self):
+        # Setup
+        stack = Stack(Resources={"SomeName": SimpleResource()})
+
+        # Exercise
+        new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
+
+        # Verify
+        assert isinstance(new_stack, Stack)
+        assert new_stack is not stack
+
+    @given(aws_logical_name_strategy())
+    def test_prefix_is_an_underscored_alphanumeric_string(self, prefix):
+        # Setup
+        stack = Stack(Resources={"SomeName": SimpleResource()})
+
+        # Exercise & Verify
+        _ = stack.with_prefixed_names(prefix)  # Should not throw an error
+
+    def test_prefix_cannot_be_empty(self):
+        # Setup
+        stack = Stack(Resources={"SomeName": SimpleResource()})
+
+        # Exercise & Verify
+        with pytest.raises(ValueError) as excinfo:
+            _ = stack.with_prefixed_names("")
+
+        assert "empty" in str(excinfo.value).lower()
+
+    def test_prefix_must_have_leading_capital(self):
+        # Setup
+        stack = Stack(Resources={"SomeName": SimpleResource()})
+
+        # Exercise & Verify
+        with pytest.raises(ValueError) as excinfo:
+            _ = stack.with_prefixed_names("lowercasedCamelsAreBactrianButInvalid")
+
+        assert "uppercase" in str(excinfo.value).lower()
+
+    @given(st.from_regex(re.compile(r"^[A-Z]\w*\W+\w*$", re.ASCII)))
+    def test_prefix_cannot_contain_special_characters(self, prefix):
+        # Setup
+        stack = Stack(Resources={"SomeName": SimpleResource()})
+
+        # Exercise & Verify
+        with pytest.raises(ValueError) as excinfo:
+            _ = stack.with_prefixed_names(prefix)
+
+        assert "alphanumeric" in str(excinfo.value).lower()
+
+    @pytest.mark.parametrize('prefix', [
+        None,
+        123,
+        Stack(),
+    ])
+    def test_prefix_must_be_string(self, prefix):
+        # Setup
+        stack = Stack(Resources={"SomeName": SimpleResource()})
+
+        # Exercise & Verify
+        with pytest.raises(TypeError) as excinfo:
+            _ = stack.with_prefixed_names(prefix)
+
+        assert "string" in str(excinfo.value).lower()
 
     # Prefixable Dictionaries
     # -----------------------

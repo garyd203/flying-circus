@@ -1,6 +1,7 @@
 """Core classes for composing AWS Cloud Formation Stacks."""
 
 import copy
+import re
 import textwrap
 
 import yaml
@@ -454,6 +455,19 @@ class Stack(AWSObject):
 
         Return the new stack.
         """
+        # TODO Add checks for logical name format when we set items, as well as here
+
+        # Filter out ridiculous prefixes before they cause subtle damage
+        if not isinstance(prefix, str):
+            raise TypeError("Prefix should be a string")
+        if not prefix:
+            raise ValueError("Prefix should not be empty")
+        if not re.fullmatch(r"[A-Z]\w*", prefix):
+            raise ValueError(
+                "Prefix should have alphanumeric or underscore characters, "
+                "beginning with an uppercase character: '{}'".format(prefix)
+            )
+
         # Create a new stack with copies of the static text fields
         new_stack = Stack(
             AWSTemplateFormatVersion=getattr(self, "AWSTemplateFormatVersion", None),

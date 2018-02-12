@@ -66,6 +66,16 @@ def aws_object_strategy(draw):
     return draw(st.builds(HypothesisedAWSObject, **{name: aws_attribute_strategy() for name in attributes}))
 
 
+@st.composite
+def aws_logical_name_strategy(draw):
+    """A strategy that produces a valid logical name for an AWS Stack object"""
+    return draw(st.builds(
+        lambda a, b: a + b,
+        st.text("ABCDEFGHIJKLMNOPQRSTUVWXYZ", min_size=1, max_size=1),
+        st.text("abcdefghijklmnnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"),
+    ))
+
+
 SIMPLE_RESOURCE_NAME = "NameSpace::Service::Resource"
 SIMPLE_RESOURCE_PROPERTIES = {"props", "kudos"}
 
