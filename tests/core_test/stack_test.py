@@ -185,9 +185,11 @@ class TestMergeStack:
         ("Outputs", Output(Value="HelloWorld")),
         ("Parameters", Parameter(Type="String")),
         ("Resources", SimpleResource()),
+        # TODO #87 Add Condition when we have a helper class
+        # TODO #87 Add Mapping when we have a helper class
     ]
 
-    # TODO #61 don't copy metadata/Description/etc.
+    # TODO #87 test_does_not_copy_metadata when we have a Metadata class
 
     def test_merge_returns_target_stack(self):
         # Setup
@@ -249,6 +251,38 @@ class TestMergeStack:
         assert len(target[stack_attribute]) == 2
         assert target[stack_attribute][item_name] is item
         assert target[stack_attribute][existing_item_name] is existing_item
+
+    def test_does_not_copy_description(self):
+        # Setup
+        source = Stack(Description="Source Description")
+        original_description = "Target Description"
+        target = Stack(Description=original_description)
+
+        # Exercise
+        target.merge_stack(source)
+
+        # Verify
+        assert target.Description == original_description
+
+    def test_cannot_merge_if_template_version_is_different(self):
+        source = Stack(AWSTemplateFormatVersion="123")
+        target = Stack(AWSTemplateFormatVersion="456")
+
+        # Exercise & Verify
+        with pytest.raises(StackMergeError) as excinfo:
+            target.merge_stack(source)
+
+        assert "template version" in str(excinfo.value).lower()
+
+    def test_cannot_merge_if_sam_transform_version_is_different(self):
+        source = Stack(Transform="123")
+        target = Stack(Transform="456")
+
+        # Exercise & Verify
+        with pytest.raises(StackMergeError) as excinfo:
+            target.merge_stack(source)
+
+        assert "transform version" in str(excinfo.value).lower()
 
     @pytest.mark.parametrize(PARAMETRIZE_NAMES, MERGED_ATTRIBUTE_EXAMPLES)
     def test_cannot_merge_if_logical_name_is_already_used_for_that_item_type(self, stack_attribute, item):
@@ -408,8 +442,8 @@ class TestPrefixedNames:
         new_item = new_stack[stack_attribute][new_name]
         assert new_item is not item
         assert getattr(new_item, "Description", None) == getattr(item, "Description", None)
-        assert getattr(new_item, "Value", None) is getattr(item, "Value",
-                                                           None), "This should be the same because it might be a Reference function or some such"
+        assert getattr(new_item, "Value", None) is getattr(item, "Value", None), \
+            "This should be the same because it might be a Reference function or some such"
 
     @pytest.mark.parametrize(ATTRIBUTE_PARAMETRIZE_NAMES, PREFIXABLE_ATTRIBUTE_EXAMPLES + OUTPUT_EXAMPLES)
     def test_item_is_not_removed_from_original_stack(self, stack_attribute, item):
