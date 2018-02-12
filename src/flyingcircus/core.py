@@ -418,6 +418,27 @@ class Stack(AWSObject):
 
         Return the current stack for call-chaining purposes.
         """
+        # Check that we aren't using incompatible versions. Note that the
+        # 'Transform' attribute is currently used to store the version of
+        # the Serverless Application Model we are using (if any), so it
+        # counts as a version too.
+        if self.AWSTemplateFormatVersion != other.AWSTemplateFormatVersion:
+            raise StackMergeError(
+                "This template has a different template version ({}) to the "
+                "other template ({})".format(
+                    self.AWSTemplateFormatVersion, other.AWSTemplateFormatVersion
+                )
+            )
+        if getattr(self, "Transform", None) is not None and \
+                getattr(other, "Transform", None) is not None and \
+                self.Transform != other.Transform:
+            raise StackMergeError(
+                "This template has a different Serverless Application Model "
+                "Transform version ({}) to the other template ({})".format(
+                    self.Transform, other.Transform
+                )
+            )
+
         # Check for output's with a repeated name. The export name can be
         # different from the logical name of the Output in the stack, so it
         # wouldn't otherwise be checked.
