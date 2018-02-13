@@ -23,16 +23,15 @@ def autoscaling_group_by_cpu(low=20, high=80):
             """),
     )
 
-    launch_config = LaunchConfiguration(
+    launch_config = stack.Resources["LaunchConfiguration"] = LaunchConfiguration(
         Properties=dict(
             ImageId="ami-1a668878",  # Amazon Linux 2017.09.01 in ap-southeast-2
             InstanceType="t2.micro",  # TODO consider making this a lookup value
             # TODO KeyName would probably be helpful
         ),
     )
-    stack.Resources["LaunchConfiguration"] = launch_config
 
-    asg = AutoScalingGroup(
+    asg = stack.Resources["AutoScalingGroup"] = AutoScalingGroup(
         Properties=dict(
             AvailabilityZones=fn.GetAZs(fn.Ref(AWS_Region)),
             LaunchConfigurationName=fn.Ref(launch_config),
@@ -40,13 +39,16 @@ def autoscaling_group_by_cpu(low=20, high=80):
             MaxSize=3,
         ),
     )
-    stack.Resources["AutoScalingGroup"] = asg
 
-    scaleup = simple_scaling_policy(cloudwatch.Alarms.high_cpu(threshold=high), fn.Ref(asg), downscale=False)
-    stack.merge_stack(scaleup.with_prefixed_names("ScaleUp"))
-
-    scaledown = simple_scaling_policy(cloudwatch.Alarms.low_cpu(threshold=low), fn.Ref(asg), downscale=True)
-    stack.merge_stack(scaledown.with_prefixed_names("ScaleDown"))
+    stack.merge_stack(
+        simple_scaling_policy(
+            cloudwatch.Alarms.high_cpu(threshold=high), fn.Ref(asg), downscale=False,
+        ).with_prefixed_names("ScaleUp")
+    ).merge_stack(
+        simple_scaling_policy(
+            cloudwatch.Alarms.low_cpu(threshold=low), fn.Ref(asg), downscale=True,
+        ).with_prefixed_names("ScaleDown")
+    )
 
     return stack
 
