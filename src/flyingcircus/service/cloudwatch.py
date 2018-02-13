@@ -30,6 +30,7 @@ class Alarms:
             ),
         )
 
+    @staticmethod
     def low_cpu(threshold):
         """An alarm that triggers when CPU is too low
         (or the underlying metric disappears, indicating the instance is down).
