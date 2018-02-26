@@ -41,7 +41,7 @@ for soem background and guidance. Or just do the following steps
    once more, and re-run tests.
 8. Do a clean build and upload to PyPI
    ```bash
-   deactivate # Don't do this in a virtual environment
+   deactivate # Don't do a release from a virtual environment
    rm -rf dist
    python setup.py sdist
    python setup.py bdist_wheel # this will be --universal in the future)
