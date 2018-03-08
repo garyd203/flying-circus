@@ -12,6 +12,7 @@ from flyingcircus.core import dedent
 from flyingcircus.intrinsic_function import GetAZs
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.yaml import AmazonCFNDumper
+from pyyaml_helper import get_mapping_node_key
 from .core_test.common import SingleAttributeObject
 from .core_test.common import ZeroAttributeObject
 
@@ -24,9 +25,6 @@ def _create_refsafe_dumper(stack):
 
 class TestGetAZs:
     """Test behaviour/output of the GetAZs function."""
-
-    def _get_mapping_node_key(self, node, i=0):
-        return node.value[i][0].value
 
     def _get_mapping_node_value(self, node, i=0):
         return node.value[i][1].value
@@ -80,21 +78,8 @@ class TestGetAZs:
         assert node.tag == dumper.DEFAULT_MAPPING_TAG
         assert len(node.value) == 1
 
-        function_name = self._get_mapping_node_key(node, 0)
+        function_name = get_mapping_node_key(node, 0)
         assert function_name == "Fn::GetAZs"
-
-    def test_region_can_be_a_ref_function(self):
-        # Setup
-        dumper = _create_refsafe_dumper(Stack())
-        region = AWS_Region
-        func = GetAZs(Ref(region))
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        function_param = self._get_mapping_node_value(node, 0)
-        assert function_param == str(region)
 
     def test_yaml_output_with_nested_function(self):
         """Nested YAML functions can't both use the ! short form."""
@@ -115,6 +100,19 @@ class TestGetAZs:
                 one:
                   Fn::GetAZs: !Ref AWS::Region
             """)
+
+    def test_region_can_be_a_ref_function(self):
+        # Setup
+        dumper = _create_refsafe_dumper(Stack())
+        region = AWS_Region
+        func = GetAZs(Ref(region))
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        function_param = self._get_mapping_node_value(node, 0)
+        assert function_param == str(region)
 
     def test_empty_region_becomes_explicit_aws_region_reference(self):
         # Setup
