@@ -20,6 +20,29 @@ class _Function(CustomYamlObject):
     pass
 
 
+class Base64(_Function):
+    """Models the behaviour of Base64 for Python objects.
+
+    Will have the effect of turning the content string into a base64-encoded
+    string when the Cloud Formation template is executed.
+
+    See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-base64.html
+    """
+
+    def __init__(self, data):
+        self._data = data
+
+    def as_yaml_node(self, dumper):
+        # TODO wrap up helper function for this code to detect a nested function. pass in tag and content
+        if isinstance(self._data, _Function):
+            return dumper.represent_dict({
+                "Fn::Base64": self._data
+            })
+        else:
+            # TODO If the content is a string, try to format multi-line strings nicely (eg. from EC2 UserData)
+            return dumper.represent_scalar("!Base64", self._data, style="")
+
+
 class GetAZs(_Function):
     """Models the behaviour of Fn::GetAZs for Python objects.
 
