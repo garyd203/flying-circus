@@ -7,8 +7,10 @@ import pytest
 from hypothesis import given
 
 from flyingcircus.core import AWS_Region
+from flyingcircus.core import AWS_StackName
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
+from flyingcircus.intrinsic_function import Base64
 from flyingcircus.intrinsic_function import GetAZs
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.yaml import AmazonCFNDumper
@@ -21,6 +23,87 @@ def _create_refsafe_dumper(stack):
     dumper = AmazonCFNDumper(None)
     dumper.cfn_stack = stack
     return dumper
+
+
+class TestBase64:
+    """Test behaviour of the Base64 function."""
+
+    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = Base64("Something something")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.tag == "!Base64"
+
+    def test_yaml_output(self):
+        # Setup
+        func = Base64("Something")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Base64 Something
+            """)
+
+    def test_yaml_output_doesnt_modify_string(self):
+        # Setup
+        func = Base64("Some 6HSsort of text_?:%#")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Base64 Some 6HSsort of text_?:%#
+            """)
+
+    def test_nested_function_forces_longform_name(self):
+        # TODO #37 do this with a Sub to be more realistic
+        # Setup
+        dumper = _create_refsafe_dumper(Stack())
+        func = Base64(Ref(AWS_StackName))
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.tag == dumper.DEFAULT_MAPPING_TAG
+        assert len(node.value) == 1
+
+        function_name = get_mapping_node_key(node, 0)
+        assert function_name == "Fn::Base64"
+
+    def test_yaml_output_with_nested_function(self):
+        """Nested YAML functions can't both use the ! short form."""
+        # TODO #37 do this with a Sub to be more realistic
+
+        # Setup
+        func = Base64(Ref(AWS_StackName))
+        data = SingleAttributeObject(one=func)
+        stack = Stack(Resources=dict(SomeResource=data))
+
+        # Exercise
+        output = stack.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            AWSTemplateFormatVersion: '2010-09-09'
+            Resources:
+              SomeResource:
+                one:
+                  Fn::Base64: !Ref AWS::StackName
+            """)
 
 
 class TestGetAZs:
