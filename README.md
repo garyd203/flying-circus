@@ -16,7 +16,10 @@ We hope that the Flying Circus library can empower DevOps folk by
 unlocking some of the techniques that are available
 for software code, like named variables and techniques to structure code 
 independently of the output format, libraries to allow code re-use with versioning,
-automated refactoring and so on. 
+automated refactoring and so on.
+
+You can learn how to use Flying Circus yourself by reading the
+[documentation](http://flying-circus.readthedocs.io/)
 
 # Is/Is Not
 
