@@ -34,7 +34,6 @@ SUPPORTED_AWS_SERVICES = {
 #: place
 SERVICE_DOCUMENTATION_URLS = {
     # FIXME add more to here.
-    # FIXME log warning if a module is missing
     "AutoScaling": "http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html",
 }
 
@@ -140,6 +139,9 @@ def generate_raw_package(packagedir, specification):
     template = env.get_template('raw_module.py.jinja2')
 
     for service_name, service in sorted(services.items()):
+        if not service["documentation"]["url"]:
+            LOGGER.warning("Service %s does not have a documentation URL configured")
+
         module_name = os.path.join(raw_dirname, service_name.lower() + ".py")
         with open(module_name, "w") as fp:
             LOGGER.debug("Generating module %s.py", service_name.lower())
