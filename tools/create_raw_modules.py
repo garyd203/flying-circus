@@ -24,7 +24,7 @@ LOGGER = logging.getLogger(
 #: Set of AWS service names that we create Flying Circus modules for.
 #: At the moment we only include some modules because we are still building
 #: up our script
-SUPPORTED_SERVICES = {
+SUPPORTED_AWS_SERVICES = {
     # FIXME remove this temporary hack when we are satisfied wth the output
     "AutoScaling",
 }
@@ -32,9 +32,25 @@ SUPPORTED_SERVICES = {
 #: Lookup table of documentation URL's for AWS services. This information does
 #: not appear to be in the specification, and is not always in a predictable
 #: place
-SERVICE_DOCUMENTATION_URL = {
-    # FIXME add more to here. log warning if a module is missing
+SERVICE_DOCUMENTATION_URLS = {
+    # FIXME add more to here.
+    # FIXME log warning if a module is missing
     "AutoScaling": "http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html",
+}
+
+#: AWS CFN resources that have non-standard attributes.
+#:
+#: Some of the CloudFormation resource attributes are only valid for a few AWS
+#: resources. This is a list of which attributes exist on which resources
+#:
+#: See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
+#: and http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
+RESOURCES_WITH_EXTRA_ATTRIBUTES = {
+    # {resource_type_fullname: [attribute_name]}
+    "AWS::AutoScaling::AutoScalingGroup": ["CreationPolicy", "UpdatePolicy"],
+    "AWS::CloudFormation::WaitCondition": ["CreationPolicy"],
+    "AWS::EC2::Instance": ["CreationPolicy"],
+    "AWS::Lambda::Alias": ["UpdatePolicy"],
 }
 
 #: The directory where this script lives
@@ -85,14 +101,14 @@ def generate_raw_package(packagedir, specification):
         provider_name, service_name, resource_name = resource_type.split("::")
         assert provider_name == "AWS", "Resource provider is expected to be AWS"
 
-        if service_name not in SUPPORTED_SERVICES:
+        if service_name not in SUPPORTED_AWS_SERVICES:
             LOGGER.info("Skipping '%s' because we don't yet support that service", resource_type)
             continue
 
         # Ensure the service data exists
         service = services.setdefault(service_name, {
             "documentation": {
-                "url": SERVICE_DOCUMENTATION_URL.get(service_name)
+                "url": SERVICE_DOCUMENTATION_URLS.get(service_name)
             },
             "friendly_name": inflection.titleize(service_name),
             "name": service_name,
@@ -104,12 +120,15 @@ def generate_raw_package(packagedir, specification):
         service["resources"][resource_name] = resource_data
 
         resource_data.update({
-            # TODO set a field for the few resoruces that have specal AWS attributes
+            "extra_aws_attributes": RESOURCES_WITH_EXTRA_ATTRIBUTES.get(resource_type, []),
             "friendly_name": inflection.titleize(resource_name),
             "type": {
                 "fullname": resource_type,
             },
         })
+
+        assert not set(resource_data["extra_aws_attributes"]).difference({"CreationPolicy", "UpdatePolicy"}), \
+            "We have defined extra AWS attributes that are not handled by the class constructor in the Jinja template"
 
     # TODO collect property types in the same way
 
@@ -126,7 +145,7 @@ def generate_raw_package(packagedir, specification):
             LOGGER.debug("Generating module %s.py", service_name.lower())
             fp.write(template.render(service=service))
 
-        # TODO check that there is a basic module in the `service` package
+        # TODO check that there is a module in the `service` package with basic imports
 
 
 if __name__ == '__main__':
