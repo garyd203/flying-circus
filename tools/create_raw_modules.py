@@ -3,10 +3,10 @@
 """
 Create the basic Python modules in the `_raw` package.
 
-These are automatically generated from a JSON specification provided by Amazon.
+These are automatically generated from a JSON specification provided by Amazon,
+which is documented at https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification-format.html
 """
 
-# TODO reference the AWS documentation at https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification-format.html
 # TODO generate the modules and commit them
 
 import json
@@ -27,14 +27,16 @@ LOGGER = logging.getLogger(
 SUPPORTED_AWS_SERVICES = {
     # FIXME remove this temporary hack when we are satisfied wth the output
     "AutoScaling",
+    "CloudWatch",
+    "EC2",
 }
 
 #: Lookup table of documentation URL's for AWS services. This information does
-#: not appear to be in the specification, and is not always in a predictable
-#: place
+#: not appear to be in the specification, and is not in a predictable place.
 SERVICE_DOCUMENTATION_URLS = {
-    # FIXME add more to here.
     "AutoScaling": "http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html",
+    "CloudWatch": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+    "EC2": "http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/",
 }
 
 #: AWS CFN resources that have non-standard attributes.
@@ -140,14 +142,14 @@ def generate_raw_package(packagedir, specification):
 
     for service_name, service in sorted(services.items()):
         if not service["documentation"]["url"]:
-            LOGGER.warning("Service %s does not have a documentation URL configured")
+            LOGGER.warning("Service %s does not have a documentation URL configured", service_name)
 
         module_name = os.path.join(raw_dirname, service_name.lower() + ".py")
         with open(module_name, "w") as fp:
             LOGGER.debug("Generating module %s.py", service_name.lower())
             fp.write(template.render(service=service))
 
-        # TODO check that there is a module in the `service` package with basic imports
+        # TODO check that there is a module in the `service` package (with basic imports)
 
 
 if __name__ == '__main__':
