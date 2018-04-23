@@ -1,16 +1,19 @@
-"""General-use classes to interact with the AutoScaling service through CloudFormation."""
+"""General-use classes to interact with the AutoScaling service through CloudFormation.
+
+See Also:
+    `AWS developer guide for AutoScaling
+     <http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html>`_
+"""
 
 from flyingcircus import fn
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
 from . import cloudwatch
-from .._raw import autoscaling as raw
-
-# TODO rethink this approach. maybe an __all__, or a from _raw import * ?
-AutoScalingGroup = raw.AutoScalingGroup
-LaunchConfiguration = raw.LaunchConfiguration
-ScalingPolicy = raw.ScalingPolicy
+# noinspection PyUnresolvedReferences
+from .._raw import autoscaling as _raw
+# noinspection PyUnresolvedReferences
+from .._raw.autoscaling import *
 
 
 def autoscaling_group_by_cpu(low=20, high=80):
