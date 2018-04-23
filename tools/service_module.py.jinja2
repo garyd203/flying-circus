@@ -1,0 +1,16 @@
+"""General-use classes to interact with the {{ service.name }} service through CloudFormation.
+
+{%- if service.documentation.url %}
+
+See Also:
+    `AWS developer guide for {{ service.name }}
+    <{{ service.documentation.url }}>`_
+{%- endif %}
+"""
+
+# noinspection PyUnresolvedReferences
+from .._raw import {{ service.module_name }} as _raw
+
+# noinspection PyUnresolvedReferences
+from .._raw.{{ service.module_name }} import *
+

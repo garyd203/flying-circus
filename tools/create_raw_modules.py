@@ -7,8 +7,6 @@ These are automatically generated from a JSON specification provided by Amazon,
 which is documented at https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification-format.html
 """
 
-# TODO generate the modules and commit them
-
 import json
 import logging
 import os.path
@@ -27,16 +25,20 @@ LOGGER = logging.getLogger(
 SUPPORTED_AWS_SERVICES = {
     # FIXME remove this temporary hack when we are satisfied wth the output
     "AutoScaling",
+    "CloudFront",
     "CloudWatch",
     "EC2",
+    "S3",
 }
 
 #: Lookup table of documentation URL's for AWS services. This information does
-#: not appear to be in the specification, and is not in a predictable place.
+#: not appear to be in the specification, and does not have a deterministic URL.
 SERVICE_DOCUMENTATION_URLS = {
     "AutoScaling": "http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html",
+    "CloudFront": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
     "CloudWatch": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
     "EC2": "http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/",
+    "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
 }
 
 #: AWS CFN resources that have non-standard attributes.
@@ -72,8 +74,9 @@ SCRIPTDIR = os.path.dirname(__file__)
               help="JSON resource specification from Amazon Web Services.",
               show_default=True,
               )
-def generate_raw_package(packagedir, specification):
-    """Create the basic Python modules in the `_raw` package.
+def generate_modules(packagedir, specification):
+    """Create the basic Python modules in the `_raw` package,
+    and ensure the accompanying modules in the `service` package exist.
 
     The output directory argument should be the location of the existing
     'src/flyingcircus/' directory, where generated files will be placed.
@@ -111,7 +114,7 @@ def generate_raw_package(packagedir, specification):
             "documentation": {
                 "url": SERVICE_DOCUMENTATION_URLS.get(service_name)
             },
-            "friendly_name": inflection.titleize(service_name),
+            "module_name": service_name.lower(),
             "name": service_name,
             "resources": {},
         })
@@ -132,28 +135,37 @@ def generate_raw_package(packagedir, specification):
             "We have defined extra AWS attributes that are not handled by the class constructor in the Jinja template"
 
     # TODO collect property types in the same way
+    # TODO verify that a property doesn't have the same name as a resource (nor an existing property)
 
     # Create a Python module for each AWS service, with a Python class for
     # each AWS resource type
     env = Environment(
-        loader=FileSystemLoader(SCRIPTDIR),
+        loader=FileSystemLoader(SCRIPTDIR),  # TODO put our template into a "standard" location for Jinja
     )
-    template = env.get_template('raw_module.py.jinja2')
+    raw_template = env.get_template('raw_module.py.jinja2')
+    service_template = env.get_template('service_module.py.jinja2')
 
     for service_name, service in sorted(services.items()):
         if not service["documentation"]["url"]:
             LOGGER.warning("Service %s does not have a documentation URL configured", service_name)
 
-        module_name = os.path.join(raw_dirname, service_name.lower() + ".py")
-        with open(module_name, "w") as fp:
-            LOGGER.debug("Generating module %s.py", service_name.lower())
-            fp.write(template.render(service=service))
+        # Create or update the "raw" python module
+        raw_module_name = os.path.join(raw_dirname, service["module_name"] + ".py")
+        with open(raw_module_name, "w") as fp:
+            LOGGER.debug("Generating raw module %s.py", service_name.lower())
+            fp.write(raw_template.render(service=service))
 
-        # TODO check that there is a module in the `service` package (with basic imports)
+        # Ensure that the "service" module exists, and pre-populate it with
+        # the boilerplate if it doesn't
+        service_module_name = os.path.join(service_dirname, service["module_name"] + ".py")
+        if not os.path.exists(service_module_name):
+            with open(service_module_name, "w") as fp:
+                LOGGER.debug("Generating service module %s.py", service_name.lower())
+                fp.write(service_template.render(service=service))
 
 
 if __name__ == '__main__':
     logging.basicConfig()
     LOGGER.setLevel(logging.DEBUG)
 
-    generate_raw_package()
+    generate_modules()
