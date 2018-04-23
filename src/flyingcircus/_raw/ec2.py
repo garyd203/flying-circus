@@ -232,10 +232,10 @@ class Instance(Resource):
             self, CreationPolicy=None, DeletionPolicy=None, DependsOn=None,
             Properties=None
     ):
-        # TODO This seems unnecessarily complex and generic. Why not just generate the code we need? Are there any other concrete use cases for _split_current_attributes().
-        current_attribs, other_params = self._split_current_attributes(locals())
-        Resource.__init__(**other_params)
-        self._set_constructor_attributes(current_attribs)
+        Resource.__init__(self, DeletionPolicy=DeletionPolicy, DependsOn=DependsOn, Properties=Properties)
+        self._set_constructor_attributes({
+            "CreationPolicy": CreationPolicy,
+        })
 
 
 class InternetGateway(Resource):
