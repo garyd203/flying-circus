@@ -52,10 +52,12 @@ class {{ resource_name }}(Resource):
             self, {% if "CreationPolicy" in resource.extra_aws_attributes %}CreationPolicy=None, {% endif %}DeletionPolicy=None, DependsOn=None,
             Properties=None{% if "UpdatePolicy" in resource.extra_aws_attributes %}, UpdatePolicy=None{% endif %}
     ):
-        # TODO This seems unnecessarily complex and generic. Why not just generate the code we need? Are there any other concrete use cases for _split_current_attributes().
-        current_attribs, other_params = self._split_current_attributes(locals())
-        Resource.__init__(**other_params)
-        self._set_constructor_attributes(current_attribs)
+        Resource.__init__(self, DeletionPolicy=DeletionPolicy, DependsOn=DependsOn, Properties=Properties)
+        self._set_constructor_attributes({
+{%- for attribname in resource.extra_aws_attributes %}
+            "{{ attribname }}": {{ attribname }},
+{%- endfor %}
+        })
 {%- endif %}
 {%- endfor %}
 
