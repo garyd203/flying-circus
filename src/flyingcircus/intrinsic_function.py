@@ -80,7 +80,6 @@ class Ref(_Function):
         if isinstance(data, str) and not isinstance(data, PseudoParameter):
             raise TypeError("You can't directly create a Ref to a name. Try Ref._for_name(name).")
 
-        _Function.__init__(self)
         self._data = data
 
     def as_yaml_node(self, dumper):
