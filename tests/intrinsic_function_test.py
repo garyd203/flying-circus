@@ -245,7 +245,7 @@ class TestRef:
         # Verify
         assert node.tag == "!Ref"
 
-    @given(st.text())
+    @given(st.text(min_size=1))
     def test_uses_logical_name_from_stack(self, name):
         # Setup
         data = SingleAttributeObject(one=42)
