@@ -391,7 +391,7 @@ class Stack(AWSObject):
         dumper.cfn_stack = self
         return super().as_yaml_node(dumper)
 
-    def get_logical_name(self, resource):
+    def get_logical_name(self, resource, resources_only=False):
         """Get the logical name used for this object in this stack.
 
         Raises ValueError if the object is not in this stack.
@@ -399,18 +399,20 @@ class Stack(AWSObject):
         # Pseudo Parameters are a special case. They can be thought of as
         # implicitly part of the current stack, so we support finding them
         # through this function
-        if isinstance(resource, PseudoParameter):
+        if not resources_only and isinstance(resource, PseudoParameter):
             return str(resource)
 
         # The lazy and non-performant approach is to iterate through all
         # the objects in this stack until we find the supplied object.
         # That should do for now, really.
-        for item_type in ["Resources", "Parameters"]:
-            matches = [name for name, data in self[item_type].items() if data is resource]
-            if len(matches) > 1:
-                raise ValueError("Object has multiple names in this stack: {}".format(resource))
-            elif len(matches) == 1:
-                return matches[0]
+        matches = [name for name, data in self.Resources.items() if data is resource]
+        if not resources_only:
+            matches.extend([name for name, data in self.Parameters.items() if data is resource])
+
+        if len(matches) > 1:
+            raise ValueError("Object has multiple names in this stack: {}".format(resource))
+        elif len(matches) == 1:
+            return matches[0]
         raise ValueError("Object is not part of this stack: {}".format(resource))
 
     def merge_stack(self, other):

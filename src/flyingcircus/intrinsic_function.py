@@ -82,8 +82,7 @@ class GetAtt(_Function):
         self._attribute_name = list(attribute_name)
 
     def as_yaml_node(self, dumper):
-        # FIXME get_logical_name assumes that the referent can be a paramater, pseudo param, or resource. thsi is not correct for a getatt lookup
-        name = dumper.cfn_stack.get_logical_name(self._resource)  # Pass error through
+        name = dumper.cfn_stack.get_logical_name(self._resource, resources_only=True)  # Pass error through
 
         if self._attribute_name_has_refs:
             return dumper.represent_dict({
