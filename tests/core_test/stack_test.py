@@ -83,17 +83,51 @@ class TestGetLogicalName:
         # Exercise & Verify
         assert stack.get_logical_name(data) == name
 
-    def test_only_search_parameters_and_resources(self):
+    def test_find_a_resource_when_only_searching_resources(self):
         # Setup
         name = "Foo"
         stack = Stack()
         data = ZeroAttributeObject()
-        for attribute_name in ["Mappings", "Conditions", "Transform", "Outputs"]:
-            setattr(stack, attribute_name, {name: data})
+        stack.Resources[name] = data
+
+        # Exercise & Verify
+        assert stack.get_logical_name(data, resources_only=True) == name
+
+    @pytest.mark.parametrize('object_type', ["Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
+    def test_only_search_parameters_and_resources(self, object_type):
+        # Setup
+        stack = Stack()
+        data = ZeroAttributeObject()
+        setattr(stack, object_type, {"Foo": data})
 
         # Exercise & Verify
         with pytest.raises(ValueError) as excinfo:
             stack.get_logical_name(data)
+
+        assert "not part of this stack" in str(excinfo.value)
+
+    @pytest.mark.parametrize('object_type',
+                             ["Parameters", "Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
+    def test_only_search_resources_when_requested(self, object_type):
+        # Setup
+        stack = Stack()
+        data = ZeroAttributeObject()
+        setattr(stack, object_type, {"Foo": data})
+
+        # Exercise & Verify
+        with pytest.raises(ValueError) as excinfo:
+            stack.get_logical_name(data, resources_only=True)
+
+        assert "not part of this stack" in str(excinfo.value)
+
+    def test_fail_if_object_is_pseudo_parameter_when_only_searching_resources(self):
+        # Setup
+        data = AWS_Region
+        stack = Stack()
+
+        # Exercise & Verify
+        with pytest.raises(ValueError) as excinfo:
+            stack.get_logical_name(data, resources_only=True)
 
         assert "not part of this stack" in str(excinfo.value)
 
