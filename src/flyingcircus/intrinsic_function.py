@@ -43,6 +43,56 @@ class Base64(_Function):
             return dumper.represent_scalar("!Base64", self._data, style="")
 
 
+class GetAtt(_Function):
+    """Models the behaviour of Fn::GetAtt for Python objects.
+
+    See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getavailabilityzones.html
+    """
+
+    # TODO Verify that attribute name is valid by comparing it against known
+    #  attributes for the resource type in question. This is obviously only
+    #  possible if the resource is concrete Resource subclass, and the
+    #  attribute name is composed solely of strings.
+
+    # TODO Have AWS attribute access as a special function on the resource
+    #  and/or be actual attribute lookup (the latter is perhaps too confusing)
+
+    def __init__(self, resource, *attribute_name):
+        """Get a resource attribute from another resource in this stack.
+
+        :param resource: The Python object that contains the resource attribute.
+        :param attribute_name: One or more components for the name of the attribute.
+            The components may be supplied as a list, or as a single dotted
+            string. They may contain Ref objects.
+        """
+        if isinstance(resource, str):
+            raise TypeError("You can't directly create a GetAtt on a logical name.")
+
+        if len(attribute_name) < 1:
+            raise ValueError("At least one part of the AWS attribute name is required")
+
+        self._attribute_name_has_refs = False
+        for component in attribute_name:
+            if isinstance(component, Ref):
+                self._attribute_name_has_refs = True
+            elif not isinstance(component, str):
+                raise ValueError("The attribute name cannot have a {} component".format(component.__class__.__name__))
+
+        self._resource = resource
+        self._attribute_name = list(attribute_name)
+
+    def as_yaml_node(self, dumper):
+        # FIXME get_logical_name assumes that the referent can be a paramater, pseudo param, or resource. thsi is not correct for a getatt lookup
+        name = dumper.cfn_stack.get_logical_name(self._resource)  # Pass error through
+
+        if self._attribute_name_has_refs:
+            return dumper.represent_dict({
+                "Fn::GetAtt": [name] + self._attribute_name
+            })
+        else:
+            return dumper.represent_scalar("!GetAtt", ".".join([name] + self._attribute_name), style="")
+
+
 class GetAZs(_Function):
     """Models the behaviour of Fn::GetAZs for Python objects.
 
