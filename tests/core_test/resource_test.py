@@ -98,3 +98,127 @@ class TestProperties:
 
         data.Properties.kudos = 1
         data.Properties.props = 'hello'
+
+
+class _UntaggableResource(Resource):
+    RESOURCE_TYPE = "NameSpace::Service::UntaggableResource"
+    RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty"}
+
+
+class _TaggableResource(Resource):
+    RESOURCE_TYPE = "NameSpace::Service::TaggableResource"
+    RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty", "Tags"}
+
+
+class TestTagging:
+    """Test automatic tagging for Resource objects."""
+
+    # TODO test cases:
+    #   for tags and more_tags:
+    #       - key is not a string
+    #       - value is not a string
+    #       - key is a crazy-but-acceptable string (use hypothesis)
+    #       - value is a crazy-but-acceptable string (use hypothesis)
+    #       - key has wrong length or invalid characters
+    #       - value has wrong length or invalid characters
+    #   same key and same value appears in both tags and more_tags
+    #   same key and different value appears n both tags and more_tags
+    #   tag_derived_resources behaviour. Need specific implementation
+    # TODO look up the weird resources that have unusual tag syntax
+    # TODO look up the resources that have an unusual name for Tag property
+
+    # Helper Methods
+    # --------------
+    #: Used for parametrizing tests across the two ways of applying tags
+    TAG_APPLY_TECHNIQUES = {
+        "argnames": 'apply_tags',
+        "argvalues": [
+            lambda res, key, value: res.tag({key: value}),
+            lambda res, key, value: res.tag(**{key: value}),
+        ],
+        "ids": [
+            "dict",
+            "keywords"
+        ],
+    }
+
+    def _verify_tag_doesnt_exist(self, res, key, value):
+        for tag in res.Properties.Tags:
+            assert not (tag["Key"] == key and tag["Value"] == value)
+
+    def _verify_tag_exists(self, res, key, value):
+        for tag in res.Properties.Tags:
+            if tag["Key"] == key and tag["Value"] == value:
+                return
+
+        assert False, "Tag not found in resource"
+
+    # Test Cases
+    # ----------
+    @pytest.mark.parametrize(**TAG_APPLY_TECHNIQUES)
+    def test_tag_is_added_to_properties(self, apply_tags):
+        # Setup
+        key = "foo"
+        value = "bar"
+
+        res = _TaggableResource()
+
+        # Exercise
+        tagged = apply_tags(res, key, value)
+
+        # Verify
+        assert tagged
+        self._verify_tag_exists(res, key, value)
+
+    @pytest.mark.parametrize(**TAG_APPLY_TECHNIQUES)
+    def test_tag_is_added_to_existing_tags(self, apply_tags):
+        # Setup
+        key1 = "existing"
+        value1 = "frobnicate"
+        key2 = "foo"
+        value2 = "bar"
+
+        res = _TaggableResource()
+        res.Properties.Tags = [{"Key": key1, "Value": value1}]
+
+        # Exercise
+        tagged = apply_tags(res, key2, value2)
+
+        # Verify
+        assert tagged
+        self._verify_tag_exists(res, key1, value1)
+        self._verify_tag_exists(res, key2, value2)
+
+    @pytest.mark.parametrize(**TAG_APPLY_TECHNIQUES)
+    def test_tag_replaces_existing_tag_with_same_key(self, apply_tags):
+        # Setup
+        key1 = "existing"
+        old_value = "frobnicate"
+        key2 = "foo"
+        value2 = "bar"
+        new_value = "new"
+
+        res = _TaggableResource()
+        res.Properties.Tags = [
+            {"Key": key1, "Value": old_value},
+            {"Key": key2, "Value": value2},
+        ]
+
+        # Exercise
+        tagged = apply_tags(res, key1, new_value)
+
+        # Verify
+        assert tagged
+        self._verify_tag_doesnt_exist(res, key1, old_value)
+        self._verify_tag_exists(res, key1, new_value)
+        self._verify_tag_exists(res, key2, value2)
+
+    def test_resource_doesnt_support_tagging(self):
+        # Setup
+        res = _UntaggableResource()
+
+        # Exercise
+        tagged = res.tag(foo="bar")
+
+        # Verify
+        assert not tagged
