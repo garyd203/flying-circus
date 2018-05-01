@@ -3,6 +3,7 @@
 import copy
 import re
 import textwrap
+from itertools import chain
 
 import yaml
 import yaml.resolver
@@ -654,6 +655,59 @@ class Resource(AWSObject):
         # underlying class via this class constant. The easiest way to
         # achieve this is through a property
         return self.RESOURCE_TYPE
+
+    def tag(self, tags=None, tag_derived_resources=True, **more_tags):
+        """Apply tags to this resource, if they are supported.
+
+        Parameters:
+            tags (dict): Key-value pairs representing tags to apply to the
+             resource.
+            more_tags: Additional key-value pairs representing tags
+             to apply to the resource, specified as keyword arguments.
+             It is not defined which tag is actually applied in the event
+             of duplicates.
+            tag_derived_resources (bool): Whether to attempt to apply the
+             same tags to resources which are derived from this one, using
+             Cloud Formation (eg. EC2 instances started by an auto-scaling
+             group).
+
+        Returns:
+            Whether tags are actually supported by this resource type.
+
+        See Also:
+            `AWS documentation on resource tagging
+            <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html>`_
+        """
+        if tags is None:
+            tags = {}
+
+        # See if this resource type is taggable
+        if "Tags" not in self.RESOURCE_PROPERTIES:
+            return False
+
+        # Initialise Tags list
+        try:
+            taglist = self.Properties["Tags"]
+        except KeyError:
+            self.Properties["Tags"] = taglist = []
+
+        # Add Tags to our horribly structured list
+        for key, value in chain(tags.items(), more_tags.items()):
+            # Ensure a tag with key and value exists, overwriting any existing
+            # value with that key
+            for tag_object in taglist:
+                if tag_object["Key"] == key:
+                    # Overwrite the existing value
+                    tag_object["Value"] = value
+                    break
+            else:
+                # Key was not found, so append a new tag object
+                taglist.append({
+                    "Key": key,
+                    "Value": value,
+                })
+
+        return True
 
 
 class ResourceProperties(AWSObject):
