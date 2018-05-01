@@ -600,8 +600,7 @@ class Resource(AWSObject):
 
     AWS_ATTRIBUTES = {
         # NB: CreationPolicy is defined as a Resource-level attribute, but is
-        # currently only valid for AutoScalingGroup, EC2::Instance and
-        # CloudFormation::WaitCondition.
+        # currently only valid for a few resource types.
         #
         # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
         #
@@ -617,7 +616,7 @@ class Resource(AWSObject):
         #: can't be directly set
         "Type",
         # NB: UpdatePolicy is defined as a Resource-level attribute, but is
-        # currently only valid for AutoScalingGroup.
+        # currently only valid for a few resource types.
         #
         # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
         #
