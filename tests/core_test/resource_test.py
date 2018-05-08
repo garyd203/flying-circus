@@ -3,8 +3,10 @@
 import pytest
 
 from flyingcircus.core import Resource
+from .common import BaseTaggingTest
 from .common import SIMPLE_RESOURCE_NAME
 from .common import SimpleResource
+from .common import parametrize_tagging_techniques
 
 
 class TestResourceUnusualAttributes:
@@ -110,7 +112,7 @@ class _TaggableResource(Resource):
     RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty", "Tags"}
 
 
-class TestTagging:
+class TestTagging(BaseTaggingTest):
     """Test automatic tagging for Resource objects."""
 
     # TODO test cases:
@@ -124,38 +126,12 @@ class TestTagging:
     #   same key and same value appears in both tags and more_tags
     #   same key and different value appears n both tags and more_tags
     #   tag_derived_resources behaviour. Need specific implementation
-    # TODO look up the weird resources that have unusual tag syntax
+    # TODO look up the weird resources that have unusual tag syntax (eg. ASG)
     # TODO look up the resources that have an unusual name for Tag property
-
-    # Helper Methods
-    # --------------
-    #: Used for parametrizing tests across the two ways of applying tags
-    TAG_APPLY_TECHNIQUES = {
-        "argnames": 'apply_tags',
-        "argvalues": [
-            lambda res, key, value: res.tag({key: value}),
-            lambda res, key, value: res.tag(**{key: value}),
-        ],
-        "ids": [
-            "dict",
-            "keywords"
-        ],
-    }
-
-    def _verify_tag_doesnt_exist(self, res, key, value):
-        for tag in res.Properties.Tags:
-            assert not (tag["Key"] == key and tag["Value"] == value)
-
-    def _verify_tag_exists(self, res, key, value):
-        for tag in res.Properties.Tags:
-            if tag["Key"] == key and tag["Value"] == value:
-                return
-
-        assert False, "Tag not found in resource"
 
     # Test Cases
     # ----------
-    @pytest.mark.parametrize(**TAG_APPLY_TECHNIQUES)
+    @parametrize_tagging_techniques()
     def test_tag_is_added_to_properties(self, apply_tags):
         # Setup
         key = "foo"
@@ -168,9 +144,9 @@ class TestTagging:
 
         # Verify
         assert tagged
-        self._verify_tag_exists(res, key, value)
+        self.verify_tag_exists(res, key, value)
 
-    @pytest.mark.parametrize(**TAG_APPLY_TECHNIQUES)
+    @parametrize_tagging_techniques()
     def test_tag_is_added_to_existing_tags(self, apply_tags):
         # Setup
         key1 = "existing"
@@ -186,10 +162,10 @@ class TestTagging:
 
         # Verify
         assert tagged
-        self._verify_tag_exists(res, key1, value1)
-        self._verify_tag_exists(res, key2, value2)
+        self.verify_tag_exists(res, key1, value1)
+        self.verify_tag_exists(res, key2, value2)
 
-    @pytest.mark.parametrize(**TAG_APPLY_TECHNIQUES)
+    @parametrize_tagging_techniques()
     def test_tag_replaces_existing_tag_with_same_key(self, apply_tags):
         # Setup
         key1 = "existing"
@@ -209,9 +185,9 @@ class TestTagging:
 
         # Verify
         assert tagged
-        self._verify_tag_doesnt_exist(res, key1, old_value)
-        self._verify_tag_exists(res, key1, new_value)
-        self._verify_tag_exists(res, key2, value2)
+        self.verify_tag_doesnt_exist(res, key1, old_value)
+        self.verify_tag_exists(res, key1, new_value)
+        self.verify_tag_exists(res, key2, value2)
 
     def test_resource_doesnt_support_tagging(self):
         # Setup
