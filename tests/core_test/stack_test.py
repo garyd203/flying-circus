@@ -6,17 +6,22 @@ import hypothesis.strategies as st
 import pytest
 from hypothesis import given
 
+from flyingcircus.core import AWSObject
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Output
 from flyingcircus.core import Parameter
+from flyingcircus.core import Resource
+from flyingcircus.core import ResourceProperties
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
 from flyingcircus.exceptions import StackMergeError
+from .common import BaseTaggingTest
 from .common import LOREM_IPSUM
 from .common import SimpleResource
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 from .common import aws_logical_name_strategy
+from .common import parametrize_tagging_techniques
 
 
 class TestBasicStackBehaviour:
@@ -572,3 +577,71 @@ class TestPrefixedNames:
         # Verify
         new_output = new_stack.Outputs[self.STACK_PREFIX + name]
         assert getattr(new_output, "Export", None) is None
+
+
+class TestTagStack(BaseTaggingTest):
+    """Test recursive tagging for stack objects."""
+
+    @parametrize_tagging_techniques()
+    def test_resource_object_has_tags_applied(self, apply_tags):
+        # Setup
+        class TaggableResource(Resource):
+            RESOURCE_TYPE = "NameSpace::Service::TaggableResource"
+            RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty", "Tags"}
+
+        resource = TaggableResource()
+        stack = Stack(Resources={"Foo": resource})
+
+        key = "foo"
+        value = "bar"
+
+        # Exercise
+        apply_tags(stack, key, value)
+
+        # Verify
+        self.verify_tag_exists(resource, key, value)
+
+    @parametrize_tagging_techniques()
+    def test_non_resource_object_is_silently_ignored(self, apply_tags):
+        # Setup
+        resource = {}
+        stack = Stack(Resources={"Foo": resource})
+
+        key = "foo"
+        value = "bar"
+
+        # Exercise
+        apply_tags(stack, key, value)
+
+        # Verify
+        self.verify_tag_doesnt_exist(resource, key, value)
+
+    @parametrize_tagging_techniques()
+    def test_resource_like_object_has_tags_applied(self, apply_tags):
+        # Setup Resource-like object.
+        #
+        # For simplicity of testing we use the same data structure as a
+        # normal resource to store the tagging information
+        class ResourceLikeThing(AWSObject):
+            AWS_ATTRIBUTES = {"Properties"}
+
+            def tag(self, tags=None, tag_derived_resources=True):
+                # noinspection PyAttributeOutsideInit
+                self.Properties = ResourceProperties(
+                    property_names={"Tags"},
+                    Tags=[{"Key": key, "Value": value} for key, value in tags.items()],
+                )
+
+        resource = ResourceLikeThing()
+
+        # Setup
+        stack = Stack(Resources={"Foo": resource})
+
+        key = "foo"
+        value = "bar"
+
+        # Exercise
+        apply_tags(stack, key, value)
+
+        # Verify
+        self.verify_tag_exists(resource, key, value)
