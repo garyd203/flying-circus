@@ -126,6 +126,7 @@ class TestTagging(BaseTaggingTest):
     #   same key and same value appears in both tags and more_tags
     #   same key and different value appears n both tags and more_tags
     #   tag_derived_resources behaviour. Need specific implementation
+    #   Resource is a Stack Resource => we should tag it's children
     # TODO look up the weird resources that have unusual tag syntax (eg. ASG)
     # TODO look up the resources that have an unusual name for Tag property
 

@@ -532,6 +532,33 @@ class Stack(AWSObject):
 
         return new_stack
 
+    def tag(self, tags=None, tag_derived_resources=True, **more_tags):
+        """Apply tags to all resources in this stack, where they are supported.
+
+        Parameters:
+            tags (dict): Key-value pairs representing tags to apply to the
+             resource.
+            more_tags: Additional key-value pairs representing tags
+             to apply to the resource, specified as keyword arguments.
+             It is not defined which tag is actually applied in the event
+             of duplicates.
+            tag_derived_resources (bool): Whether to attempt to apply the
+             same tags to derived resources, using Cloud Formation
+             (eg. EC2 instances started by an auto-scaling group).
+        """
+        # Handle multiple ways of passing tags
+        if tags is None:
+            tags = more_tags
+        else:
+            tags = dict(tags)
+            tags.update(more_tags)
+
+        # Simply apply the tags to each resource
+        for resource in self.Resources.values():
+            if hasattr(resource, "tag") and callable(resource.tag):
+                # Assume this is a Resource-like object
+                resource.tag(tags=tags, tag_derived_resources=tag_derived_resources)
+
 
 class Parameter(AWSObject):
     """Represents a CloudFormation Parameter.
