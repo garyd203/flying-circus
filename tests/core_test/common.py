@@ -1,6 +1,7 @@
 """Common base test classes and helper methods."""
 
 import hypothesis.strategies as st
+import pytest
 
 from flyingcircus.core import AWSObject
 from flyingcircus.core import Resource
@@ -92,3 +93,37 @@ nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
 eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
 in culpa qui officia deserunt mollit anim id est laborum."""
+
+
+class BaseTaggingTest:
+    """Base class for testing tagging on AWS Objects"""
+
+    # Helper Methods
+    # --------------
+
+    def verify_tag_doesnt_exist(self, res, key, value):
+        for tag in res.Properties.Tags:
+            assert not (tag["Key"] == key and tag["Value"] == value)
+
+    def verify_tag_exists(self, res, key, value):
+        for tag in res.Properties.Tags:
+            if tag["Key"] == key and tag["Value"] == value:
+                return
+
+        assert False, "Tag not found in resource"
+
+
+def parametrize_tagging_techniques():
+    """Decorator that parametrizes tests across the two techniques of applying tags."""
+
+    return pytest.mark.parametrize(
+        argnames='apply_tags',
+        argvalues=[
+            lambda res, key, value: res.tag({key: value}),
+            lambda res, key, value: res.tag(**{key: value}),
+        ],
+        ids=[
+            "dict",
+            "keywords"
+        ],
+    )
