@@ -102,7 +102,10 @@ class BaseTaggingTest:
     # --------------
 
     def verify_tag_doesnt_exist(self, res, key, value):
-        for tag in res.Properties.Tags:
+        if not hasattr(res, "Properties") \
+                or not hasattr(res.Properties, "Tags"):
+            return
+        for tag in getattr(res.Properties, "Tags", []):
             assert not (tag["Key"] == key and tag["Value"] == value)
 
     def verify_tag_exists(self, res, key, value):
