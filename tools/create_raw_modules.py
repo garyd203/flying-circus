@@ -28,6 +28,8 @@ SUPPORTED_AWS_SERVICES = {
     "CloudFront",
     "CloudWatch",
     "EC2",
+    "ECR",
+    "ECS",
     "S3",
 }
 
@@ -38,6 +40,8 @@ SERVICE_DOCUMENTATION_URLS = {
     "CloudFront": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
     "CloudWatch": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
     "EC2": "http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/",
+    "ECR": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/index.html",
+    "ECS": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/index.html",
     "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
 }
 
