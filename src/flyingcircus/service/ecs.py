@@ -10,3 +10,5 @@ from .._raw import ecs as _raw
 
 # noinspection PyUnresolvedReferences
 from .._raw.ecs import *
+
+# TODO specialised Service and TaskDefinition for use with fargate (which explicitly excludes some of the fields)
