@@ -13,7 +13,7 @@ from .yaml import CustomYamlObject
 
 
 # TODO use the rule that every time you detect a nested func, the outer has to use long form
-
+# TODO new flying-circus specific function LogicalName - exports as the logical name of the referred resource.
 
 class _Function(CustomYamlObject):
     """Base class for all intrinsic CloudFormation functions"""
@@ -140,3 +140,17 @@ class Ref(_Function):
         # TODO doco - you can use this, but better not to
         # TODO implement as a private subclass. Still get type safety, but shortcut the lookup process
         assert False
+
+    def __eq__(self, other):
+        # noinspection PyProtectedMember
+        if not isinstance(other, self.__class__):
+            return False
+
+        # Two references are equal if they refer to *exactly* the same object
+        return self._data is other._data
+
+    def __hash__(self):
+        # An immutable class that implements equality should also implement hash.
+        # Equal objects should have the same hash, so we derive our has from
+        # the class and the referred object
+        return hash((self.__class__, id(self._data)))
