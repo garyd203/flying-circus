@@ -10,8 +10,9 @@ from flyingcircus.core import AWS_Region
 from flyingcircus.core import AWS_StackName
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
-from flyingcircus.intrinsic_function import Base64, GetAtt
+from flyingcircus.intrinsic_function import Base64
 from flyingcircus.intrinsic_function import GetAZs
+from flyingcircus.intrinsic_function import GetAtt
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.yaml import AmazonCFNDumper
 from pyyaml_helper import get_mapping_node_key
@@ -351,6 +352,63 @@ class TestRef:
         # Exercise & Verify
         with pytest.raises(Exception):
             ref.as_yaml_node(dumper)
+
+    def test_refs_to_same_object_are_equal(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        ref1 = Ref(data)
+        ref2 = Ref(data)
+
+        # Verify
+        assert ref1 == ref2
+        assert not (ref1 != ref2)
+        assert hash(ref1) == hash(ref2)
+
+    def test_refs_to_different_objects_are_not_equal(self):
+        # Setup
+        ref1 = Ref(SingleAttributeObject(one=42))
+        ref2 = Ref(ZeroAttributeObject())
+
+        # Verify
+        assert ref1 != ref2
+        assert not (ref1 == ref2)
+        assert hash(ref1) != hash(ref2)
+
+    def test_refs_to_similar_objects_are_not_equal(self):
+        # Setup
+        ref1 = Ref(SingleAttributeObject(one=42))
+        ref2 = Ref(SingleAttributeObject(one=42))
+
+        # Verify
+        assert ref1 != ref2
+        assert not (ref1 == ref2)
+        assert hash(ref1) != hash(ref2)
+
+    def test_hash_is_different_from_hash_of_referent(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        ref = Ref(data)
+
+        # Verify
+        assert hash(data) != hash(ref)
+
+    @pytest.mark.parametrize('func', [
+        Base64,  # A Ref-like object
+        str,  # An unrelated data type
+    ])
+    def test_ref_is_not_equal_to_arbitrary_object(self, func):
+        # Setup
+        data = SingleAttributeObject(one=42)
+
+        ref = Ref(data)
+        other = func(data)
+
+        # Verify
+        assert ref != other
+        assert other != ref
+        assert not (ref == other)
+        assert not (other == ref)
+        assert hash(ref) != hash(other)
 
 
 class TestGetAtt:
