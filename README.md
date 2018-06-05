@@ -21,7 +21,7 @@ automated refactoring and so on.
 # Is/Is Not
 
 There's a lot of tools for managing Infrastructure as Code, often with subtle
-differences and passionate advocates. A quick discussion of it's scope may
+differences and passionate advocates. A quick discussion of our scope may
 help you understand where Flying Circus fits into this ecosystem, and whether it can
 help you. This is presented in the simple "Is/Is Not" format.
 
