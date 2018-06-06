@@ -87,7 +87,7 @@ class TestCpuAutoScalingGroup:
 
 
 class TestValidateAutoScalingService(AwsTemplateValidation):
-    """Verify that all convenience functions Autoscaling service module
+    """Verify that all convenience functions in the Autoscaling service module
     produce stacks that are valid.
     """
 
