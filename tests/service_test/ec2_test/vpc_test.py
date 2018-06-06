@@ -24,7 +24,7 @@ class TestVpcEnsureInternetGatewayExists:
         all_resources = [res for res in stack.Resources.values() if isinstance(res, resource.__class__)]
         if unique:
             assert len(all_resources) == 1, \
-                "Stack contains several {} resources".format(resource.RESOURCE_TYPE)
+                "Stack contains several {} resources".format(resource.Type)
 
         identical_resources = [res for res in all_resources if res is resource]
         assert len(identical_resources) == 1, "Resource should be in stack exactly once"
