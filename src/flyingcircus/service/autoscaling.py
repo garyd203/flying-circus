@@ -18,6 +18,7 @@ from .._raw.autoscaling import *
 
 def autoscaling_group_by_cpu(low=20, high=80):
     """Create an auto-scaling group that scales based on it's CPU load."""
+    # TODO this is more like a recipe than a basic service
     stack = Stack(
         # TODO generate description by auto-breaking the line with the (not-yet-existent) reflow function instead
         Description=dedent("""
