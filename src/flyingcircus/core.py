@@ -545,7 +545,13 @@ class Stack(AWSObject):
             tag_derived_resources (bool): Whether to attempt to apply the
              same tags to derived resources, using Cloud Formation
              (eg. EC2 instances started by an auto-scaling group).
+
+        See Also:
+            `AWS documentation on resource tagging
+            <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html>`_
         """
+        # TODO naming ambiguity - `tag` sounds like it could just mean "tag this single object"
+
         # Handle multiple ways of passing tags
         if tags is None:
             tags = more_tags
@@ -683,8 +689,15 @@ class Resource(AWSObject):
         # achieve this is through a property
         return self.RESOURCE_TYPE
 
+    @property
+    def is_taggable(self):
+        """Is this resource taggable."""
+        return "Tags" in self.RESOURCE_PROPERTIES
+
     def tag(self, tags=None, tag_derived_resources=True, **more_tags):
         """Apply tags to this resource, if they are supported.
+
+        Existing tags with the same key will be overwritten.
 
         Parameters:
             tags (dict): Key-value pairs representing tags to apply to the
@@ -705,36 +718,70 @@ class Resource(AWSObject):
             `AWS documentation on resource tagging
             <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html>`_
         """
-        if tags is None:
-            tags = {}
-
-        # See if this resource type is taggable
-        if "Tags" not in self.RESOURCE_PROPERTIES:
+        if not self.is_taggable:
             return False
 
-        # Initialise Tags list
-        try:
-            taglist = self.Properties["Tags"]
-        except KeyError:
-            self.Properties["Tags"] = taglist = []
+        if tags is None:
+            tags = {}
 
         # Add Tags to our horribly structured list
         for key, value in chain(tags.items(), more_tags.items()):
             # Ensure a tag with key and value exists, overwriting any existing
             # value with that key
-            for tag_object in taglist:
+            for tag_object in self._get_tag_list():
                 if tag_object["Key"] == key:
                     # Overwrite the existing value
                     tag_object["Value"] = value
                     break
             else:
                 # Key was not found, so append a new tag object
-                taglist.append({
+                self._get_tag_list().append({
                     "Key": key,
                     "Value": value,
                 })
 
         return True
+
+    def get_tag(self, key: str):
+        """Get one of the tags currently set on this resource.
+
+        Raises:
+             AttributeError: If this resource doesn't support tags
+
+        Returns:
+            The tag's value, or else `None` if it is not set
+        """
+        # TODO tests
+        if not self.is_taggable:
+            raise AttributeError("Tags are not supported by {}".format(self.Type))
+
+        # Search through existing tags looking for the tag
+        for tag_object in self._get_tag_list():
+            if tag_object["Key"] == key:
+                return tag_object["Value"]
+
+        # Tag was not found
+        return None
+
+    def _get_tag_list(self):
+        """Get the internal list of all the tag objects on this resource,
+        creating it if necessary
+        """
+        # Try to get the property as quickly as possible
+        #
+        # Note that Properties might be a `ResourceProperties` object, which
+        # doesn't support `setdefault`
+        try:
+            return self.Properties["Tags"]
+        except KeyError:
+            pass
+
+        # Create the Tags list, if allowed
+        if not self.is_taggable:
+            raise AttributeError("Tags are not supported by {}".format(self.Type))
+
+        self.Properties["Tags"] = []
+        return self.Properties["Tags"]
 
 
 class ResourceProperties(AWSObject):
