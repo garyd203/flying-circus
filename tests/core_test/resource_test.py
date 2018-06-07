@@ -112,6 +112,45 @@ class _TaggableResource(Resource):
     RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty", "Tags"}
 
 
+class TestGetTag(BaseTaggingTest):
+    """Test simplified tag retrieval with get_tag()."""
+
+    def test_return_value_of_tag(self):
+        # Setup
+        key = "SomeTag"
+        value = "To be or not to be"
+        res = _TaggableResource()
+        res.tag({key: value, "SomethingElse": "42"})
+
+        # Exercise & Verify
+        assert res.get_tag(key) == value
+
+    def test_return_none_when_tag_not_set(self):
+        # Setup
+        res = _TaggableResource()
+        res.tag({"SomethingElse": "42"})
+
+        # Exercise & Verify
+        assert res.get_tag("MissingKey") is None
+
+    def test_return_none_when_no_tags_set(self):
+        # Setup
+        res = _TaggableResource()
+
+        # Exercise & Verify
+        assert res.get_tag("MissingKey") is None
+
+    def test_throws_error_when_untaggable(self):
+        # Setup
+        res = _UntaggableResource()
+
+        # Exercise & Verify
+        with pytest.raises(AttributeError) as excinfo:
+            _ = res.name
+
+        assert "not supported" in str(excinfo.value)
+
+
 class TestTagging(BaseTaggingTest):
     """Test automatic tagging for Resource objects."""
 
@@ -130,8 +169,6 @@ class TestTagging(BaseTaggingTest):
     # TODO look up the weird resources that have unusual tag syntax (eg. ASG)
     # TODO look up the resources that have an unusual name for Tag property
 
-    # Test Cases
-    # ----------
     @parametrize_tagging_techniques()
     def test_tag_is_added_to_properties(self, apply_tags):
         # Setup
