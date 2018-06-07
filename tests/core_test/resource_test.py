@@ -236,3 +236,39 @@ class TestTagging(BaseTaggingTest):
 
         # Verify
         assert not tagged
+
+
+class TestNameAccess:
+    """Test automatic name access for Resource objects.
+
+    The implementation simply calls `tag` and `set_tag`, so we take a light
+    touch with the testing.
+    """
+
+    def test_fetches_name_tag(self):
+        # Setup
+        name = "Some extraordinary name"
+        res = _TaggableResource()
+        res.tag(Name=name)
+
+        # Exercise & Verify
+        assert res.name == name
+
+    def test_sets_name_tag(self):
+        # Setup
+        name = "Some extraordinary name"
+        res = _TaggableResource()
+
+        # Exercise
+        res.name = name
+
+        # Verify
+        assert res.get_tag("Name") == name
+
+    def test_set_throws_error_when_untaggable(self):
+        # Setup
+        res = _UntaggableResource()
+
+        # Exercise & Verify
+        with pytest.raises(AttributeError) as excinfo:
+            res.name = "Can't touch this"
