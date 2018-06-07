@@ -783,6 +783,28 @@ class Resource(AWSObject):
         self.Properties["Tags"] = []
         return self.Properties["Tags"]
 
+    @property
+    def name(self):
+        """The context-dependent name of this resource, if it is set.
+        Usually a resource's name appears as the 'Name' tag.
+
+        Raises:
+             AttributeError: If this resource doesn't support name's
+
+        Returns:
+            The resource's name, or else `None` if it is not set
+        """
+        # The default implementation looks for the 'Name' tag
+        return self.get_tag("Name")
+
+    @name.setter
+    def name(self, value: str):
+        # The default implementation looks for the 'Name' tag
+        if not self.is_taggable:
+            raise AttributeError("Tags are not supported by {}".format(self.Type))
+
+        self.tag(Name=value)
+
 
 class ResourceProperties(AWSObject):
     def __init__(self, property_names, **properties):
