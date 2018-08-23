@@ -23,13 +23,15 @@ LOGGER = logging.getLogger(
 #: At the moment we only include some modules because we are still building
 #: up our script
 SUPPORTED_AWS_SERVICES = {
-    # FIXME remove this temporary hack when we are satisfied wth the output
+    # FIXME remove this temporary hack when we are satisfied with the output
     "AutoScaling",
     "CloudFront",
+    "CloudTrail",
     "CloudWatch",
     "EC2",
     "ECR",
     "ECS",
+    "KMS",
     "S3",
 }
 
@@ -38,10 +40,12 @@ SUPPORTED_AWS_SERVICES = {
 SERVICE_DOCUMENTATION_URLS = {
     "AutoScaling": "http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html",
     "CloudFront": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+    "CloudTrail": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
     "CloudWatch": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
     "EC2": "http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/",
     "ECR": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/index.html",
     "ECS": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/index.html",
+    "KMS": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
     "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
 }
 
