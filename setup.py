@@ -37,7 +37,7 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
-        #'Topic :: Software Development :: Pre-processors',
+        'Topic :: Software Development :: Pre-processors',
         'Topic :: System :: Systems Administration',
     ],
 )
