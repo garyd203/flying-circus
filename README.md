@@ -13,8 +13,8 @@ It may seem unusual to use a programming language to create descriptions of
 infrastructure, instead of a configuration file like many of us are used to
 (whether or not we also utilise a templating tool).
 We hope that the Flying Circus library can empower DevOps folk by 
-unlocking some of the powerful techniques that are available
-for software code, like named variables and methods to structure code 
+unlocking some of the techniques that are available
+for software code, like named variables and techniques to structure code 
 independently of the output format, libraries to allow code re-use with versioning,
 automated refactoring and so on. 
 
