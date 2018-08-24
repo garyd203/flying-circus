@@ -13,7 +13,6 @@ from .yaml import CustomYamlObject
 
 
 # TODO use the rule that every time you detect a nested func, the outer has to use long form
-# TODO new flying-circus specific function LogicalName - exports as the logical name of the referred resource.
 
 class _Function(CustomYamlObject):
     """Base class for all intrinsic CloudFormation functions"""
@@ -21,7 +20,7 @@ class _Function(CustomYamlObject):
 
 
 class Base64(_Function):
-    """Models the behaviour of Base64 for Python objects.
+    """Models the behaviour of Fn::Base64 for Python objects.
 
     Will have the effect of turning the content string into a base64-encoded
     string when the Cloud Formation template is executed.
