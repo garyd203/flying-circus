@@ -238,7 +238,8 @@ class AWSObject(CustomYamlObject):
         # Create neater YAML by filtering out empty entries in sub-lists
         attributes = [(key, remove_empty_values_from_attribute(value)) for key, value in attributes]
 
-        # Represent this object as a mapping of it's AWS attributes
+        # Represent this object as a mapping of it's AWS attributes.
+        # Note that `represent_mapping` works on a list of 2-tuples, not a map!
         return dumper.represent_mapping(tag, attributes)
 
     def _get_export_order(self):
