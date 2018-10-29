@@ -5,14 +5,51 @@ See Also:
     <https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html>`_
 """
 
-# noinspection PyUnresolvedReferences
 from .._raw import s3 as _raw
-
 # noinspection PyUnresolvedReferences
 from .._raw.s3 import *
 
 
 class Bucket(_raw.Bucket):
+    #: Key ID for the AWS-supplied KMS Master Key used for server-side
+    #: encryption if a customer-managed key is not explicitly specified.
+    SSE_KMS_DEFAULT_MASTER_KEY = "aws/s3"
+
+    def set_encryption(self, kms_keyid=SSE_KMS_DEFAULT_MASTER_KEY, s3_managed: bool = False):
+        """Set the default server-side encryption approach for this bucket.
+
+        This convenience function can be used to set any one of the mutually
+        exclusive `AWS server-side encryption schemes
+        <https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html>`_
+        With default parameters, it will set KMS-managed encryption with the
+        default AWS S3 KMS key.
+
+        Parameters:
+            kms_keyid: Use KMS-managed encryption with this custom KMS key.
+            s3_managed: Use S3-managed encryption.
+        """
+        # TODO also implement is_s3_encrypted, is_kms_encrypted, get_kms_key
+
+        # Checks
+        if s3_managed and kms_keyid != self.SSE_KMS_DEFAULT_MASTER_KEY:
+            raise ValueError("Unable to set both S3-managed and KMS-managed bucket encryption")
+
+        # Get the top-level encryption config object
+        try:
+            config = self.Properties["BucketEncryption"]
+        except KeyError:
+            config = self.Properties["BucketEncryption"] = {}
+
+        # Create a fresh single-value list of server-side encryption rules
+        if s3_managed:
+            rule = {"SSEAlgorithm": "AES256"}
+        else:
+            rule = {
+                "KMSMasterKeyID": kms_keyid,
+                "SSEAlgorithm": "aws:kms",
+            }
+        config["ServerSideEncryptionConfiguration"] = [{"ServerSideEncryptionByDefault": rule}]
+
     #: List of Status values for Bucket versioning, and whether they mean
     #: versioning is enabled
     _VERSIONING_STATUSES = {
@@ -31,7 +68,7 @@ class Bucket(_raw.Bucket):
 
         See Also:
             `VersioningConfiguration documentation
-            <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-versioningconfig.html>`
+            <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-versioningconfig.html>`_
         """
         try:
             status = self.Properties["VersioningConfiguration"]["Status"]
