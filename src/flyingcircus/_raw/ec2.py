@@ -42,6 +42,7 @@ __all__ = [
     "VPCCidrBlock",
     "VPCDHCPOptionsAssociation",
     "VPCEndpoint",
+    "VPCEndpointServicePermissions",
     "VPCGatewayAttachment",
     "VPCPeeringConnection",
     "VPNConnection",
@@ -153,6 +154,8 @@ class FlowLog(Resource):
 
     RESOURCE_PROPERTIES = {
         "DeliverLogsPermissionArn",
+        "LogDestination",
+        "LogDestinationType",
         "LogGroupName",
         "ResourceId",
         "ResourceType",
@@ -211,6 +214,7 @@ class Instance(Resource):
         "Ipv6Addresses",
         "KernelId",
         "KeyName",
+        "LaunchTemplate",
         "Monitoring",
         "NetworkInterfaces",
         "PlacementGroupName",
@@ -673,9 +677,29 @@ class VPCEndpoint(Resource):
 
     RESOURCE_PROPERTIES = {
         "PolicyDocument",
+        "PrivateDnsEnabled",
         "RouteTableIds",
+        "SecurityGroupIds",
         "ServiceName",
+        "SubnetIds",
+        "VPCEndpointType",
         "VpcId",
+    }
+
+
+class VPCEndpointServicePermissions(Resource):
+    """A Vpc Endpoint Service Permissions for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for VPCEndpointServicePermissions
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpointservicepermissions.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::VPCEndpointServicePermissions"
+
+    RESOURCE_PROPERTIES = {
+        "AllowedPrincipals",
+        "ServiceId",
     }
 
 
@@ -708,6 +732,7 @@ class VPCPeeringConnection(Resource):
 
     RESOURCE_PROPERTIES = {
         "PeerOwnerId",
+        "PeerRegion",
         "PeerRoleArn",
         "PeerVpcId",
         "Tags",
