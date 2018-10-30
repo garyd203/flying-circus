@@ -45,6 +45,7 @@ for some background and guidance. Or just do the following steps
    rm -rf dist
    python setup.py sdist
    python setup.py bdist_wheel # this will be --universal in the future)
+   # TODO test upload with twine
    twine upload dist/*
    ```
 9. Check the correct build appears in PyPI
