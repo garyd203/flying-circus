@@ -53,7 +53,9 @@ class Service(Resource):
         "PlacementStrategies",
         "PlatformVersion",
         "Role",
+        "SchedulingStrategy",
         "ServiceName",
+        "ServiceRegistries",
         "TaskDefinition",
     }
 
