@@ -10,7 +10,7 @@ in GitHub.
 
 This is a manual process at the moment. See the
 [python packaging guide](https://packaging.python.org/tutorials/distributing-packages/#packaging-your-project)
-for soem background and guidance. Or just do the following steps
+for some background and guidance. Or just do the following steps
 (hand wavy description) on your local workstation
 
 1. Make sure there are no uncommitted changes in your local workspace
