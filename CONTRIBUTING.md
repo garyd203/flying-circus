@@ -22,7 +22,7 @@ for some background and guidance. Or just do the following steps
 3. Create a fresh venv and run all tests (including integration tests)
    ```bash
    rm -rf venv
-   virtualenv venv
+   virtualenv -p python3 venv
    ./venv/bin/activate
    pip install -r requirements.txt
    pip install -e . # Install the local working copy of flying circus in "edit" mode
