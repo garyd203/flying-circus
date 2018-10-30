@@ -15,7 +15,7 @@ from flyingcircus.intrinsic_function import GetAZs
 from flyingcircus.intrinsic_function import GetAtt
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.yaml import AmazonCFNDumper
-from pyyaml_helper import get_mapping_node_key
+from .pyyaml_helper import get_mapping_node_key
 from .core_test.common import SingleAttributeObject
 from .core_test.common import ZeroAttributeObject
 
