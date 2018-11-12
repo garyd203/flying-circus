@@ -1,5 +1,7 @@
 """Tests for the Resource base class."""
 
+import importlib
+
 import pytest
 
 from flyingcircus.core import Resource
@@ -237,12 +239,37 @@ class TestTagging(BaseTaggingTest):
         # Verify
         assert not tagged
 
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "cognito.UserPool",
+        ],
+    )
+    @parametrize_tagging_techniques()
+    def test_resource_with_nonstandard_tag_property_is_supported(self, name: str, apply_tags: callable):
+        # Setup: Create a resource of this type
+        modulename, classname = name.rsplit(".", 1)
+        module = importlib.import_module("flyingcircus.service." + modulename)
+        res = getattr(module, classname)()
+
+        # Exercise
+        tags_supported = apply_tags(res, "Foo", "1")
+        apply_tags(res, "Bar", "2")
+        apply_tags(res, "Bar", "3")
+
+        # Verify
+        assert tags_supported is True
+        assert res.is_taggable is True, "This resource type should be taggable"
+        assert res.get_tag("Foo") == "1", "Tags should be saved on the resource"
+        assert res.get_tag("Bar") == "3", "Tags should be updated on the resource"
+        assert not hasattr(res.Properties, "Tags"), "Tags should not be stored on the 'Tags' property"
+
 
 class TestNameAccess:
     """Test automatic name access for Resource objects.
 
-    The implementation simply calls `tag` and `set_tag`, so we take a light
-    touch with the testing.
+    The standard implementation simply calls `tag` and `set_tag`, so we take
+    a light touch with the testing.
     """
 
     def test_fetches_name_tag(self):
@@ -270,5 +297,25 @@ class TestNameAccess:
         res = _UntaggableResource()
 
         # Exercise & Verify
-        with pytest.raises(AttributeError) as excinfo:
+        with pytest.raises(AttributeError):
             res.name = "Can't touch this"
+
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "cognito.UserPool",
+        ],
+    )
+    def test_resource_with_nonstandard_name_is_supported(self, name: str):
+        # Setup: Create a resource of this type
+        modulename, classname = name.rsplit(".", 1)
+        module = importlib.import_module("flyingcircus.service." + modulename)
+        res = getattr(module, classname)()
+
+        name = "Some extraordinary name"
+
+        # Exercise
+        res.name = name
+
+        # Verify
+        assert res.name == name
