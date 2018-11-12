@@ -664,6 +664,9 @@ class Resource(AWSObject):
     #: Set of valid property names for this Resource class
     RESOURCE_PROPERTIES = set()
 
+    #: The name of the property that tags are stored in (if any)
+    TAG_PROPERTY = "Tags"
+
     # TODO classmethod to instantiate a Properties object for this resource type. Or better, have a hard-wired Properties initialised in __init__
     # TODO implement a shortcut function for get_ref(), instead of having to bring in the fn.Ref function?
 
@@ -693,7 +696,7 @@ class Resource(AWSObject):
     @property
     def is_taggable(self):
         """Is this resource taggable."""
-        return "Tags" in self.RESOURCE_PROPERTIES
+        return self.TAG_PROPERTY in self.RESOURCE_PROPERTIES
 
     def tag(self, tags=None, tag_derived_resources=True, **more_tags):
         """Apply tags to this resource, if they are supported.
@@ -773,7 +776,7 @@ class Resource(AWSObject):
         # Note that Properties might be a `ResourceProperties` object, which
         # doesn't support `setdefault`
         try:
-            return self.Properties["Tags"]
+            return self.Properties[self.TAG_PROPERTY]
         except KeyError:
             pass
 
@@ -781,8 +784,8 @@ class Resource(AWSObject):
         if not self.is_taggable:
             raise AttributeError("Tags are not supported by {}".format(self.Type))
 
-        self.Properties["Tags"] = []
-        return self.Properties["Tags"]
+        self.Properties[self.TAG_PROPERTY] = []
+        return self.Properties[self.TAG_PROPERTY]
 
     @property
     def name(self):
