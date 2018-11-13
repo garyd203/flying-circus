@@ -19,14 +19,12 @@ class TestYamlAttributeExport:
     def test_aws_attributes_are_only_exported_when_set(self):
         data = DualAttributeObject(one=42)
         data._internal_value = 7
-        data.set_unknown_aws_attribute("special", 8)
 
         output = data.export("yaml")
 
         assert output == dedent("""
             ---
             one: 42
-            special: 8
             """)
 
     def test_empty_export_when_no_aws_attributes_configured_and_internal_attributes_set(self):
@@ -49,16 +47,6 @@ class TestYamlAttributeExport:
             --- {}
             """)
 
-    def test_unknown_attributes_are_exported_even_when_no_known_attributes(self):
-        data = ZeroAttributeObject()
-        data.set_unknown_aws_attribute("special", 8)
-
-        output = data.export("yaml")
-
-        assert output == dedent("""
-            ---
-            special: 8
-            """)
 
 
 class TestYamlBasicFormatting:

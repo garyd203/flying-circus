@@ -142,40 +142,13 @@ class TestAttributeAccess:
         assert hasattr(data, "_internal_value")
         assert data._internal_value is value
 
-    def test_unknown_attributes_cannot_be_set_directly(self):
+    def test_unknown_attributes_cannot_be_set(self):
         data = self.SimpleObject()
 
         with pytest.raises(AttributeError) as excinfo:
             data.WeirdValue = "hello"
         assert "WeirdValue" in str(excinfo.value)
         assert not hasattr(data, "WeirdValue")
-
-    @given(aws_attribute_strategy())
-    def test_unknown_aws_attributes_can_be_explicitly_set_and_read_normally(self, value):
-        data = self.SimpleObject()
-
-        data.set_unknown_aws_attribute("WeirdValue", value)
-
-        assert hasattr(data, "WeirdValue")
-        assert data.WeirdValue is value
-
-    def test_valid_aws_attributes_cannot_be_explicitly_set(self):
-        data = self.SimpleObject()
-
-        with pytest.raises(AttributeError) as excinfo:
-            data.set_unknown_aws_attribute("bar", "hello")
-
-        assert "bar" in str(excinfo.value)
-        assert not hasattr(data, "bar")
-
-    def test_internal_attributes_cannot_be_explicitly_set(self):
-        data = self.SimpleObject()
-
-        with pytest.raises(AttributeError) as excinfo:
-            data.set_unknown_aws_attribute("_internal_value", "hello")
-
-        assert "_internal_value" in str(excinfo.value)
-        assert not hasattr(data, "_internal_value")
 
     # Set Special Cases
     # -----------------
@@ -230,24 +203,6 @@ class TestAttributeAccess:
 
         assert data._internal_value is new_value
 
-    @given(aws_attribute_strategy(), aws_attribute_strategy())
-    def test_unknown_aws_attributes_can_be_updated_directly(self, old_value, new_value):
-        data = self.SimpleObject()
-        data.set_unknown_aws_attribute("WeirdValue", old_value)
-
-        data.WeirdValue = new_value
-
-        assert data.WeirdValue is new_value
-
-    @given(aws_attribute_strategy(), aws_attribute_strategy())
-    def test_unknown_aws_attributes_can_be_updated_via_explicit_setter(self, old_value, new_value):
-        data = self.SimpleObject()
-        data.set_unknown_aws_attribute("WeirdValue", old_value)
-
-        data.set_unknown_aws_attribute("WeirdValue", new_value)
-
-        assert data.WeirdValue is new_value
-
     # Delete
     # ------
 
@@ -276,15 +231,6 @@ class TestAttributeAccess:
 
         assert not hasattr(data, "_internal_value")
 
-    @given(aws_attribute_strategy())
-    def test_unknown_aws_attributes_can_be_deleted(self, value):
-        data = self.SimpleObject()
-        data.set_unknown_aws_attribute("WeirdValue", value)
-
-        del data.WeirdValue
-
-        assert not hasattr(data, "WeirdValue")
-
     def test_delete_nonexistent_attribute_raises_error(self):
         data = self.SimpleObject()
 
@@ -308,17 +254,6 @@ class TestAttributeAccess:
             del data._internal_value
 
         assert "_internal_value" in str(excinfo.value)
-
-    @given(aws_attribute_strategy())
-    def test_delete_already_deleted_unknown_aws_attribute_raises_error(self, value):
-        data = self.SimpleObject()
-        data.set_unknown_aws_attribute("WeirdValue", value)
-        del data.WeirdValue
-
-        with pytest.raises(AttributeError) as excinfo:
-            del data.WeirdValue
-
-        assert "WeirdValue" in str(excinfo.value)
 
 
 class TestDictionaryAccess:
@@ -375,6 +310,15 @@ class TestDictionaryAccess:
 
         assert "one" in str(excinfo.value)
 
+    @given(aws_attribute_strategy())
+    def test_unknown_aws_attributes_cannot_be_set(self, value):
+        data = SingleAttributeObject()
+
+        with pytest.raises(KeyError) as excinfo:
+            data["WeirdValue"] = value
+
+        assert "WeirdValue" in str(excinfo.value)
+
     # CRUD Access For Internal Attributes
     # -----------------------------------
 
@@ -419,44 +363,6 @@ class TestDictionaryAccess:
         assert "_internal_value" in str(excinfo.value)
         assert data._internal_value is value
 
-    # CRUD Access For Unknown AWS Attributes
-    # --------------------------------------
-
-    @given(aws_attribute_strategy())
-    def test_unknown_aws_attributes_cannot_be_set_directly(self, value):
-        data = SingleAttributeObject()
-
-        with pytest.raises(KeyError) as excinfo:
-            data["WeirdValue"] = value
-
-        assert "WeirdValue" in str(excinfo.value)
-
-    @given(aws_attribute_strategy())
-    def test_unknown_aws_attributes_can_be_read(self, value):
-        data = SingleAttributeObject()
-        data.set_unknown_aws_attribute("WeirdValue", value)
-
-        assert data["WeirdValue"] is value
-
-    @given(aws_attribute_strategy(), aws_attribute_strategy())
-    def test_unknown_aws_attributes_can_be_updated(self, old_value, new_value):
-        data = SingleAttributeObject()
-        data.set_unknown_aws_attribute("WeirdValue", old_value)
-
-        data["WeirdValue"] = new_value
-
-        assert data["WeirdValue"] is new_value
-        assert data.WeirdValue is new_value
-
-    @given(aws_attribute_strategy())
-    def test_unknown_aws_attributes_can_be_deleted(self, value):
-        data = SingleAttributeObject()
-        data.set_unknown_aws_attribute("WeirdValue", value)
-
-        del data["WeirdValue"]
-
-        assert not hasattr(data, "WeirdValue")
-
 
 class TestIteratorAccess:
     """Verify behaviour of attribute iteration on a Flying Circus AWS object.
@@ -475,18 +381,6 @@ class TestIteratorAccess:
         # Verify
         assert list(attribs) == ['one', 'two']
         assert len(data) == 2
-
-    def test_object_iteration_includes_unknown_attributes(self):
-        # Setup
-        data = DualAttributeObject(one=42, two='hello world')
-        data.set_unknown_aws_attribute("special", 8)
-
-        # Exercise
-        attribs = iter(data)
-
-        # Verify
-        assert list(attribs) == ['one', 'special', 'two']
-        assert len(data) == 3
 
     def test_object_iteration_includes_attributes_set_to_none(self):
         # Setup
@@ -560,7 +454,9 @@ class TestSortOrder:
     def test_attributes_are_ordered_alphabetically_by_default(self):
         # Setup
         class MegaObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b", "c", "A", "Bad", "bad", "42", "4", "1", "z", "ZoologicalSpecimen"}
+            AWS_ATTRIBUTES = {
+                "a", "b", "c", "A", "Bad", "bad", "badness", "baddie", "42", "4", "1", "z", "ZoologicalSpecimen"
+            }
 
         data = MegaObject(
             a=1,
@@ -581,8 +477,8 @@ class TestSortOrder:
         setattr(data, "4", 8)
         setattr(data, "1", 9)
 
-        data.set_unknown_aws_attribute("badness", 12)
-        data.set_unknown_aws_attribute("baddie", 13)
+        data.badness = 12
+        data.baddie = 13
 
         # Exercise
         attribs = iter(data)
@@ -645,21 +541,6 @@ class TestSortOrder:
 
         # Verify
         assert list(attribs) == ['b', 'a']
-
-    def test_explicit_attribute_ordering_can_use_unknown_aws_attributes(self):
-        # Setup
-        class OrderedObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b"}
-            EXPORT_ORDER = ["b", "c", "a"]
-
-        data = OrderedObject(a=1, b=2)
-        data.set_unknown_aws_attribute("c", 3)
-
-        # Exercise
-        attribs = iter(data)
-
-        # Verify
-        assert list(attribs) == ['b', 'c', 'a']
 
     def test_explicit_attribute_ordering_may_list_only_some_attributes(self):
         # Setup

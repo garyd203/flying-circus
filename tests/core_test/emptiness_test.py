@@ -50,11 +50,6 @@ class TestEmptyAttribute:
     def test_awsobject_with_no_attributes_set_is_empty(self):
         assert is_non_empty_attribute(DualAttributeObject()) is False
 
-    def test_awsobject_with_no_attributes_but_unknown_attributes_set_is_not_empty(self):
-        data = ZeroAttributeObject()
-        data.set_unknown_aws_attribute("foo", "bar")
-        assert is_non_empty_attribute(data) is True
-
     def test_awsobject_with_only_empty_attributes_is_empty(self):
         assert is_non_empty_attribute(DualAttributeObject(one=[], two={})) is False
 
