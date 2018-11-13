@@ -52,4 +52,4 @@ class UserPool(_raw.UserPool):
 
     @name.setter
     def name(self, value: str):
-        self.Properties.UserPoolName = value
+        self.Properties["UserPoolName"] = value
