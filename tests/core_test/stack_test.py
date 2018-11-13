@@ -1,4 +1,5 @@
 """Tests for the Stack base class."""
+
 import re
 from copy import copy
 
@@ -6,6 +7,7 @@ import hypothesis.strategies as st
 import pytest
 from hypothesis import given
 
+import flyingcircus
 from flyingcircus.core import AWSObject
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Output
@@ -36,15 +38,25 @@ class TestBasicStackBehaviour:
         assert output == dedent("""
         ---
         AWSTemplateFormatVersion: '2010-09-09'
+        Metadata:
+          FlyingCircus:
+            version: {}
         Resources:
           SomeName:
             Type: NameSpace::Service::Resource
-        """)
+        """.format(flyingcircus.__version__))
 
     def test_template_version_defaults_to_2010(self):
         stack = Stack()
 
         assert stack.AWSTemplateFormatVersion == "2010-09-09"
+
+    def test_standard_metadata_is_present(self):
+        # Exercise
+        stack = Stack()
+
+        # Verify
+        assert stack.Metadata["FlyingCircus"]["version"] == flyingcircus.__version__
 
 
 class TestGetLogicalName:
@@ -221,14 +233,13 @@ class TestMergeStack:
     """Verify the stack merge functionality."""
     PARAMETRIZE_NAMES = 'stack_attribute,item'
     MERGED_ATTRIBUTE_EXAMPLES = [
+        ("Metadata", "Hello World"),
         ("Outputs", Output(Value="HelloWorld")),
         ("Parameters", Parameter(Type="String")),
         ("Resources", SimpleResource()),
         # TODO #87 Add Condition when we have a helper class
         # TODO #87 Add Mapping when we have a helper class
     ]
-
-    # TODO #87 test_does_not_copy_metadata when we have a Metadata class
 
     def test_merge_returns_target_stack(self):
         # Setup
@@ -247,13 +258,15 @@ class TestMergeStack:
         item_name = "SomeChildProperty"
         source = Stack()
         source[stack_attribute] = {item_name: item}
+
         target = Stack()
+        target_initial_size = len(target[stack_attribute])
 
         # Exercise
         target.merge_stack(source)
 
         # Verify
-        assert len(target[stack_attribute]) == 1
+        assert len(target[stack_attribute]) == target_initial_size + 1
         assert target[stack_attribute][item_name] is item
 
     @pytest.mark.parametrize(PARAMETRIZE_NAMES, MERGED_ATTRIBUTE_EXAMPLES)
@@ -302,6 +315,20 @@ class TestMergeStack:
 
         # Verify
         assert target.Description == original_description
+
+    def test_does_not_copy_flying_circus_metadata(self):
+        # Setup
+        source = Stack()
+        source.Metadata["FlyingCircus"]["version"] = ("gamma-gamma")
+
+        target = Stack()
+        original_fc_data = target.Metadata["FlyingCircus"]
+
+        # Exercise
+        target.merge_stack(source)
+
+        # Verify
+        assert target.Metadata["FlyingCircus"] == original_fc_data
 
     def test_cannot_merge_if_template_version_is_different(self):
         source = Stack(AWSTemplateFormatVersion="123")
