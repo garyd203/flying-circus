@@ -14,8 +14,7 @@ from .yaml import AmazonCFNDumper
 from .yaml import CustomYamlObject
 
 
-# TODO rename "AWS attribute" to "CloudFormation attribute" everywhere ?
-# TODO rename "unknown" AWS attributes to something less confusing.
+# TODO rename "AWS attribute" to "CloudFormation attribute" (or YAML attribute) everywhere ?
 
 class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
@@ -25,6 +24,7 @@ class AWSObject(CustomYamlObject):
     considered to be a Cloud Formation attribute. By contrast, a private
     Python attribute (ie. named with a leading underscore) is considered to
     be an internal attribute and is not exported to Cloud Formation.
+    todo CHANGE THIS BEHAVIOUR
 
     Concrete subclasses are expected to implement a constructor that
     explicitly lists all the known AWS attributes. This is intended to help
@@ -53,10 +53,6 @@ class AWSObject(CustomYamlObject):
     # -----------
 
     def __init__(self, **kwargs):
-        # Set of unknown AWS attribute names that we have seen in this
-        # object. These may or may not still be present.
-        self._known_unknown_aws_attributes = set()
-
         # Set initial values passed to constructor
         self._set_constructor_attributes(kwargs)
 
@@ -112,32 +108,6 @@ class AWSObject(CustomYamlObject):
             return
         raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
 
-    def set_unknown_aws_attribute(self, key, value):
-        """Override the normal checking and set an AWS attribute that we don't know about.
-
-        This is intended as a bridging mechanism for when older versions of
-        the library do not explicitly know about a newly introduced AWS
-        attribute.
-
-        Note that normal, known, AWS attributes cannot be set by this method.
-
-        Ideally, users would issue a pull request to fix the problem in our
-        type mapping, but this method exists for when you need a workaround.
-        """
-        # TODO use a better name than "unknown attribute". How about "new attribute"???
-        if self._is_internal_attribute(key):
-            raise AttributeError("'{}' is an internal attribute and should not be set as a AWS attribute".format(key))
-        if self._is_normal_aws_attribute(key):
-            # TODO throwing an error here stuffs up the code migration when users move to a version that knows about this attribute. At least it's thrown at set-time, not at export time.
-            raise AttributeError(
-                "'{}' is a recognised AWS attribute and should be set as a normal Python attribute".format(key))
-
-        # Bypass the filtering in our __setattr__ implementation
-        object.__setattr__(self, key, value)
-
-        # If we managed to store the attribute successfully, then keep track of it
-        self._known_unknown_aws_attributes.add(key)
-
     def _is_internal_attribute(self, name):
         """Whether this attribute name corresponds to an internal attribute for this object."""
         # Internal attributes all start with an underscore
@@ -148,16 +118,12 @@ class AWSObject(CustomYamlObject):
         # Known AWS attributes are explicitly listed in a class-specific constant
         return name in self.AWS_ATTRIBUTES
 
-    def _is_unknown_aws_attribute(self, name):
-        """Whether this attribute name corresponds to an explicitly set but unknown AWS attribute for this object."""
-        return name in self._known_unknown_aws_attributes and hasattr(self, name)
-
     # Container-Like Access
     # ---------------------
 
     def __getitem__(self, item):
         """Get AWS attributes in a dictionary-like manner."""
-        if self._is_normal_aws_attribute(item) or self._is_unknown_aws_attribute(item):
+        if self._is_normal_aws_attribute(item):
             try:
                 return getattr(self, item)
             except AttributeError as ex:
@@ -168,7 +134,7 @@ class AWSObject(CustomYamlObject):
 
     def __setitem__(self, key, value):
         """Set AWS attributes in a dictionary-like manner."""
-        if self._is_normal_aws_attribute(key) or self._is_unknown_aws_attribute(key):
+        if self._is_normal_aws_attribute(key):
             setattr(self, key, value)
         else:
             raise KeyError(
@@ -176,7 +142,7 @@ class AWSObject(CustomYamlObject):
 
     def __delitem__(self, key):
         """Delete AWS attributes in a dictionary-like manner."""
-        if self._is_normal_aws_attribute(key) or self._is_unknown_aws_attribute(key):
+        if self._is_normal_aws_attribute(key):
             try:
                 delattr(self, key)
             except AttributeError as ex:
@@ -199,8 +165,7 @@ class AWSObject(CustomYamlObject):
     def __len__(self):
         # The length of the object is the number of attributes currently set
         return len(
-            [key for key in self.AWS_ATTRIBUTES if hasattr(self, key)] +
-            [key for key in self._known_unknown_aws_attributes if hasattr(self, key)]
+            [key for key in self.AWS_ATTRIBUTES if hasattr(self, key)]
         )
 
     # Export Data
@@ -249,7 +214,7 @@ class AWSObject(CustomYamlObject):
         result = []
 
         # All valid AWS attributes
-        trailing_attribs = self.AWS_ATTRIBUTES.union(self._known_unknown_aws_attributes)
+        trailing_attribs = set(self.AWS_ATTRIBUTES)
 
         # Some attributes need to be explicitly listed in a particular order
         # at the beginning of the map output
