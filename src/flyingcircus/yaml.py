@@ -1,6 +1,11 @@
 """Helper methods for configuring PyYAML."""
 
+from typing import Optional
+
 import yaml
+from yaml.resolver import BaseResolver
+
+import flyingcircus
 
 
 def register_yaml_representers():
@@ -26,32 +31,32 @@ def register_yaml_representers():
 class CustomYamlObject(object):
     """Mixin class for objects that have a custom YAML export."""
 
-    def as_yaml_node(self, dumper):
+    def as_yaml_node(self, dumper: yaml.Dumper) -> yaml.Node:
         """Get a representation of this object as a PyYAML node."""
         raise NotImplementedError("as_yaml_node")
 
     @classmethod
-    def represent_object(cls, dumper, data):
+    def represent_object(cls, dumper: yaml.Dumper, data: "CustomYamlObject") -> yaml.Node:
         assert isinstance(data, cls)
         return data.as_yaml_node(dumper)
 
 
-def _represent_string(dumper, data):
+def _represent_string(dumper: yaml.Dumper, data: str) -> yaml.ScalarNode:
     # Override the normal string emission rules to produce the most readable text output
     # TODO test cases
     if '\n' in data:
         # '|' style means literal block style, so line breaks and formatting are retained.
         # This will be especially handy for inline code.
-        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "|")
+        return dumper.represent_scalar(BaseResolver.DEFAULT_SCALAR_TAG, data, "|")
     elif len(data) > 65:
         # Longer lines will be automatically folded (ie. have line breaks
         # inserted) by PyYAML, which is likely to cause confusion. We
         # compromise by using the literal block style ('|'), which doesn't
         # fold, but does require some special block indicators.
         # TODO need some way to allow folding. Having a helper function probably isn't really good enough. perhaps have the reflow function return a special subclass of string which we can detect here
-        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, '|')
+        return dumper.represent_scalar(BaseResolver.DEFAULT_SCALAR_TAG, data, '|')
     else:
-        return dumper.represent_scalar(yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG, data, "")
+        return dumper.represent_scalar(BaseResolver.DEFAULT_SCALAR_TAG, data, "")
 
 
 class NonAliasingDumper(yaml.Dumper):
@@ -71,11 +76,11 @@ class NonAliasingDumper(yaml.Dumper):
     # TODO what about overriding ignore_aliases() instead ?
     # TODO duplicate instances of the same object in a single stack can be confusing, so consider having warning/error functionality if this happens
 
-    def generate_anchor(self, node):
+    def generate_anchor(self, node: yaml.Node) -> Optional[str]:
         # Don't generate anchors at all
         return None
 
-    def serialize_node(self, node, parent, index):
+    def serialize_node(self, node: yaml.Node, parent, index):
         # Don't keep track of previously serialised nodes, so any node will appear to be new.
         self.serialized_nodes = {}
         super(NonAliasingDumper, self).serialize_node(node, parent, index)
@@ -87,10 +92,10 @@ class AmazonCFNDumper(NonAliasingDumper, yaml.Dumper):
     def __init__(self, *args, **kwargs):
         yaml.Dumper.__init__(self, *args, **kwargs)
 
-        self.__cloud_formation_stack = None
+        self.__cloud_formation_stack: "flyingcircus.core.Stack" = None
 
     @property
-    def cfn_stack(self):
+    def cfn_stack(self) -> "flyingcircus.core.Stack":
         """The Cloud Formation stack being exported.
 
         This should be set by the stack object when it is first represented.
@@ -98,7 +103,7 @@ class AmazonCFNDumper(NonAliasingDumper, yaml.Dumper):
         return self.__cloud_formation_stack
 
     @cfn_stack.setter
-    def cfn_stack(self, value):
+    def cfn_stack(self, value: Optional["flyingcircus.core.Stack"]):
         # Checks
         if value is not None:
             from .core import Stack
@@ -114,7 +119,7 @@ class AmazonCFNDumper(NonAliasingDumper, yaml.Dumper):
         # Set value
         self.__cloud_formation_stack = value
 
-    def choose_scalar_style(self):
+    def choose_scalar_style(self) -> str:
         if self.analysis is None:
             self.analysis = self.analyze_scalar(self.event.value)
 
