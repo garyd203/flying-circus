@@ -1,5 +1,6 @@
 """Tests for AutoScalingGroup functionality."""
 
+import flyingcircus
 from flyingcircus.core import dedent
 from flyingcircus.service.autoscaling import autoscaling_group_by_cpu
 from ..validation_helper import AwsTemplateValidation
@@ -14,6 +15,9 @@ class TestCpuAutoScalingGroup:
         Description: |
           Deploy an auto-scaling group that scales based on lower and upper CPU usage
           thresholds.
+        Metadata:
+          FlyingCircus:
+            version: {}
         Resources:
           AutoScalingGroup:
             Type: AWS::AutoScaling::AutoScalingGroup
@@ -76,7 +80,7 @@ class TestCpuAutoScalingGroup:
               AutoScalingGroupName: !Ref AutoScalingGroup
               Cooldown: 1
               ScalingAdjustment: 1
-    """)
+    """.format(flyingcircus.__version__))
 
     def test_yaml(self):
         stack = autoscaling_group_by_cpu(low=49, high=74)

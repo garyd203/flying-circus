@@ -92,6 +92,7 @@ class TestBase64:
         func = Base64(Ref(AWS_StackName))
         data = SingleAttributeObject(one=func)
         stack = Stack(Resources=dict(SomeResource=data))
+        del stack.Metadata
 
         # Exercise
         output = stack.export("yaml")
@@ -171,6 +172,7 @@ class TestGetAZs:
         func = GetAZs(Ref(AWS_Region))
         data = SingleAttributeObject(one=func)
         stack = Stack(Resources=dict(SomeResource=data))
+        del stack.Metadata
 
         # Exercise
         output = stack.export("yaml")
@@ -266,6 +268,7 @@ class TestRef:
         # Setup
         data = SingleAttributeObject(one=42)
         stack = Stack(Resources=dict(Foo=data, Bar=Ref(data)))
+        del stack.Metadata
 
         # Exercise
         output = stack.export("yaml")
@@ -448,6 +451,7 @@ class TestGetAtt:
         # Setup
         data = SingleAttributeObject(one=42)
         stack = Stack(Resources=dict(Foo=data, Bar=GetAtt(data, "ResourceAttrib1")))
+        del stack.Metadata
 
         # Exercise
         output = stack.export("yaml")
@@ -480,6 +484,7 @@ class TestGetAtt:
         # Setup
         data = SingleAttributeObject(one=42)
         stack = Stack(Resources=dict(Foo=data, Bar=GetAtt(data, "ResourceAttrib1", Ref(AWS_Region))))
+        del stack.Metadata
 
         # Exercise
         output = stack.export("yaml")
