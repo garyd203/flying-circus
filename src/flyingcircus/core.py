@@ -8,7 +8,8 @@ from itertools import chain
 import yaml
 import yaml.resolver
 
-from flyingcircus.exceptions import StackMergeError
+from .exceptions import StackMergeError
+from . import _about
 from .yaml import AmazonCFNDumper
 from .yaml import CustomYamlObject
 
@@ -382,12 +383,19 @@ class Stack(AWSObject):
         AWSObject.__init__(**locals())
 
         # TODO We really want issue #45 to auto-initialise all the sets
+        if not hasattr(self, "Metadata"):
+            self.Metadata = {}
+        if not hasattr(self, "Outputs"):
+            self.Outputs = {}
         if not hasattr(self, "Parameters"):
             self.Parameters = {}
         if not hasattr(self, "Resources"):
             self.Resources = {}
-        if not hasattr(self, "Outputs"):
-            self.Outputs = {}
+
+        # Set standard Metadata
+        self.Metadata["FlyingCircus"] = {
+            "version": _about.__version__,
+        }
 
     def as_yaml_node(self, dumper):
         dumper.cfn_stack = self
@@ -470,6 +478,16 @@ class Stack(AWSObject):
                         "{} in this stack already has an item with the logical name {}".format(item_type, name)
                     )
                 existing_items[name] = value
+
+        # Copy across metadata from other sources.
+        for name, value in other.Metadata.items():
+            if name == "FlyingCircus":
+                continue
+            if name in self.Metadata:
+                raise StackMergeError(
+                    "Metadata in this stack already has an item with the logical name {}".format(name)
+                )
+            self.Metadata[name] = value
 
         return self
 
