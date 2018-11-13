@@ -5,7 +5,7 @@ See Also:
      <http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html>`_
 """
 
-from flyingcircus import fn
+from flyingcircus import Fn
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
@@ -37,8 +37,8 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
     asg = stack.Resources["AutoScalingGroup"] = AutoScalingGroup(
         Properties=dict(
-            AvailabilityZones=fn.GetAZs(fn.Ref(AWS_Region)),
-            LaunchConfigurationName=fn.Ref(launch_config),
+            AvailabilityZones=Fn.GetAZs(Fn.Ref(AWS_Region)),
+            LaunchConfigurationName=Fn.Ref(launch_config),
             MinSize=1,
             MaxSize=3,
         ),
@@ -46,11 +46,11 @@ def autoscaling_group_by_cpu(low=20, high=80):
 
     stack.merge_stack(
         simple_scaling_policy(
-            cloudwatch.Alarms.high_cpu(threshold=high), fn.Ref(asg), downscale=False,
+            cloudwatch.Alarms.high_cpu(threshold=high), Fn.Ref(asg), downscale=False,
         ).with_prefixed_names("ScaleUp")
     ).merge_stack(
         simple_scaling_policy(
-            cloudwatch.Alarms.low_cpu(threshold=low), fn.Ref(asg), downscale=True,
+            cloudwatch.Alarms.low_cpu(threshold=low), Fn.Ref(asg), downscale=True,
         ).with_prefixed_names("ScaleDown")
     )
 
@@ -72,7 +72,7 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
     stack.Resources["ScalingPolicy"] = scaling_policy
 
     # TODO need properties to be a real object (not a dict), and to auto-create empty lists.
-    alarm.Properties.setdefault("AlarmActions", []).append(fn.Ref(scaling_policy))
+    alarm.Properties.setdefault("AlarmActions", []).append(Fn.Ref(scaling_policy))
     alarm.Properties.setdefault("Dimensions", []).append(
         # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
         dict(
