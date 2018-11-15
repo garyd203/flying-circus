@@ -7,6 +7,7 @@ from itertools import chain
 
 import yaml
 import yaml.resolver
+from attr import attrs
 
 from . import _about
 from .exceptions import StackMergeError
@@ -19,23 +20,40 @@ from .yaml import CustomYamlObject
 class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
 
-    In general, Cloud Formation attributes are stored directly as Python
-    attributes on the object. Any public Python instance attribute is
-    considered to be a Cloud Formation attribute. By contrast, a private
-    Python attribute (ie. named with a leading underscore) is considered to
-    be an internal attribute and is not exported to Cloud Formation.
-    todo CHANGE THIS BEHAVIOUR
+    Cloud Formation attributes are stored as Python attributes on the object,
+    using the `attrs` library.
 
-    Concrete subclasses are expected to implement a constructor that
-    explicitly lists all the known AWS attributes. This is intended to help
-    with API discovery and IDE auto-completion.
+    Any public Python instance attribute is considered to be a Cloud
+    Formation attribute. By contrast, a private Python attribute (ie. named
+    with a leading underscore) is considered to be an internal attribute and
+    is not exported to Cloud Formation.
 
-    Default values for attributes are implemented by having a non-None
-    default value in the constructor.
+    If an attribute is set to None it is considered to not be set for cloud
+    formation. It is still returned when accessed in code, but won't be
+    exported.
+
+    Attributes are exported in the order they are declared.
     """
 
-    # TODO implement __str__ and/or __repr__
-    # TODO implement equals functionality
+    # TODO instead use attrs metadata to mark non-exported attributes
+
+    # FIXME validate behaviour when we have subclassed objects with attribs defined at multiple levels (all should be included)
+    #   - can't set invalid attributes => slots should be set all the way up
+
+    # TODO we need to use a decorator *and* a superclass - best to combine them somehow
+
+    # FIXME for sorting, what about if we have inehrited some attributes frm the parent? Maybe get an override mechanism when that need arises
+
+    #: Arguments to `attrs` decorator for creating a CloudFormation object,
+    #: as a subclass of this class.
+    ATTR_ARGS = dict(
+        cmp=False,  # FIXME comparison is not needed, but it wouldnt hurt either
+        slots=True,  # Only allow known attributes
+        init=True, kw_only=True,  # Create a constructor with only keyword parameters
+        # TODO consider weakref_slot - not sure why we would need it though
+    )
+
+    # TODO test that slots actually works - it will fail if we missed slots on any intermediate class
 
     #: Set of valid AWS attribute names for this class
     AWS_ATTRIBUTES = set()  # TODO make a function instead?
@@ -52,9 +70,11 @@ class AWSObject(CustomYamlObject):
     # Constructor
     # -----------
 
-    def __init__(self, **kwargs):
-        # Set initial values passed to constructor
-        self._set_constructor_attributes(kwargs)
+    # TODO clean up old code
+
+    # def __init__(self, **kwargs):
+    #     # Set initial values passed to constructor
+    #     self._set_constructor_attributes(kwargs)
 
     def _set_constructor_attributes(self, params):
         """Set any attributes that were passed to the object constructor.
@@ -91,65 +111,70 @@ class AWSObject(CustomYamlObject):
     # Attribute Access
     # ----------------
 
-    def __setattr__(self, key, value):
-        if hasattr(self, key):
-            # Allow modification of existing attributes. This avoids madness,
-            # whilst also neatly covering some corner cases with our
-            # attribute filtering
-            super(AWSObject, self).__setattr__(key, value)
-            return
-        if self._is_internal_attribute(key):
-            # Internal attribute
-            super(AWSObject, self).__setattr__(key, value)
-            return
-        if self._is_normal_aws_attribute(key):
-            # Known AWS attribute
-            super(AWSObject, self).__setattr__(key, value)
-            return
-        raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
+    # TODO clean up old code
 
-    def _is_internal_attribute(self, name):
-        """Whether this attribute name corresponds to an internal attribute for this object."""
-        # Internal attributes all start with an underscore
-        return name.startswith("_")
+    # def __setattr__(self, key, value):
+    #     if hasattr(self, key):
+    #         # Allow modification of existing attributes. This avoids madness,
+    #         # whilst also neatly covering some corner cases with our
+    #         # attribute filtering
+    #         super(AWSObject, self).__setattr__(key, value)
+    #         return
+    #     if self._is_internal_attribute(key):
+    #         # Internal attribute
+    #         super(AWSObject, self).__setattr__(key, value)
+    #         return
+    #     if self._is_normal_aws_attribute(key):
+    #         # Known AWS attribute
+    #         super(AWSObject, self).__setattr__(key, value)
+    #         return
+    #     raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
 
-    def _is_normal_aws_attribute(self, name):
-        """Whether this attribute name corresponds to a known AWS attribute for this object."""
-        # Known AWS attributes are explicitly listed in a class-specific constant
-        return name in self.AWS_ATTRIBUTES
+    # def _is_internal_attribute(self, name):
+    #     """Whether this attribute name corresponds to an internal attribute for this object."""
+    #     # Internal attributes all start with an underscore
+    #     return name.startswith("_")
 
-    # Container-Like Access
-    # ---------------------
+    def _is_cfn_attribute(self, name):
+        """Whether this attribute name corresponds to a known CloudFormation attribute for this object."""
+        # TODO use attribs metadata
+        return not name.startswith("_")
+
+    # Container-Like Access For CloudFormation Attributes
+    # ---------------------------------------------------
 
     def __getitem__(self, item):
-        """Get AWS attributes in a dictionary-like manner."""
-        if self._is_normal_aws_attribute(item):
+        """Get CloudFormation attributes in a dictionary-like manner."""
+        if self._is_cfn_attribute(item):
             try:
                 return getattr(self, item)
             except AttributeError as ex:
                 raise KeyError(str(ex)) from ex
         else:
             raise KeyError(
-                "'{}' is not an AWS attribute, and cannot be retrieved with the dictionary interface".format(item))
+                "'{}' is not a CloudFormation attribute, and cannot be retrieved with the dictionary interface".format(
+                    item))
 
     def __setitem__(self, key, value):
-        """Set AWS attributes in a dictionary-like manner."""
-        if self._is_normal_aws_attribute(key):
+        """Set CloudFormation attributes in a dictionary-like manner."""
+        if self._is_cfn_attribute(key):
             setattr(self, key, value)
         else:
             raise KeyError(
-                "'{}' is not an AWS attribute, and cannot be set with the dictionary interface".format(key))
+                "'{}' is not a CloudFormation attribute, and cannot be set with the dictionary interface".format(key))
 
-    def __delitem__(self, key):
-        """Delete AWS attributes in a dictionary-like manner."""
-        if self._is_normal_aws_attribute(key):
-            try:
-                delattr(self, key)
-            except AttributeError as ex:
-                raise KeyError(str(ex)) from ex
-        else:
-            raise KeyError(
-                "'{}' is not an AWS attribute, and cannot be deleted with the dictionary interface".format(key))
+    # TODO do we do delete with attrs? maybe not
+
+    # def __delitem__(self, key):
+    #     """Delete AWS attributes in a dictionary-like manner."""
+    #     if self._is_normal_aws_attribute(key):
+    #         try:
+    #             delattr(self, key)
+    #         except AttributeError as ex:
+    #             raise KeyError(str(ex)) from ex
+    #     else:
+    #         raise KeyError(
+    #             "'{}' is not an AWS attribute, and cannot be deleted with the dictionary interface".format(key))
 
     # TODO implement other container functions: __reversed__, __contains__
 
@@ -157,16 +182,21 @@ class AWSObject(CustomYamlObject):
 
     def __iter__(self):
         # We treat the object like a dictionary for iteration. This means
-        # we return a sorted list of AWS attribute names that are currently set
-        for key in self._get_export_order():
-            if hasattr(self, key):
-                yield key
+        # we return a sorted list of CloudFormation attribute names that are currently set
+        # TODO what system do we use for indicating that a attribute has no meaningufl value. Sometimes the supplied default could be useful
+        #   -> perhaps compare to some metadata?
+        #   -> perhaps compare to None. Not sure we have any valid use cases for exporting None
+        for attrib in self.__attrs_attrs__:
+            if self._is_cfn_attribute(attrib.name):
+                if getattr(self, attrib.name) is not None:
+                    yield attrib.name
 
-    def __len__(self):
-        # The length of the object is the number of attributes currently set
-        return len(
-            [key for key in self.AWS_ATTRIBUTES if hasattr(self, key)]
-        )
+    #
+    # def __len__(self):
+    #     # The length of the object is the number of attributes currently set
+    #     return len(
+    #         [key for key in self.AWS_ATTRIBUTES if hasattr(self, key)]
+    #     )
 
     # Export Data
     # -----------
