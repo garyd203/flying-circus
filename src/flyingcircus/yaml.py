@@ -13,7 +13,7 @@ def register_yaml_representers():
     # TODO better to add these to a custom Dumper than pollute the global object?
 
     # Add marshalling/representers for custom types
-    yaml.add_representer(str, _represent_string)
+    yaml.add_representer(str, represent_string)
     yaml.add_multi_representer(CustomYamlObject, CustomYamlObject.represent_object)
 
     # Don't silently fail if we try to export something weird
@@ -41,22 +41,32 @@ class CustomYamlObject(object):
         return data.as_yaml_node(dumper)
 
 
-def _represent_string(dumper: yaml.Dumper, data: str) -> yaml.ScalarNode:
-    # Override the normal string emission rules to produce the most readable text output
+def represent_string(dumper: yaml.Dumper, data: str, tag: str = BaseResolver.DEFAULT_SCALAR_TAG,
+                     basicsep: str = "") -> yaml.ScalarNode:
+    """Override the normal string emission rules to produce the most readable text output.
+
+    Args:
+        data: The string to dump
+        tag: (Optional) The YAML tag to use for this scalar. Defaults to the
+            default YAML scalar tag, which does not get printed.
+        basicsep: (Optional) The scalar string separator to use for "simple"
+            strings (ie. strings where there isn't a more specific rule)
+    """
     # TODO test cases
+
     if '\n' in data:
         # '|' style means literal block style, so line breaks and formatting are retained.
         # This will be especially handy for inline code.
-        return dumper.represent_scalar(BaseResolver.DEFAULT_SCALAR_TAG, data, "|")
+        return dumper.represent_scalar(tag, data, "|")
     elif len(data) > 65:
         # Longer lines will be automatically folded (ie. have line breaks
         # inserted) by PyYAML, which is likely to cause confusion. We
         # compromise by using the literal block style ('|'), which doesn't
         # fold, but does require some special block indicators.
         # TODO need some way to allow folding. Having a helper function probably isn't really good enough. perhaps have the reflow function return a special subclass of string which we can detect here
-        return dumper.represent_scalar(BaseResolver.DEFAULT_SCALAR_TAG, data, '|')
+        return dumper.represent_scalar(tag, data, '|')
     else:
-        return dumper.represent_scalar(BaseResolver.DEFAULT_SCALAR_TAG, data, "")
+        return dumper.represent_scalar(tag, data, basicsep)
 
 
 class NonAliasingDumper(yaml.Dumper):
