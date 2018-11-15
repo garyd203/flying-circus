@@ -108,6 +108,199 @@ class TestBase64:
             """)
 
 
+class TestGetAtt:
+    """Test behaviour/output of the GetAtt function."""
+
+    # Helper Methods
+    # --------------
+    @staticmethod
+    def _create_getatt_function(resource_name, *attrib_name):
+        """Create a GetAtt function object that refers to a valid resource.
+
+        Returns:
+            A tuple of (dumper, function_object)
+        """
+        data = SingleAttributeObject(one=42)
+        stack = Stack(Resources={resource_name: data})
+        func = GetAtt(data, *attrib_name)
+
+        dumper = _create_refsafe_dumper(stack)
+
+        return dumper, func
+
+    # YAML Output
+    # -----------
+    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+        # Setup
+        dumper, func = self._create_getatt_function("SomeResource", "Attrib")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.tag == "!GetAtt"
+
+    def test_stack_yaml_output(self):
+        """An integration test, yay!"""
+        # Setup
+        data = SingleAttributeObject(one=42)
+        stack = Stack(Resources=dict(Foo=data, Bar=GetAtt(data, "ResourceAttrib1")))
+        del stack.Metadata
+
+        # Exercise
+        output = stack.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            AWSTemplateFormatVersion: '2010-09-09'
+            Resources:
+              Bar: !GetAtt Foo.ResourceAttrib1
+              Foo:
+                one: 42
+            """)
+
+    def test_nested_function_forces_longform_name(self):
+        # Setup
+        dumper, func = self._create_getatt_function("SomeResource", "Foo", Ref(AWS_Region))
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.tag == dumper.DEFAULT_MAPPING_TAG
+        assert len(node.value) == 1
+
+        function_name = get_mapping_node_key(node, 0)
+        assert function_name == "Fn::GetAtt"
+
+    def test_yaml_output_with_nested_function(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        stack = Stack(Resources=dict(Foo=data, Bar=GetAtt(data, "ResourceAttrib1", Ref(AWS_Region))))
+        del stack.Metadata
+
+        # Exercise
+        output = stack.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            AWSTemplateFormatVersion: '2010-09-09'
+            Resources:
+              Bar:
+                Fn::GetAtt:
+                - Foo
+                - ResourceAttrib1
+                - !Ref AWS::Region
+              Foo:
+                one: 42
+            """)
+
+    # Stack Reference Lookup
+    # ----------------------
+
+    def test_uses_logical_name_from_stack(self):
+        # Setup
+        dumper, func = self._create_getatt_function("SomeResource", "Attrib")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == "SomeResource.Attrib"
+
+    def test_referred_object_can_be_a_plain_dict(self):
+        # Setup
+        data = {"one": 42}
+        stack = Stack(Resources={"SomeResource": data})
+        func = GetAtt(data, "Attrib")
+
+        dumper = _create_refsafe_dumper(stack)
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == "SomeResource.Attrib"
+
+    def test_referred_object_that_is_a_string_is_rejected_immediately(self):
+        # Setup
+        name = "SomeResource"
+        data = SingleAttributeObject(one=42)
+        stack = Stack(Resources={name: data})
+
+        # Exercise
+        with pytest.raises(TypeError) as excinfo:
+            _ = GetAtt(name, "AttribName")
+
+        assert "directly create a GetAtt on a logical name" in str(excinfo.value)
+
+    @pytest.mark.parametrize('object_type',
+                             ["Parameters", "Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
+    def test_non_resource_stack_objects_cannot_be_referenced(self, object_type):
+        # Setup
+        data = {"one": 42}
+        stack = Stack()
+        setattr(stack, object_type, {"SomeResource": data})
+
+        func = GetAtt(data, "Attrib")
+
+        dumper = _create_refsafe_dumper(stack)
+
+        # Exercise
+        with pytest.raises(Exception):
+            func.as_yaml_node(dumper)
+
+    # Attribute Name
+    # --------------
+    def test_attribute_name_list_cannot_be_empty(self):
+        # Exercise
+        with pytest.raises(ValueError) as excinfo:
+            _ = GetAtt({"one": 42})
+
+        assert "AWS attribute name is required" in str(excinfo.value)
+
+    def test_attribute_name_is_a_single_string(self):
+        # Setup
+        dumper, func = self._create_getatt_function("SomeResource", "Attrib")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == "SomeResource.Attrib"
+
+    def test_attribute_name_is_a_single_dotted_string(self):
+        # Setup
+        dumper, func = self._create_getatt_function("SomeResource", "Attrib.SubAttrib")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == "SomeResource.Attrib.SubAttrib"
+
+    def test_attribute_name_is_a_list_of_strings(self):
+        # Setup
+        dumper, func = self._create_getatt_function("SomeResource", "Attrib", "SubAttrib", "SomethingElse")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == "SomeResource.Attrib.SubAttrib.SomethingElse"
+
+    test_attribute_name_contains_a_ref = test_nested_function_forces_longform_name
+
+    def test_attribute_name_contains_an_unsupported_function(self):
+        # Exercise
+        with pytest.raises(ValueError) as excinfo:
+            _ = GetAtt({"one": 42}, "Attrib", GetAZs())
+
+        assert "GetAZs" in str(excinfo.value)
+
+
 class TestGetAZs:
     """Test behaviour/output of the GetAZs function."""
 
@@ -412,196 +605,3 @@ class TestRef:
         assert not (ref == other)
         assert not (other == ref)
         assert hash(ref) != hash(other)
-
-
-class TestGetAtt:
-    """Test behaviour/output of the GetAtt function."""
-
-    # Helper Methods
-    # --------------
-    @staticmethod
-    def _create_getatt_function(resource_name, *attrib_name):
-        """Create a GetAtt function object that refers to a valid resource.
-
-        Returns:
-            A tuple of (dumper, function_object)
-        """
-        data = SingleAttributeObject(one=42)
-        stack = Stack(Resources={resource_name: data})
-        func = GetAtt(data, *attrib_name)
-
-        dumper = _create_refsafe_dumper(stack)
-
-        return dumper, func
-
-    # YAML Output
-    # -----------
-    def test_uses_bang_ref_tag_for_yaml_scalar(self):
-        # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Attrib")
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        assert node.tag == "!GetAtt"
-
-    def test_stack_yaml_output(self):
-        """An integration test, yay!"""
-        # Setup
-        data = SingleAttributeObject(one=42)
-        stack = Stack(Resources=dict(Foo=data, Bar=GetAtt(data, "ResourceAttrib1")))
-        del stack.Metadata
-
-        # Exercise
-        output = stack.export("yaml")
-
-        # Verify
-        assert output == dedent("""
-            ---
-            AWSTemplateFormatVersion: '2010-09-09'
-            Resources:
-              Bar: !GetAtt Foo.ResourceAttrib1
-              Foo:
-                one: 42
-            """)
-
-    def test_nested_function_forces_longform_name(self):
-        # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Foo", Ref(AWS_Region))
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        assert node.tag == dumper.DEFAULT_MAPPING_TAG
-        assert len(node.value) == 1
-
-        function_name = get_mapping_node_key(node, 0)
-        assert function_name == "Fn::GetAtt"
-
-    def test_yaml_output_with_nested_function(self):
-        # Setup
-        data = SingleAttributeObject(one=42)
-        stack = Stack(Resources=dict(Foo=data, Bar=GetAtt(data, "ResourceAttrib1", Ref(AWS_Region))))
-        del stack.Metadata
-
-        # Exercise
-        output = stack.export("yaml")
-
-        # Verify
-        assert output == dedent("""
-            ---
-            AWSTemplateFormatVersion: '2010-09-09'
-            Resources:
-              Bar:
-                Fn::GetAtt:
-                - Foo
-                - ResourceAttrib1
-                - !Ref AWS::Region
-              Foo:
-                one: 42
-            """)
-
-    # Stack Reference Lookup
-    # ----------------------
-
-    def test_uses_logical_name_from_stack(self):
-        # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Attrib")
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        assert node.value == "SomeResource.Attrib"
-
-    def test_referred_object_can_be_a_plain_dict(self):
-        # Setup
-        data = {"one": 42}
-        stack = Stack(Resources={"SomeResource": data})
-        func = GetAtt(data, "Attrib")
-
-        dumper = _create_refsafe_dumper(stack)
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        assert node.value == "SomeResource.Attrib"
-
-    def test_referred_object_that_is_a_string_is_rejected_immediately(self):
-        # Setup
-        name = "SomeResource"
-        data = SingleAttributeObject(one=42)
-        stack = Stack(Resources={name: data})
-
-        # Exercise
-        with pytest.raises(TypeError) as excinfo:
-            _ = GetAtt(name, "AttribName")
-
-        assert "directly create a GetAtt on a logical name" in str(excinfo.value)
-
-    @pytest.mark.parametrize('object_type',
-                             ["Parameters", "Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
-    def test_non_resource_stack_objects_cannot_be_referenced(self, object_type):
-        # Setup
-        data = {"one": 42}
-        stack = Stack()
-        setattr(stack, object_type, {"SomeResource": data})
-
-        func = GetAtt(data, "Attrib")
-
-        dumper = _create_refsafe_dumper(stack)
-
-        # Exercise
-        with pytest.raises(Exception):
-            func.as_yaml_node(dumper)
-
-    # Attribute Name
-    # --------------
-    def test_attribute_name_list_cannot_be_empty(self):
-        # Exercise
-        with pytest.raises(ValueError) as excinfo:
-            _ = GetAtt({"one": 42})
-
-        assert "AWS attribute name is required" in str(excinfo.value)
-
-    def test_attribute_name_is_a_single_string(self):
-        # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Attrib")
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        assert node.value == "SomeResource.Attrib"
-
-    def test_attribute_name_is_a_single_dotted_string(self):
-        # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Attrib.SubAttrib")
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        assert node.value == "SomeResource.Attrib.SubAttrib"
-
-    def test_attribute_name_is_a_list_of_strings(self):
-        # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Attrib", "SubAttrib", "SomethingElse")
-
-        # Exercise
-        node = func.as_yaml_node(dumper)
-
-        # Verify
-        assert node.value == "SomeResource.Attrib.SubAttrib.SomethingElse"
-
-    test_attribute_name_contains_a_ref = test_nested_function_forces_longform_name
-
-    def test_attribute_name_contains_an_unsupported_function(self):
-        # Exercise
-        with pytest.raises(ValueError) as excinfo:
-            _ = GetAtt({"one": 42}, "Attrib", GetAZs())
-
-        assert "GetAZs" in str(excinfo.value)
