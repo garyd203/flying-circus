@@ -1,12 +1,15 @@
 """Tests for YAML output from the AWSObject base class."""
 
 import pytest
+from attr import attrib
+from attr import attrs
 
 from flyingcircus.core import AWSObject
 from flyingcircus.core import EMPTY_DICT
 from flyingcircus.core import EMPTY_LIST
 from flyingcircus.core import dedent
 from .common import DualAttributeObject
+from .common import MixedAttributeObject
 from .common import SingleAttributeObject
 from .common import ZeroAttributeObject
 
@@ -16,9 +19,8 @@ from .common import ZeroAttributeObject
 class TestYamlAttributeExport:
     """Verify all relevant attributes are exported to YAML"""
 
-    def test_aws_attributes_are_only_exported_when_set(self):
-        data = DualAttributeObject(one=42)
-        data._internal_value = 7
+    def test_aws_attributes_are_exported_when_set(self):
+        data = SingleAttributeObject(one=42)
 
         output = data.export("yaml")
 
@@ -27,9 +29,39 @@ class TestYamlAttributeExport:
             one: 42
             """)
 
-    def test_empty_export_when_no_aws_attributes_configured_and_internal_attributes_set(self):
+    def test_aws_attributes_are_not_exported_when_uninitialised(self):
+        data = DualAttributeObject(one=42)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            """)
+
+    def test_aws_attributes_are_not_exported_when_set_to_none(self):
+        data = DualAttributeObject(one=42, two=15)
+        data.two = None
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            """)
+
+    def test_internal_attributes_are_not_exported(self):
+        data = MixedAttributeObject(one=42, a=6)
+
+        output = data.export("yaml")
+
+        assert output == dedent("""
+            ---
+            one: 42
+            """)
+
+    def test_empty_export_when_no_aws_attributes_configured(self):
         data = ZeroAttributeObject()
-        data._internal_value = 7
 
         output = data.export("yaml")
 
@@ -37,16 +69,14 @@ class TestYamlAttributeExport:
             --- {}
             """)
 
-    def test_empty_export_when_no_aws_attributes_set_and_internal_attributes_set(self):
-        data = DualAttributeObject()
-        data._internal_value = 7
+    def test_empty_export_when_no_aws_attributes_set(self):
+        data = MixedAttributeObject(a=6)
 
         output = data.export("yaml")
 
         assert output == dedent("""
             --- {}
             """)
-
 
 
 class TestYamlBasicFormatting:
@@ -60,8 +90,12 @@ class TestYamlBasicFormatting:
         assert output.startswith("---")
 
     def test_yaml_tags_are_not_printed(self):
+        @attrs(**AWSObject.ATTR_ARGS)
         class TestObject(AWSObject):
-            AWS_ATTRIBUTES = {"string_value", "number_value", "list_value", "dict_value"}
+            dict_value = attrib()
+            list_value = attrib()
+            number_value = attrib()
+            string_value = attrib()
 
         data = TestObject(string_value="some string", number_value=42, list_value=[1, 2, 'abc'], dict_value={'a': 'b'})
 
@@ -109,6 +143,7 @@ class TestYamlBasicFormatting:
             two: 2
             """)
 
+    @pytest.mark.skip("#107: Need to think about why we need null's in output. Currently we treat them as 'no value'")
     def test_none_values_are_exported_as_null(self):
         data = SingleAttributeObject()
         data.one = None
@@ -147,10 +182,11 @@ class TestYamlBasicFormatting:
     # Object/Dictionary Export Order
     # ------------------------------
 
-    def test_map_entries_are_sorted(self):
+    def test_object_entries_are_sorted_in_order_of_declaration(self):
+        @attrs(**AWSObject.ATTR_ARGS)
         class OrderedObject(AWSObject):
-            AWS_ATTRIBUTES = {"a", "b"}
-            EXPORT_ORDER = ["b", "a"]
+            b = attrib()
+            a = attrib()
 
         data = OrderedObject(a=1, b=2)
 
@@ -160,6 +196,32 @@ class TestYamlBasicFormatting:
             ---
             b: 2
             a: 1
+            """)
+
+    def test_dictionary_entries_are_sorted_alphabetically(self):
+        data = SingleAttributeObject(one=dict([(x, "foo") for x in [
+            "a", "b", "c", "A", "Bad", "bad", "badness", "baddie", "42", "4", "1", "z", "ZoologicalSpecimen"
+        ]]))
+
+        output = data.export("yaml")
+
+        # TODO I don't really like this sort order - vcapitalized items before lowercase items is a bit deceptive
+        assert output == dedent("""
+            ---
+            one:
+              '1': foo
+              '4': foo
+              '42': foo
+              A: foo
+              Bad: foo
+              ZoologicalSpecimen: foo
+              a: foo
+              b: foo
+              bad: foo
+              baddie: foo
+              badness: foo
+              c: foo
+              z: foo
             """)
 
     # List Export Style
@@ -204,7 +266,7 @@ class TestYamlBasicFormatting:
 
         output = data.export("yaml")
 
-        # TODO This is not actually very readable - see issue #41
+        # TODO #41: This is not actually very readable
         assert output == dedent("""
                 ---
                 one:

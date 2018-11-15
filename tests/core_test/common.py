@@ -2,6 +2,8 @@
 
 import hypothesis.strategies as st
 import pytest
+from attr import attrib
+from attr import attrs
 
 from flyingcircus.core import AWSObject
 from flyingcircus.core import Resource
@@ -18,6 +20,7 @@ class CommonAWSObjectTests:
         assert False
 
 
+@attrs(**AWSObject.ATTR_ARGS)
 class ZeroAttributeObject(AWSObject):
     """Test object with no attributes.
 
@@ -27,20 +30,26 @@ class ZeroAttributeObject(AWSObject):
     pass
 
 
+@attrs(**AWSObject.ATTR_ARGS)
 class SingleAttributeObject(AWSObject):
     """Test object with 1 attribute"""
-    AWS_ATTRIBUTES = {"one"}
-
-    def __init__(self, one=None):
-        AWSObject.__init__(self, one=one)
+    one = attrib(default=None)
 
 
+@attrs(**AWSObject.ATTR_ARGS)
 class DualAttributeObject(AWSObject):
     """Test object with 2 attributes"""
-    AWS_ATTRIBUTES = {"one", "two"}
+    one = attrib(default=None)
+    two = attrib(default=None)
 
-    def __init__(self, one=None, two=None):
-        AWSObject.__init__(self, one=one, two=two)
+
+@attrs(**AWSObject.ATTR_ARGS)
+class MixedAttributeObject(AWSObject):
+    """Test object with AWS attributes and internal attributes"""
+    one = attrib(default=None)
+    two = attrib(default=None)
+    _a = attrib(default=None)
+    _b = attrib(default=None)
 
 
 @st.composite
