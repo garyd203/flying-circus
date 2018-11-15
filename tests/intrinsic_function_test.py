@@ -5,6 +5,7 @@ from unittest.mock import Mock
 import hypothesis.strategies as st
 import pytest
 from hypothesis import given
+from yaml import ScalarNode
 
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import AWS_StackName
@@ -14,10 +15,11 @@ from flyingcircus.intrinsic_function import Base64
 from flyingcircus.intrinsic_function import GetAZs
 from flyingcircus.intrinsic_function import GetAtt
 from flyingcircus.intrinsic_function import Ref
+from flyingcircus.intrinsic_function import Sub
 from flyingcircus.yaml import AmazonCFNDumper
-from .pyyaml_helper import get_mapping_node_key
 from .core_test.common import SingleAttributeObject
 from .core_test.common import ZeroAttributeObject
+from .pyyaml_helper import get_mapping_node_key
 
 
 def _create_refsafe_dumper(stack):
@@ -38,6 +40,7 @@ class TestBase64:
         node = func.as_yaml_node(dumper)
 
         # Verify
+        assert isinstance(node, ScalarNode)
         assert node.tag == "!Base64"
 
     def test_yaml_output(self):
@@ -138,6 +141,7 @@ class TestGetAtt:
         node = func.as_yaml_node(dumper)
 
         # Verify
+        assert isinstance(node, ScalarNode)
         assert node.tag == "!GetAtt"
 
     def test_stack_yaml_output(self):
@@ -316,6 +320,7 @@ class TestGetAZs:
         node = func.as_yaml_node(dumper)
 
         # Verify
+        assert isinstance(node, ScalarNode)
         assert node.tag == "!GetAZs"
 
     @pytest.mark.parametrize("region", ["us-east-1", "ap-southeast-2"])
@@ -439,6 +444,7 @@ class TestRef:
         node = ref.as_yaml_node(dumper)
 
         # Verify
+        assert isinstance(node, ScalarNode)
         assert node.tag == "!Ref"
 
     @given(st.text(min_size=1))
@@ -605,3 +611,112 @@ class TestRef:
         assert not (ref == other)
         assert not (other == ref)
         assert hash(ref) != hash(other)
+
+
+class TestSubWithoutExplicitVariables:
+    """Test behaviour/output of the Sub function, when a variable mapping is not used."""
+
+    # YAML Output
+    # -----------
+    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = Sub("Something something")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert isinstance(node, ScalarNode)
+        assert node.tag == "!Sub"
+
+    def test_uses_string_quoting(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = Sub("Something something")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert isinstance(node, ScalarNode)
+        assert node.style != ""
+
+    def test_yaml_output(self):
+        # Setup
+        func = Sub("Something")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Sub 'Something'
+            """)
+
+    def test_yaml_output_doesnt_modify_complex_string(self):
+        # Setup. Use example from AWS documentation
+        func = Sub("arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}'
+            """)
+
+    def test_yaml_output_doesnt_modify_multiline_string(self):
+        # Setup. Use example from AWS documentation
+        func = Sub(dedent("""
+            #!/bin/bash -xe
+            yum update -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --configsets wordpress_install --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
+            """))
+
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Sub |
+              #!/bin/bash -xe
+              yum update -y aws-cfn-bootstrap
+              /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --configsets wordpress_install --region ${AWS::Region}
+              /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
+            """)
+
+    # Parameters
+    # ----------
+    @pytest.mark.parametrize("input", [
+        AWS_Region,  # string-like PseudoParameter
+        Base64("Some string with ${AWS::Region} embedded"),  # String-like function
+    ])
+    def test_nonstring_input_is_rejected_immediately(self, input):
+        with pytest.raises(TypeError):
+            _ = Sub(input)
+
+
+@pytest.mark.skip("#37: Need to implement Fn::Sub with variable mapping.")
+class TestSubWithVariableMapping:
+    """Test behaviour/output of the Sub function, when a variable mapping is used."""
+
+    pass
+
+    # TODO tests
+    #   standard YAML output tests
+    #   standard nested function tests
+    #   any var names + values are strings or subset of intrinsic functions (from list)
+    #   String with no var references is fine
+    #   string with siple var references is exported properly
+    #   string with complex vcar refs is exported properyl
+    #   multi-line strings
+    #   `input` parameter is not a string
