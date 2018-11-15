@@ -10,6 +10,7 @@ See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-func
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import PseudoParameter
 from .yaml import CustomYamlObject
+from .yaml import represent_string
 
 
 # TODO use the rule that every time you detect a nested func, the outer has to use long form
@@ -153,3 +154,44 @@ class Ref(_Function):
         # Equal objects should have the same hash, so we derive our has from
         # the class and the referred object
         return hash((self.__class__, id(self._data)))
+
+
+class Sub(_Function):
+    """Models the behaviour of Ref for Python objects.
+
+    See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-sub.html
+    """
+
+    def __init__(self, input: str, **vars):
+        """Create a string that will have values substituted in
+        by the CloudFormation service
+
+        Args:
+            input: Sub-specific string containing "${Name}" -style references
+                to values in this CloudFormation template.
+            vars: (Optional) Mapping of {name: value} for substituted values
+                referenced by the input string, that are not otherwise present
+                in this template.
+        """
+        # Checks
+        if not isinstance(input, str):
+            raise TypeError("The Fn::Sub function can only accept a string.")
+        if isinstance(input, PseudoParameter):
+            # Beware that a PseudoParameter is actually a string, in Flying Circus
+            raise TypeError("Don't try to use a Pseudo Parameter as the output of Fn::Sub.")
+
+        self._input = input
+        self._variables = vars
+
+    def as_yaml_node(self, dumper):
+        if self._variables:
+            # Use long form
+            # TODO #37 need to write tests for long form output
+            # return dumper.represent_sequence("Fn::Sub", [self._input, self._variables])
+            raise NotImplementedError("Fn::Sub with an explicit Variable map is not yet supported")
+
+        # Use short form without any extra named variables.
+        #
+        # Strings used in Sub tend to be full of special characters, so we
+        # force them to be quoted in order to improve readability.
+        return represent_string(dumper, self._input, tag="!Sub", basicsep="'")
