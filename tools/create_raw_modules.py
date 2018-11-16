@@ -34,6 +34,7 @@ SUPPORTED_AWS_SERVICES = {
     "ECS",
     "KMS",
     "S3",
+    "SNS",
 }
 
 #: Lookup table of documentation URL's for AWS services. This information does
@@ -49,6 +50,7 @@ SERVICE_DOCUMENTATION_URLS = {
     "ECS": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/index.html",
     "KMS": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
     "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
+    "SNS": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
 }
 
 #: AWS CFN resources that have non-standard attributes.
