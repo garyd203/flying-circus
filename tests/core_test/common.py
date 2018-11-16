@@ -68,10 +68,14 @@ def aws_attribute_strategy(draw):
 @st.composite
 def aws_object_strategy(draw):
     """A strategy that produces an AWS CFN object."""
-    attributes = draw(st.sets(st.text()))
+    attributes = draw(st.sets(aws_logical_name_strategy()))
 
+    @attrs(
+        these={name: attrib(default=None) for name in attributes},
+        **AWSObject.ATTR_ARGS
+    )
     class HypothesisedAWSObject(AWSObject):
-        AWS_ATTRIBUTES = attributes
+        pass
 
     return draw(st.builds(HypothesisedAWSObject, **{name: aws_attribute_strategy() for name in attributes}))
 
