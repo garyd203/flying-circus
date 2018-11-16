@@ -4,7 +4,7 @@ import pytest
 from attr import attrib
 from attr import attrs
 
-from flyingcircus.core import AWSObject
+from flyingcircus.core import AWSObject, ATTRSCONFIG
 from flyingcircus.core import EMPTY_DICT
 from flyingcircus.core import EMPTY_LIST
 from flyingcircus.core import dedent
@@ -90,7 +90,7 @@ class TestYamlBasicFormatting:
         assert output.startswith("---")
 
     def test_yaml_tags_are_not_printed(self):
-        @attrs(**AWSObject.ATTR_ARGS)
+        @attrs(**ATTRSCONFIG)
         class TestObject(AWSObject):
             dict_value = attrib()
             list_value = attrib()
@@ -183,7 +183,7 @@ class TestYamlBasicFormatting:
     # ------------------------------
 
     def test_object_entries_are_sorted_in_order_of_declaration(self):
-        @attrs(**AWSObject.ATTR_ARGS)
+        @attrs(**ATTRSCONFIG)
         class OrderedObject(AWSObject):
             b = attrib()
             a = attrib()

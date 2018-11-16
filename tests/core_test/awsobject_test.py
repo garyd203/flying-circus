@@ -9,6 +9,7 @@ from attr import attrib
 from attr import attrs
 from hypothesis import given
 
+from flyingcircus.core import ATTRSCONFIG
 from flyingcircus.core import AWSObject
 from .common import DualAttributeObject
 from .common import MixedAttributeObject
@@ -25,7 +26,7 @@ class TestInitMethod:
             _ = SingleAttributeObject(42)
 
     def test_init_should_not_accept_parameters_that_are_internal_attributes(self):
-        @attrs(**AWSObject.ATTR_ARGS)
+        @attrs(**ATTRSCONFIG)
         class InitTestObject(AWSObject):
             aws_attribute: int = attrib(default=None)
             _internal_attribute: int = attrib(default=None, init=False)
@@ -173,7 +174,7 @@ class TestIteratorAccess:
         assert len(data) == 2
 
     def test_object_iteration_sorts_in_order_of_declaration(self):
-        @attrs(**AWSObject.ATTR_ARGS)
+        @attrs(**ATTRSCONFIG)
         class OrderedObject(AWSObject):
             b = attrib()
             a = attrib()

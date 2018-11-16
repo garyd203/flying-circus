@@ -16,11 +16,27 @@ from .exceptions import StackMergeError
 from .yaml import AmazonCFNDumper
 from .yaml import CustomYamlObject
 
-
 # TODO rename "AWS attribute" to "CloudFormation attribute" (or YAML attribute) everywhere ?
 
+#: Arguments to `attrs` decorator for creating a CloudFormation object,
+#: as a subclass of CustomYamlObject.
+#:
+#: Some type checkers (eg PyCharm) implement attrs-based type-checking by
+#: detecting the use of the @attrs decorator and then examining the decorated
+#: class. These type checkers break when we wrap attrs() in our own extensions,
+#: so we instead provide our standard configuration as a set of arguments
+ATTRSCONFIG = dict(
+    # TODO Consider whether we should have comparison. It's not normally needed, but it wouldnt hurt either
+    cmp=False,
+    # Only allow known attributes. This requires all parent classes to also
+    # have __slots__ defined.
+    slots=True,
+    # Create a constructor with only keyword parameters
+    init=True, kw_only=True,
+)
 
-@attrs(kw_only=True, slots=True)  # TODO unnecessary?
+
+@attrs(**ATTRSCONFIG)
 class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
 
@@ -39,6 +55,8 @@ class AWSObject(CustomYamlObject):
     Attributes are exported in the order they are declared.
     """
 
+    # TODO renanme to BaseObject and make this an AWS-specific module for context
+
     # TODO do something with these somehow. Bear in mind that declaring them here will pollute subclasses unnecessarily
     # prototype_aws_attribute: int = attrib(default=None)
     # _prototype_internal_attribute: int = attrib(default=None, init=False)
@@ -53,15 +71,6 @@ class AWSObject(CustomYamlObject):
     # TODO we need to use a decorator *and* a superclass - best to combine them somehow
 
     # FIXME for sorting, what about if we have inehrited some attributes frm the parent? Maybe get an override mechanism when that need arises
-
-    #: Arguments to `attrs` decorator for creating a CloudFormation object,
-    #: as a subclass of this class.
-    ATTR_ARGS = dict(
-        cmp=False,  # FIXME comparison is not needed, but it wouldnt hurt either
-        slots=True,  # Only allow known attributes
-        init=True, kw_only=True,  # Create a constructor with only keyword parameters
-        # TODO consider weakref_slot - not sure why we would need it though
-    )
 
     # FIXME what if we make our overriden versions have the same name?
 
