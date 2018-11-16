@@ -170,7 +170,7 @@ class AWSObject(CustomYamlObject):
         tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
         # Get all cloud formation attributes that are set, in sorted order
-        attributes = [(key, self[key]) for key in self if self._is_cfn_attribute(key)]
+        attributes = [(key, self[key]) for key in self if self._is_attribute_set(key)]
 
         # Create neater YAML by filtering out empty blocks at this level
         attributes = [(key, value) for key, value in attributes if is_non_empty_attribute(value)]
