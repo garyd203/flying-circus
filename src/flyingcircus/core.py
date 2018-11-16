@@ -36,6 +36,11 @@ ATTRSCONFIG = dict(
 )
 
 
+# TODO create some prototypes or helper functions for creating attribs().
+# prototype_aws_attribute: int = attrib(default=None)
+# _prototype_internal_attribute: int = attrib(default=None, init=False)
+
+
 @attrs(**ATTRSCONFIG)
 class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
@@ -55,40 +60,32 @@ class AWSObject(CustomYamlObject):
     Attributes are exported in the order they are declared.
     """
 
-    # TODO renanme to BaseObject and make this an AWS-specific module for context
+    # TODO rename to BaseObject and make this an AWS-specific module for context
 
-    # TODO do something with these somehow. Bear in mind that declaring them here will pollute subclasses unnecessarily
-    # prototype_aws_attribute: int = attrib(default=None)
-    # _prototype_internal_attribute: int = attrib(default=None, init=False)
+    # TODO use attrs metadata to mark non-exported attributes
 
-    # TODO instead use attrs metadata to mark non-exported attributes
-
-    # TODO beware we have changed the semantics of hasattr. Nowadays the attr is always there, but has a signal value to say it is absent
+    # TODO beware we have changed the semantics of hasattr with our `attrs` reimplementation. Nowadays the attr is always there, but has a signal value to say it is absent
 
     # FIXME validate behaviour when we have subclassed objects with attribs defined at multiple levels (all should be included)
     #   - can't set invalid attributes => slots should be set all the way up
 
-    # TODO we need to use a decorator *and* a superclass - best to combine them somehow
-
-    # FIXME for sorting, what about if we have inehrited some attributes frm the parent? Maybe get an override mechanism when that need arises
-
-    # FIXME what if we make our overriden versions have the same name?
-
-    # TODO test that slots actually works - it will fail if we missed slots on any intermediate class
-
     # Attribute Access
     # ----------------
 
-    # TODO do something with this
-    # def _is_internal_attribute(self, name):
-    #     """Whether this attribute name corresponds to an internal attribute for this object."""
-    #     # Internal attributes all start with an underscore
-    #     return name.startswith("_")
+    def _is_internal_attribute(self, name: str) -> bool:
+        """Whether this attribute name corresponds to an internal attribute for this object.
+
+        This is effectively the inverse of _is_cfn_attribute().
+        """
+        # TODO use attribs metadata
+        # Internal attributes all start with an underscore
+        return name.startswith("_")
 
     def _is_cfn_attribute(self, name: str) -> bool:
         """Whether this attribute name corresponds to a known CloudFormation attribute for this object."""
         # TODO use attribs metadata
-        return not name.startswith("_")
+        # A CloudFormation attribute is an attribute that's not internal.
+        return not self._is_internal_attribute(name)
 
     def _is_attribute_set(self, name: str) -> bool:
         """Whether this attribute has a valid value."""
@@ -97,8 +94,9 @@ class AWSObject(CustomYamlObject):
 
         # TODO If we ever encounter a need to use None as a real value,
         # have some attrib() metadata that is used to indicate the
-        # alternate signal value for not-set
-        return getattr(self, name, None) is not None  # TODO get None as a standard metadata "fc-notset-signal-value"
+        # alternate signal value for not-set (eg. "fc-notset-signal-value")
+
+        return getattr(self, name, None) is not None
 
     # Container-Like Access For CloudFormation Attributes
     # ---------------------------------------------------
@@ -129,9 +127,13 @@ class AWSObject(CustomYamlObject):
         # We treat the object like a dictionary for iteration. This means
         # we return a sorted list of CloudFormation attribute names.
 
-        # FIXME I am not sure that sorting by declaration order will work with subclassing
+        # TODO sorting by declaration order will be difficult to manage with
+        # subclassing. If there turns out to be a real need for more control,
+        # we can re-introduce partial sort-order declaration like we used to
+        # have
 
-        for attrib in self.__attrs_attrs__:  # TODO make this class be an attrs class, or else use the standalone attrs lookup function
+        # noinspection PyUnresolvedReferences
+        for attrib in self.__attrs_attrs__:
             if self._is_cfn_attribute(attrib.name):
                 yield attrib.name
 
