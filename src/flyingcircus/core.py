@@ -5,10 +5,14 @@ import re
 import textwrap
 from itertools import chain
 from typing import Any
+from typing import Dict
 from typing import Iterator
+from typing import List
+from typing import Optional
 
 import yaml
 import yaml.resolver
+from attr import attrib
 from attr import attrs
 
 from . import _about
@@ -68,6 +72,8 @@ class AWSObject(CustomYamlObject):
 
     # FIXME validate behaviour when we have subclassed objects with attribs defined at multiple levels (all should be included)
     #   - can't set invalid attributes => slots should be set all the way up
+
+    # FIXME convert existing "safe" getattr code to simple attribute lookup
 
     # Attribute Access
     # ----------------
@@ -259,43 +265,26 @@ class _EmptyDict(CustomYamlObject):
 EMPTY_DICT = _EmptyDict()
 
 
+@attrs(**ATTRSCONFIG)
 class Stack(AWSObject):
     """Represents a CloudFormation Stack, the top-level template object.
 
     See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html
     """
 
-    # This is in the order recommended in the documentation
-    EXPORT_ORDER = [
-        "AWSTemplateFormatVersion", "Description", "Metadata", "Parameters",
-        "Mappings", "Conditions", "Transform", "Resources", "Outputs",
-    ]
+    # These are declared in the order recommended in the documentation
+    # TODO can probably nail down the value types for these dicts - Resource, Output, etc.
+    AWSTemplateFormatVersion: str = attrib(default="2010-09-09")
+    Description: Optional[str] = attrib(default=None)
+    Metadata: Optional[Dict[str, Any]] = attrib(factory=dict)
+    Parameters: Optional[Dict[str, Any]] = attrib(factory=dict)
+    Mappings: Optional[Dict[str, Any]] = attrib(factory=dict)
+    Conditions: Optional[Dict[str, Any]] = attrib(factory=dict)
+    Transform: Optional[str] = attrib(default=None)
+    Resources: Optional[Dict[str, Any]] = attrib(factory=dict)
+    Outputs: Optional[Dict[str, Any]] = attrib(factory=dict)
 
-    AWS_ATTRIBUTES = {
-        "AWSTemplateFormatVersion", "Conditions", "Description", "Mappings",
-        "Metadata", "Outputs", "Parameters", "Resources", "Transform",
-    }
-
-    def __init__(self, AWSTemplateFormatVersion=None, Conditions=None,
-                 Description=None, Mappings=None, Metadata=None, Outputs=None,
-                 Parameters=None, Resources=None, Transform=None):
-        # We default to the most recent format version
-        # TODO #56 consider functionality to set defaults in a generic way. Not sure how much it would be needed, so maybe not worth the fuss
-        if AWSTemplateFormatVersion is None:
-            AWSTemplateFormatVersion = "2010-09-09"
-
-        AWSObject.__init__(**locals())
-
-        # TODO We really want issue #45 to auto-initialise all the sets
-        if not hasattr(self, "Metadata"):
-            self.Metadata = {}
-        if not hasattr(self, "Outputs"):
-            self.Outputs = {}
-        if not hasattr(self, "Parameters"):
-            self.Parameters = {}
-        if not hasattr(self, "Resources"):
-            self.Resources = {}
-
+    def __attrs_post_init__(self):
         # Set standard Metadata
         self.Metadata["FlyingCircus"] = {
             "version": _about.__version__,
@@ -345,8 +334,8 @@ class Stack(AWSObject):
                     self.AWSTemplateFormatVersion, other.AWSTemplateFormatVersion
                 )
             )
-        if getattr(self, "Transform", None) is not None and \
-                getattr(other, "Transform", None) is not None and \
+        if self.Transform is not None and \
+                other.Transform is not None and \
                 self.Transform != other.Transform:
             raise StackMergeError(
                 "This template has a different Serverless Application Model "
@@ -362,7 +351,6 @@ class Stack(AWSObject):
         # Duplicated export names are picked up by cloud formation when we
         # import the template, but when merging stacks it is a lot more
         # helpful to catch these errors early
-        # TODO what if Export is not a simple dict?
         existing_exports = {getattr(output, "Export", {}).get("Name", "") for output in self.Outputs.values()}
         new_exports = {getattr(output, "Export", {}).get("Name", "") for output in other.Outputs.values()}
         shared_exports = existing_exports.intersection(new_exports)
@@ -403,6 +391,7 @@ class Stack(AWSObject):
         Return the new stack.
         """
         # TODO Add checks for logical name format when we set items, as well as here
+        # FIXME #43 Copy across Metadata. i don't think we should prefix it.
 
         # Filter out ridiculous prefixes before they cause subtle damage
         if not isinstance(prefix, str):
@@ -417,8 +406,8 @@ class Stack(AWSObject):
 
         # Create a new stack with copies of the static text fields
         new_stack = Stack(
-            AWSTemplateFormatVersion=getattr(self, "AWSTemplateFormatVersion", None),
-            Transform=getattr(self, "Transform", None),
+            AWSTemplateFormatVersion=self.AWSTemplateFormatVersion,
+            Transform=self.Transform,
         )
 
         # Modify the description to refer to the prefix. This is a bit hacky,
@@ -483,34 +472,34 @@ class Stack(AWSObject):
             tags.update(more_tags)
 
         # Simply apply the tags to each resource
+        # TODO force the type for Resources to always be a resource, then can simplify this checking
         for resource in self.Resources.values():
             if hasattr(resource, "tag") and callable(resource.tag):
                 # Assume this is a Resource-like object
                 resource.tag(tags=tags, tag_derived_resources=tag_derived_resources)
 
 
+@attrs(**ATTRSCONFIG)
 class Parameter(AWSObject):
     """Represents a CloudFormation Parameter.
 
     https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
     """
 
-    EXPORT_ORDER = ["Type"]
+    Type: str = attrib()
+    AllowedPattern: Optional[str] = attrib(default=None)
+    AllowedValues: List[Any] = attrib(factory=list)
+    ConstraintDescription: Optional[str] = attrib(default=None)
+    Default: Optional[Any] = attrib(default=None)
+    Description: Optional[str] = attrib(default=None)
+    MaxLength: Optional[int] = attrib(default=None)
+    MaxValue: Optional[int] = attrib(default=None)  # TODO this could also ]be a float
+    MinLength: Optional[int] = attrib(default=None)
+    MinValue: Optional[int] = attrib(default=None)  # TODO this could also be float
+    NoEcho: Optional[bool] = attrib(default=None)
 
-    AWS_ATTRIBUTES = {
-        "AllowedPattern", "AllowedValues", "ConstraintDescription", "Default",
-        "Description", "MaxLength", "MaxValue", "MinLength", "MinValue",
-        "NoEcho", "Type",
-    }
-
-    def __init__(self, AllowedPattern=None, AllowedValues=None,
-                 ConstraintDescription=None, Default=None, Description=None,
-                 MaxLength=None, MaxValue=None, MinLength=None, MinValue=None,
-                 NoEcho=None, Type=None,
-                 ):
-        AWSObject.__init__(**locals())
-        # TODO check Type is set to a valid value?
-        # TODO check MinLength/MaxLength are set to a valid integer value?
+    # TODO check Type is set to a valid value?
+    # TODO check MinLength/MaxLength are set to a valid integer value?
 
 
 class PseudoParameter(str):
