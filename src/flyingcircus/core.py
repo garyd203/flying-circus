@@ -4,6 +4,8 @@ import copy
 import re
 import textwrap
 from itertools import chain
+from typing import Any
+from typing import Iterator
 
 import yaml
 import yaml.resolver
@@ -17,6 +19,8 @@ from .yaml import CustomYamlObject
 
 # TODO rename "AWS attribute" to "CloudFormation attribute" (or YAML attribute) everywhere ?
 
+
+@attrs(kw_only=True, slots=True)  # TODO unnecessary?
 class AWSObject(CustomYamlObject):
     """Base class to represent any dictionary-like object from AWS Cloud Formation.
 
@@ -35,7 +39,13 @@ class AWSObject(CustomYamlObject):
     Attributes are exported in the order they are declared.
     """
 
+    # TODO do something with these somehow. Bear in mind that declaring them here will pollute subclasses unnecessarily
+    # prototype_aws_attribute: int = attrib(default=None)
+    # _prototype_internal_attribute: int = attrib(default=None, init=False)
+
     # TODO instead use attrs metadata to mark non-exported attributes
+
+    # TODO beware we have changed the semantics of hasattr. Nowadays the attr is always there, but has a signal value to say it is absent
 
     # FIXME validate behaviour when we have subclassed objects with attribs defined at multiple levels (all should be included)
     #   - can't set invalid attributes => slots should be set all the way up
@@ -53,97 +63,40 @@ class AWSObject(CustomYamlObject):
         # TODO consider weakref_slot - not sure why we would need it though
     )
 
+    # FIXME what if we make our overriden versions have the same name?
+
     # TODO test that slots actually works - it will fail if we missed slots on any intermediate class
-
-    #: Set of valid AWS attribute names for this class
-    AWS_ATTRIBUTES = set()  # TODO make a function instead?
-
-    #: Order in which we write attributes out, when exporting them to a file.
-    #: If an attribute is not set, it will not be exported, even if it is
-    #: listed here.
-    #:
-    #: Any attributes not specified here will be listed alphabetically after
-    #: these attributes (ie. the default ordering is to list every attribute
-    #: in alphabetical order)
-    EXPORT_ORDER = []
-
-    # Constructor
-    # -----------
-
-    # TODO clean up old code
-
-    # def __init__(self, **kwargs):
-    #     # Set initial values passed to constructor
-    #     self._set_constructor_attributes(kwargs)
-
-    def _set_constructor_attributes(self, params):
-        """Set any attributes that were passed to the object constructor.
-
-        This requires some special handling to handle constructor-specific
-        semantics, in contrast to normal attribute setting.
-        """
-        for name, value in params.items():
-            if value is not None:
-                try:
-                    setattr(self, name, value)
-                except AttributeError as ex:
-                    # Unrecognised keyword parameters in a constructor
-                    # normally get treated as TypeError's, interestingly.
-                    raise TypeError(str(ex)) from ex
-
-    @classmethod
-    def _split_current_attributes(cls, params):
-        """Filter attribute values to separate those that are defined by the current class."""
-        parent_names = super(cls, cls).AWS_ATTRIBUTES
-        current_names = cls.AWS_ATTRIBUTES.difference(parent_names)
-
-        current_attribs = {}
-        other_params = dict(params)
-
-        for name in current_names:
-            try:
-                current_attribs[name] = other_params.pop(name)
-            except KeyError:
-                pass
-
-        return current_attribs, other_params
 
     # Attribute Access
     # ----------------
 
-    # TODO clean up old code
-
-    # def __setattr__(self, key, value):
-    #     if hasattr(self, key):
-    #         # Allow modification of existing attributes. This avoids madness,
-    #         # whilst also neatly covering some corner cases with our
-    #         # attribute filtering
-    #         super(AWSObject, self).__setattr__(key, value)
-    #         return
-    #     if self._is_internal_attribute(key):
-    #         # Internal attribute
-    #         super(AWSObject, self).__setattr__(key, value)
-    #         return
-    #     if self._is_normal_aws_attribute(key):
-    #         # Known AWS attribute
-    #         super(AWSObject, self).__setattr__(key, value)
-    #         return
-    #     raise AttributeError("'{}' is not a recognised AWS attribute for {}".format(key, self.__class__.__name__))
-
+    # TODO do something with this
     # def _is_internal_attribute(self, name):
     #     """Whether this attribute name corresponds to an internal attribute for this object."""
     #     # Internal attributes all start with an underscore
     #     return name.startswith("_")
 
-    def _is_cfn_attribute(self, name):
+    def _is_cfn_attribute(self, name: str) -> bool:
         """Whether this attribute name corresponds to a known CloudFormation attribute for this object."""
         # TODO use attribs metadata
         return not name.startswith("_")
 
+    def _is_attribute_set(self, name: str) -> bool:
+        """Whether this attribute has a valid value."""
+        # Currently we use None as a signal value (and default value in
+        # attrib() definitions) to indicate that the attribute is not set.
+
+        # TODO If we ever encounter a need to use None as a real value,
+        # have some attrib() metadata that is used to indicate the
+        # alternate signal value for not-set
+        return getattr(self, name, None) is not None  # TODO get None as a standard metadata "fc-notset-signal-value"
+
     # Container-Like Access For CloudFormation Attributes
     # ---------------------------------------------------
+    # TODO implement other container functions: __reversed__, __contains__
+    # TODO probably need __reversed__ otherwise an attempt to reverse the object will break like crazy (int item lookups)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> Any:
         """Get CloudFormation attributes in a dictionary-like manner."""
         if self._is_cfn_attribute(item):
             try:
@@ -155,7 +108,7 @@ class AWSObject(CustomYamlObject):
                 "'{}' is not a CloudFormation attribute, and cannot be retrieved with the dictionary interface".format(
                     item))
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Any):
         """Set CloudFormation attributes in a dictionary-like manner."""
         if self._is_cfn_attribute(key):
             setattr(self, key, value)
@@ -163,46 +116,26 @@ class AWSObject(CustomYamlObject):
             raise KeyError(
                 "'{}' is not a CloudFormation attribute, and cannot be set with the dictionary interface".format(key))
 
-    # TODO do we do delete with attrs? maybe not
-
-    # def __delitem__(self, key):
-    #     """Delete AWS attributes in a dictionary-like manner."""
-    #     if self._is_normal_aws_attribute(key):
-    #         try:
-    #             delattr(self, key)
-    #         except AttributeError as ex:
-    #             raise KeyError(str(ex)) from ex
-    #     else:
-    #         raise KeyError(
-    #             "'{}' is not an AWS attribute, and cannot be deleted with the dictionary interface".format(key))
-
-    # TODO implement other container functions: __reversed__, __contains__
-
-    # TODO probably need __reversed__ otherwise an attempt to reverse the object will break like crazy (int item lookups)
-
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         # We treat the object like a dictionary for iteration. This means
-        # we return a sorted list of CloudFormation attribute names that are currently set
-        # TODO what system do we use for indicating that a attribute has no meaningufl value. Sometimes the supplied default could be useful
-        #   -> perhaps compare to some metadata?
-        #   -> perhaps compare to None. Not sure we have any valid use cases for exporting None
-        for attrib in self.__attrs_attrs__:
-            if self._is_cfn_attribute(attrib.name):
-                if getattr(self, attrib.name) is not None:
-                    yield attrib.name
+        # we return a sorted list of CloudFormation attribute names.
 
-    #
-    # def __len__(self):
-    #     # The length of the object is the number of attributes currently set
-    #     return len(
-    #         [key for key in self.AWS_ATTRIBUTES if hasattr(self, key)]
-    #     )
+        # FIXME I am not sure that sorting by declaration order will work with subclassing
+
+        for attrib in self.__attrs_attrs__:  # TODO make this class be an attrs class, or else use the standalone attrs lookup function
+            if self._is_cfn_attribute(attrib.name):
+                yield attrib.name
+
+    def __len__(self) -> int:
+        # The length of the object is the number of attributes currently set,
+        # in order to match the result from __iter__
+        return len(list(iter(self)))
 
     # Export Data
     # -----------
 
     # TODO change param name to prevent namespace clash
-    def export(self, format="yaml"):
+    def export(self, format: str = "yaml") -> str:
         """Export this AWS object as CloudFormation in the specified format."""
         # TODO document the formats. 'json' or 'yaml'
         if format == "yaml":
@@ -215,7 +148,7 @@ class AWSObject(CustomYamlObject):
         else:
             raise ValueError("Export format '{}' is unknown".format(format))
 
-    def as_yaml_node(self, dumper):
+    def as_yaml_node(self, dumper: yaml.Dumper) -> yaml.Node:
         # Ideally, we would create a tag that contains the object name
         # (eg. "!Bucket") for completeness. Unfortunately, there is no way
         # to then prevent the YAML dumper from printing tags unless it
@@ -225,8 +158,8 @@ class AWSObject(CustomYamlObject):
         # TODO investigate hacking a Dumper subclass like we did for aliasing
         tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
-        # Get all attributes for export in our customised sort order
-        attributes = [(key, self[key]) for key in self]
+        # Get all cloud formation attributes that are set, in sorted order
+        attributes = [(key, self[key]) for key in self if self._is_cfn_attribute(key)]
 
         # Create neater YAML by filtering out empty blocks at this level
         attributes = [(key, value) for key, value in attributes if is_non_empty_attribute(value)]
@@ -237,41 +170,6 @@ class AWSObject(CustomYamlObject):
         # Represent this object as a mapping of it's AWS attributes.
         # Note that `represent_mapping` works on a list of 2-tuples, not a map!
         return dumper.represent_mapping(tag, attributes)
-
-    def _get_export_order(self):
-        """Get ordered list of all attribute names that might exist on this object."""
-        # TODO Rename - not just export order, but iteration order
-        result = []
-
-        # All valid AWS attributes
-        trailing_attribs = set(self.AWS_ATTRIBUTES)
-
-        # Some attributes need to be explicitly listed in a particular order
-        # at the beginning of the map output
-        for name in self.EXPORT_ORDER:
-            try:
-                trailing_attribs.remove(name)
-            except KeyError:
-                # The explicit attribute ordering refers to a attribute that
-                # is not valid. This could indicate a configuration problem,
-                # but failures here are stylistic rather than critical, so
-                # we choose to silently ignore any problems.
-                # TODO log warning message
-                continue
-            result.append(name)
-
-        # Include all remaining attributes in standard sort order
-        result.extend(sorted(trailing_attribs, key=self._get_export_sort_key))
-        return result
-
-    @classmethod
-    def _get_export_sort_key(cls, st):
-        """Sort method for sorting dictionary keys when exporting."""
-        # We want to order alphabetically in a case-insensitive fashion, but
-        # we also want to ensure consistency in the event of two keys that
-        # differ only in case (crazy as that may be). The best way to achieve
-        # this is to use a compound key that falls back to the original value.
-        return st.lower(), st
 
 
 def remove_empty_values_from_attribute(data):
