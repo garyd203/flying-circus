@@ -30,6 +30,7 @@ def register_yaml_representers():
 
 class CustomYamlObject(object):
     """Mixin class for objects that have a custom YAML export."""
+    __slots__ = []
 
     def as_yaml_node(self, dumper: yaml.Dumper) -> yaml.Node:
         """Get a representation of this object as a PyYAML node."""
