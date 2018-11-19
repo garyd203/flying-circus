@@ -134,6 +134,49 @@ class ImportValue(_Function):
         return self._get_string_node(dumper, self._export_name, "ImportValue")
 
 
+class Join(_Function):
+    """Models the behaviour of Fn::Join for Python objects.
+
+    See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-join.html
+    """
+
+    def __init__(self, delimiter, *values):
+        """Join several string-like objects together at template execution time.
+
+        Args:
+            delimiter: The string used to join the values. May be the empty
+                string.
+            *values: The values to join together, expressed as either
+                sequential parameters, or a single list. May contain other
+                intrinsic functions.
+        """
+        # Check delimiter
+        if not isinstance(delimiter, str):
+            raise TypeError("Delimiter must be a string")
+        if len(delimiter) > 30:
+            # CloudFormation does not specify any inherent restriction on
+            # delimiter length, but any large delimiter probably represents
+            # a coding error
+            raise ValueError("Delimiter is very large {}".format(len(delimiter)))
+
+        # Clean values
+        if len(values) == 1 and isinstance(values[0], list):
+            values = list(values[0])
+        else:
+            values = list(values)
+
+        if len(values) < 2:
+            raise ValueError("`values` parameter must contain at least 2 values to join together")
+
+        # Save fields for YAML output
+        self._delimiter = delimiter
+        self._values = list(values)
+
+    def as_yaml_node(self, dumper):
+        # TODO The default block layout is ugly. Better to use a compact form if values are not too large
+        return dumper.represent_sequence("!Join", [self._delimiter, self._values])
+
+
 class Ref(_Function):
     """Models the behaviour of Ref for Python objects.
 
