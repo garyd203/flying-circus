@@ -7,6 +7,10 @@ be resolved internally.
 See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 """
 
+from typing import Union
+
+import yaml
+
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import PseudoParameter
 from .yaml import CustomYamlObject
@@ -17,7 +21,23 @@ from .yaml import represent_string
 
 class _Function(CustomYamlObject):
     """Base class for all intrinsic CloudFormation functions"""
-    pass
+
+    def _get_string_node(self, dumper: yaml.Dumper, value: Union["_Function", str], tag: str) -> yaml.Node:
+        """Get a PyYAML node for a function that returns a string.
+
+        Lots of the intrinsic functions take a single string as the argument,
+        which we echo directly into the output. However, in CloudFormation,
+        this string could be a reference to another function rather than a
+        literal string, and that needs to be handled specially.
+        """
+        if isinstance(value, _Function):
+            return dumper.represent_dict({
+                f"Fn::{tag}": value
+            })
+        else:
+            # TODO be able to control the scalar output, perhaps
+            # TODO use represent_string instead, perhaps
+            return dumper.represent_scalar(f"!{tag}", value, style="")
 
 
 class Base64(_Function):
@@ -33,14 +53,8 @@ class Base64(_Function):
         self._data = data
 
     def as_yaml_node(self, dumper):
-        # TODO wrap up helper function for this code to detect a nested function. pass in tag and content
-        if isinstance(self._data, _Function):
-            return dumper.represent_dict({
-                "Fn::Base64": self._data
-            })
-        else:
-            # TODO If the content is a string, try to format multi-line strings nicely (eg. from EC2 UserData)
-            return dumper.represent_scalar("!Base64", self._data, style="")
+        # TODO If the content is a string, try to format multi-line strings nicely (eg. from EC2 UserData)
+        return self._get_string_node(dumper, self._data, "Base64")
 
 
 class GetAtt(_Function):
@@ -104,12 +118,7 @@ class GetAZs(_Function):
         self._region = region
 
     def as_yaml_node(self, dumper):
-        if isinstance(self._region, _Function):
-            return dumper.represent_dict({
-                "Fn::GetAZs": self._region
-            })
-        else:
-            return dumper.represent_scalar("!GetAZs", self._region, style="")
+        return self._get_string_node(dumper, self._region, "GetAZs")
 
 
 class Ref(_Function):
