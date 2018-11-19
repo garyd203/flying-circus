@@ -32,7 +32,7 @@ def _create_refsafe_dumper(stack):
 class TestBase64:
     """Test behaviour of the Base64 function."""
 
-    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+    def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
         dumper = _create_refsafe_dumper(None)
         func = Base64("Something something")
@@ -134,7 +134,7 @@ class TestGetAtt:
 
     # YAML Output
     # -----------
-    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+    def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
         dumper, func = self._create_getatt_function("SomeResource", "Attrib")
 
@@ -312,7 +312,7 @@ class TestGetAZs:
     def _get_mapping_node_value(self, node, i=0):
         return node.value[i][1].value
 
-    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+    def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
         dumper = _create_refsafe_dumper(None)
         func = GetAZs("ap-southeast-2")
@@ -434,10 +434,7 @@ class TestGetAZs:
 class TestImportValue:
     """Test behaviour/output of the ImportValue function."""
 
-    def _get_mapping_node_value(self, node, i=0):
-        return node.value[i][1].value
-
-    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+    def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
         dumper = _create_refsafe_dumper(None)
         func = ImportValue("some_export_name")
@@ -700,7 +697,7 @@ class TestSubWithoutExplicitVariables:
 
     # YAML Output
     # -----------
-    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+    def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
         dumper = _create_refsafe_dumper(None)
         func = Sub("Something something")
