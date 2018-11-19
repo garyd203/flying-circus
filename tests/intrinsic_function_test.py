@@ -1,11 +1,13 @@
 """Tests for the implementation of intrinsic functions"""
 
+import re
 from unittest.mock import Mock
 
 import hypothesis.strategies as st
 import pytest
 from hypothesis import given
 from yaml import ScalarNode
+from yaml import SequenceNode
 
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import AWS_StackName
@@ -15,6 +17,7 @@ from flyingcircus.intrinsic_function import Base64
 from flyingcircus.intrinsic_function import GetAZs
 from flyingcircus.intrinsic_function import GetAtt
 from flyingcircus.intrinsic_function import ImportValue
+from flyingcircus.intrinsic_function import Join
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.intrinsic_function import Sub
 from flyingcircus.yaml import AmazonCFNDumper
@@ -22,6 +25,8 @@ from .core_test.common import SingleAttributeObject
 from .core_test.common import ZeroAttributeObject
 from .pyyaml_helper import get_mapping_node_key
 
+
+# TODO these tests are in dire need of hypothesis and some smart strategies
 
 def _create_refsafe_dumper(stack):
     dumper = AmazonCFNDumper(None)
@@ -507,6 +512,179 @@ class TestImportValue:
                 one:
                   Fn::ImportValue: !Sub '${AWS::Region}-SharedLogBucket'
             """)
+
+
+class TestJoin:
+    """Test behaviour/output of the Join function."""
+
+    # Test Helpers
+    # ------------
+
+    def _verify_delimiter(self, node, delimiter):
+        assert node.value[0].value == delimiter
+
+    def _verify_values(self, node, values: list):
+        actual_values = [n.value for n in node.value[1].value]
+        assert actual_values == values
+
+    # YAML Output
+    # -----------
+
+    def test_uses_abbreviated_tag(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = Join(".", "foo", "bar")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.tag == "!Join"
+
+    def test_supplied_values_are_used_in_output(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        expected_delimiter = "."
+        expected_values = ["foo", "bar", "baz"]
+        func = Join(expected_delimiter, *expected_values)
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert isinstance(node, SequenceNode)
+        assert len(node.value) == 2
+        self._verify_delimiter(node, expected_delimiter)
+        self._verify_values(node, expected_values)
+
+    def test_yaml_output_as_args(self):
+        # Setup
+        func = Join(".", "foo", "bar")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Join
+            - .
+            - - foo
+              - bar
+            """)
+
+    def test_yaml_output_as_list_parameter(self):
+        # Setup
+        func = Join(".", ["foo", "bar"])
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Join
+            - .
+            - - foo
+              - bar
+            """)
+
+    # Delimiter
+    # ---------
+
+    @pytest.mark.parametrize("value", [
+        None,
+        Ref(AWS_StackName)
+    ])
+    def test_delimiter_must_be_a_string(self, value):
+        with pytest.raises(TypeError, match=re.compile(r"delimiter.*string", re.I)):
+            _ = Join(value, "foo", "bar")
+
+    def test_delimiter_can_be_empty_string(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = Join("", "foo", "bar")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        self._verify_delimiter(node, "")
+
+    def test_yaml_output_when_delimiter_is_empty(self):
+        # Setup
+        func = Join("", ["foo", "bar"])
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Join
+            - ''
+            - - foo
+              - bar
+            """)
+
+    def test_delimiter_can_have_more_than_one_character(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = Join("::", "foo", "bar")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        self._verify_delimiter(node, "::")
+
+    def test_delimiter_should_not_be_huge(self):
+        delimiter = "syzygy" * 10
+
+        with pytest.raises(ValueError, match=re.compile(r"delimiter.*(large|long)", re.I)):
+            _ = Join(delimiter, "foo", "bar")
+
+    # Input Values
+    # ------------
+
+    def test_input_values_can_be_a_single_list_parameter(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        expected_delimiter = "."
+        expected_values = ["foo", "bar", "baz"]
+        func = Join(expected_delimiter, expected_values)
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert isinstance(node, SequenceNode)
+        assert len(node.value) == 2
+        self._verify_delimiter(node, expected_delimiter)
+        self._verify_values(node, expected_values)
+
+    def test_input_values_can_include_functions(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = Join(".", [Base64("Something"), "foo", "bar"])
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value[1].value[0].tag == "!Base64"
+        self._verify_values(node, ["Something", "foo", "bar"])
+
+    def test_input_values_must_contain_multiple_values(self):
+        with pytest.raises(ValueError, match=r"values.*at least 2"):
+            _ = Join(".", "foo")
+
+    def test_input_values_as_list_must_contain_multiple_values(self):
+        with pytest.raises(ValueError, match=r"values.*at least 2"):
+            _ = Join(".", ["foo"])
 
 
 class TestRef:
