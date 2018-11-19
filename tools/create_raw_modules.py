@@ -33,6 +33,7 @@ SUPPORTED_AWS_SERVICES = {
     "ECR",
     "ECS",
     "KMS",
+    "RDS",
     "S3",
     "SNS",
 }
@@ -49,6 +50,7 @@ SERVICE_DOCUMENTATION_URLS = {
     "ECR": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/index.html",
     "ECS": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/index.html",
     "KMS": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
+    "RDS": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/index.html",
     "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
     "SNS": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
 }
