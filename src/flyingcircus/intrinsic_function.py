@@ -121,6 +121,19 @@ class GetAZs(_Function):
         return self._get_string_node(dumper, self._region, "GetAZs")
 
 
+class ImportValue(_Function):
+    """Models the behaviour of Fn::ImportValue for Python objects.
+
+    See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html
+    """
+
+    def __init__(self, export_name):
+        self._export_name = export_name
+
+    def as_yaml_node(self, dumper):
+        return self._get_string_node(dumper, self._export_name, "ImportValue")
+
+
 class Ref(_Function):
     """Models the behaviour of Ref for Python objects.
 

@@ -14,6 +14,7 @@ from flyingcircus.core import dedent
 from flyingcircus.intrinsic_function import Base64
 from flyingcircus.intrinsic_function import GetAZs
 from flyingcircus.intrinsic_function import GetAtt
+from flyingcircus.intrinsic_function import ImportValue
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.intrinsic_function import Sub
 from flyingcircus.yaml import AmazonCFNDumper
@@ -428,6 +429,87 @@ class TestGetAZs:
             _ = GetAZs("some-fakeregion-2")
 
         assert "unknown region" in str(excinfo.value)
+
+
+class TestImportValue:
+    """Test behaviour/output of the ImportValue function."""
+
+    def _get_mapping_node_value(self, node, i=0):
+        return node.value[i][1].value
+
+    def test_uses_bang_ref_tag_for_yaml_scalar(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        func = ImportValue("some_export_name")
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert isinstance(node, ScalarNode)
+        assert node.tag == "!ImportValue"
+
+    def test_supplied_export_name_is_used_in_output(self):
+        # Setup
+        dumper = _create_refsafe_dumper(None)
+        export_name = "some_export_name"
+        func = ImportValue(export_name)
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == export_name
+
+    def test_yaml_output(self):
+        # Setup
+        func = ImportValue("SomeStack-export_name")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !ImportValue SomeStack-export_name
+            """)
+
+    def test_nested_function_forces_longform_name(self):
+        # Setup
+        dumper = _create_refsafe_dumper(Stack())
+        func = ImportValue(Sub("${AWS::Region}-SharedLogBucket"))
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert node.tag == dumper.DEFAULT_MAPPING_TAG
+        assert len(node.value) == 1
+
+        function_name = get_mapping_node_key(node, 0)
+        assert function_name == "Fn::ImportValue"
+
+    def test_yaml_output_with_nested_function(self):
+        """Nested YAML functions can't both use the ! short form."""
+        # Setup
+        func = ImportValue(Sub("${AWS::Region}-SharedLogBucket"))
+        data = SingleAttributeObject(one=func)
+        stack = Stack(Resources=dict(SomeResource=data))
+        del stack.Metadata
+
+        # Exercise
+        output = stack.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            AWSTemplateFormatVersion: '2010-09-09'
+            Resources:
+              SomeResource:
+                one:
+                  Fn::ImportValue: !Sub '${AWS::Region}-SharedLogBucket'
+            """)
 
 
 class TestRef:
