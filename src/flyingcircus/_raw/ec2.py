@@ -504,6 +504,7 @@ class SecurityGroupIngress(Resource):
         "GroupId",
         "GroupName",
         "IpProtocol",
+        "SourcePrefixListId",
         "SourceSecurityGroupId",
         "SourceSecurityGroupName",
         "SourceSecurityGroupOwnerId",
