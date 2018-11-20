@@ -47,7 +47,7 @@ class UserPool(_raw.UserPool):
         try:
             return self.Properties["UserPoolName"]
         except KeyError:
-            # No tags set yet
+            # No name set yet
             return None
 
     @name.setter
