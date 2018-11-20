@@ -47,5 +47,6 @@ class Key(Resource):
         "EnableKeyRotation",
         "KeyPolicy",
         "KeyUsage",
+        "PendingWindowInDays",
         "Tags",
     }

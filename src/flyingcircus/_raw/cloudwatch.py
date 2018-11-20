@@ -31,6 +31,7 @@ class Alarm(Resource):
         "AlarmDescription",
         "AlarmName",
         "ComparisonOperator",
+        "DatapointsToAlarm",
         "Dimensions",
         "EvaluateLowSampleCountPercentile",
         "EvaluationPeriods",
