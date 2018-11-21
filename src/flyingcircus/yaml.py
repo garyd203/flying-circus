@@ -1,5 +1,7 @@
 """Helper methods for configuring PyYAML."""
 
+# TODO rename this module to avoid confusion with external `yaml` module
+
 from typing import Optional
 
 import yaml

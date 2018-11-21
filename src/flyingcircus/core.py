@@ -832,6 +832,7 @@ def dedent(st):
     This is perfect for text embedded inside indented Python code.
     """
     # TODO needs test cases
+    # TODO different python module
 
     lines = st.split('\n')
 
