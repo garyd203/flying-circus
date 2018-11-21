@@ -1,4 +1,4 @@
-"""Represent the application of intrinsic CloudFormation functions.
+"""Represent the application of CloudFormation intrinsic functions.
 
 These will probably return a special object that exports as a YAML scalar
 ("string") containing the function reference. Some functions may be able to
@@ -20,7 +20,7 @@ from .yaml import represent_string
 # TODO use the rule that every time you detect a nested func, the outer has to use long form
 
 class _Function(CustomYamlObject):
-    """Base class for all intrinsic CloudFormation functions"""
+    """Base class for all CloudFormation intrinsic functions"""
 
     def _get_string_node(self, dumper: yaml.Dumper, value: Union["_Function", str], tag: str) -> yaml.Node:
         """Get a PyYAML node for a function that returns a string.
