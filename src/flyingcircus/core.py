@@ -809,19 +809,18 @@ class LogicalName(CustomYamlObject):
         return dumper.represent_str(name)
 
 
+@attrs(**ATTRSCONFIG)
 class Output(AWSObject):
     """Represents a CloudFormation Output.
 
     https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
     """
 
-    AWS_ATTRIBUTES = {
-        "Description", "Export", "Value"
-    }
+    # TODO Export is a single-entry dictionary. Should we flatten it or do something nicer?
 
-    def __init__(self, Description=None, Export=None, Value=None):
-        AWSObject.__init__(**locals())
-        # TODO Export is a single-entry dictionary. Should we flatten it?
+    Description: str = attrib(default=None)
+    Export: Dict[str, Any] = attrib(factory=dict)
+    Value: Any = attrib(default=None)
 
 
 # TODO new `reflow` function that cleans a long (multi-) line string from IDE padding, and marks it as as suitable for PyYAML flow style
