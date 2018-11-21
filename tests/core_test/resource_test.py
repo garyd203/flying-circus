@@ -304,6 +304,8 @@ class TestNameAccess:
         "name",
         [
             "cognito.UserPool",
+            "rds.DBInstance",
+            "secretsmanager.Secret",
         ],
     )
     def test_resource_with_nonstandard_name_is_supported(self, name: str):
