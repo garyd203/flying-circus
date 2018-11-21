@@ -93,7 +93,7 @@ class AWSObject(CustomYamlObject):
         # A CloudFormation attribute is an attribute that's not internal.
         return not self._is_internal_attribute(name)
 
-    def _is_attribute_set(self, name: str) -> bool:
+    def is_attribute_set(self, name: str) -> bool:
         """Whether this attribute has a valid value."""
         # Currently we use None as a signal value (and default value in
         # attrib() definitions) to indicate that the attribute is not set.
@@ -179,7 +179,7 @@ class AWSObject(CustomYamlObject):
         tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
         # Get all cloud formation attributes that are set, in sorted order
-        attributes = [(key, self[key]) for key in self if self._is_attribute_set(key)]
+        attributes = [(key, self[key]) for key in self if self.is_attribute_set(key)]
 
         # Create neater YAML by filtering out empty blocks at this level
         attributes = [(key, value) for key, value in attributes if is_non_empty_attribute(value)]
@@ -230,7 +230,7 @@ def is_non_empty_attribute(data):
         return False
     elif isinstance(data, AWSObject):
         for key in data:
-            if is_non_empty_attribute(data[key]):
+            if data.is_attribute_set(key) and is_non_empty_attribute(data[key]):
                 return True
         return False
 
