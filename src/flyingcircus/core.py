@@ -416,7 +416,7 @@ class Stack(AWSObject):
         # Modify the description to refer to the prefix. This is a bit hacky,
         # but for our use cases we don't expect the description to be
         # retained in final output, so it's good enough for now
-        if hasattr(self, "Description"):
+        if self.Description:
             new_stack.Description = prefix + ": " + self.Description
         else:
             new_stack.Description = prefix
