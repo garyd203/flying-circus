@@ -8,11 +8,9 @@ import pytest
 from hypothesis import given
 
 import flyingcircus
-from flyingcircus.core import AWSObject
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Output
 from flyingcircus.core import Parameter
-from flyingcircus.core import ResourceProperties
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
 from flyingcircus.exceptions import StackMergeError
@@ -43,7 +41,7 @@ class TestBasicStackBehaviour:
             version: {}
         Resources:
           SomeName:
-            Type: NameSpace::Service::Resource
+            Type: NameSpace::Service::SimpleResource
         """.format(flyingcircus.__version__))
 
     def test_template_version_defaults_to_2010(self):
@@ -603,7 +601,7 @@ class TestPrefixedNames:
 
         # Verify
         new_output = new_stack.Outputs[self.STACK_PREFIX + name]
-        assert getattr(new_output, "Export", None) is None
+        assert new_output.Export == {}
 
 
 class TestTagStack(BaseTaggingTest):
@@ -642,18 +640,12 @@ class TestTagStack(BaseTaggingTest):
     @parametrize_tagging_techniques()
     def test_resource_like_object_has_tags_applied(self, apply_tags):
         # Setup Resource-like object.
-        #
-        # For simplicity of testing we use the same data structure as a
-        # normal resource to store the tagging information
-        class ResourceLikeThing(AWSObject):
-            AWS_ATTRIBUTES = {"Properties"}
+        class ResourceLikeThing(object):
+            def __init__(self):
+                self._tags = {}
 
             def tag(self, tags=None, tag_derived_resources=True):
-                # noinspection PyAttributeOutsideInit
-                self.Properties = ResourceProperties(
-                    property_names={"Tags"},
-                    Tags=[{"Key": key, "Value": value} for key, value in tags.items()],
-                )
+                self._tags.update(tags)
 
         resource = ResourceLikeThing()
 
@@ -667,4 +659,4 @@ class TestTagStack(BaseTaggingTest):
         apply_tags(stack, key, value)
 
         # Verify
-        self.verify_tag_exists(resource, key, value)
+        assert resource._tags[key] == value
