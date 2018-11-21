@@ -35,6 +35,7 @@ SUPPORTED_AWS_SERVICES = {
     "KMS",
     "RDS",
     "S3",
+    "SecretsManager",
     "SNS",
 }
 
@@ -52,6 +53,7 @@ SERVICE_DOCUMENTATION_URLS = {
     "KMS": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
     "RDS": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/index.html",
     "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
+    "SecretsManager": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
     "SNS": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
 }
 
