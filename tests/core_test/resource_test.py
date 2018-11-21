@@ -2,13 +2,21 @@
 
 import importlib
 
+import hypothesis.strategies as st
 import pytest
+from hypothesis import given
 
+from flyingcircus.core import LogicalName
+from flyingcircus.core import Parameter
 from flyingcircus.core import Resource
+from flyingcircus.core import Stack
+from flyingcircus.core import dedent
 from .common import BaseTaggingTest
 from .common import SIMPLE_RESOURCE_NAME
 from .common import SimpleResource
+from .common import SingleAttributeObject
 from .common import parametrize_tagging_techniques
+from ..pyyaml_helper import create_refsafe_dumper
 
 
 class TestResourceUnusualAttributes:
@@ -321,3 +329,55 @@ class TestNameAccess:
 
         # Verify
         assert res.name == name
+
+
+class TestLogicalName:
+    """Test behaviour/output of the LogicalName function."""
+
+    @given(st.text(min_size=1))
+    def test_uses_logical_name_from_stack(self, name):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        stack = Stack(Resources={name: data})
+        ref = LogicalName(data)
+
+        dumper = create_refsafe_dumper(stack)
+
+        # Exercise
+        node = ref.as_yaml_node(dumper)
+
+        # Verify
+        assert node.value == name
+
+    def test_stack_yaml_output(self):
+        """An integration test, yay!"""
+        # Setup
+        data = SingleAttributeObject(one=42)
+        stack = Stack(Resources=dict(Foo=data, Bar=LogicalName(data)))
+        del stack.Metadata
+
+        # Exercise
+        output = stack.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            AWSTemplateFormatVersion: '2010-09-09'
+            Resources:
+              Bar: Foo
+              Foo:
+                one: 42
+            """)
+
+    def test_non_resource_cannot_be_found(self):
+        # Setup
+        name = "Foo"
+        param = Parameter(Type="String", Default="Hello world")
+        stack = Stack(Parameters={name: param})
+        ref = LogicalName(param)
+
+        dumper = create_refsafe_dumper(stack)
+
+        # Exercise & Verify
+        with pytest.raises(ValueError, match="Parameter"):
+            _ = ref.as_yaml_node(dumper)
