@@ -20,18 +20,13 @@ from flyingcircus.intrinsic_function import ImportValue
 from flyingcircus.intrinsic_function import Join
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.intrinsic_function import Sub
-from flyingcircus.yaml import AmazonCFNDumper
 from .core_test.common import SingleAttributeObject
 from .core_test.common import ZeroAttributeObject
+from .pyyaml_helper import create_refsafe_dumper
 from .pyyaml_helper import get_mapping_node_key
 
 
 # TODO these tests are in dire need of hypothesis and some smart strategies
-
-def _create_refsafe_dumper(stack):
-    dumper = AmazonCFNDumper(None)
-    dumper.cfn_stack = stack
-    return dumper
 
 
 class TestBase64:
@@ -39,7 +34,7 @@ class TestBase64:
 
     def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = Base64("Something something")
 
         # Exercise
@@ -80,7 +75,7 @@ class TestBase64:
     def test_nested_function_forces_longform_name(self):
         # TODO #37 do this with a Sub to be more realistic
         # Setup
-        dumper = _create_refsafe_dumper(Stack())
+        dumper = create_refsafe_dumper(Stack())
         func = Base64(Ref(AWS_StackName))
 
         # Exercise
@@ -133,7 +128,7 @@ class TestGetAtt:
         stack = Stack(Resources={resource_name: data})
         func = GetAtt(data, *attrib_name)
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         return dumper, func
 
@@ -226,7 +221,7 @@ class TestGetAtt:
         stack = Stack(Resources={"SomeResource": data})
         func = GetAtt(data, "Attrib")
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         # Exercise
         node = func.as_yaml_node(dumper)
@@ -256,7 +251,7 @@ class TestGetAtt:
 
         func = GetAtt(data, "Attrib")
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         # Exercise
         with pytest.raises(Exception):
@@ -319,7 +314,7 @@ class TestGetAZs:
 
     def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = GetAZs("ap-southeast-2")
 
         # Exercise
@@ -332,7 +327,7 @@ class TestGetAZs:
     @pytest.mark.parametrize("region", ["us-east-1", "ap-southeast-2"])
     def test_supplied_region_is_used_in_output(self, region):
         # Setup. We test with a couple of regions only
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = GetAZs(region)
 
         # Exercise
@@ -357,7 +352,7 @@ class TestGetAZs:
 
     def test_nested_function_forces_longform_name(self):
         # Setup
-        dumper = _create_refsafe_dumper(Stack())
+        dumper = create_refsafe_dumper(Stack())
         func = GetAZs(Ref(AWS_Region))
 
         # Exercise
@@ -393,7 +388,7 @@ class TestGetAZs:
 
     def test_region_can_be_a_ref_function(self):
         # Setup
-        dumper = _create_refsafe_dumper(Stack())
+        dumper = create_refsafe_dumper(Stack())
         region = AWS_Region
         func = GetAZs(Ref(region))
 
@@ -406,7 +401,7 @@ class TestGetAZs:
 
     def test_empty_region_becomes_explicit_aws_region_reference(self):
         # Setup
-        dumper = _create_refsafe_dumper(Stack())
+        dumper = create_refsafe_dumper(Stack())
         func = GetAZs("")
 
         # Exercise
@@ -418,7 +413,7 @@ class TestGetAZs:
 
     def test_unspecified_region_becomes_explicit_aws_region_reference(self):
         # Setup
-        dumper = _create_refsafe_dumper(Stack())
+        dumper = create_refsafe_dumper(Stack())
         func = GetAZs()
 
         # Exercise
@@ -441,7 +436,7 @@ class TestImportValue:
 
     def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = ImportValue("some_export_name")
 
         # Exercise
@@ -453,7 +448,7 @@ class TestImportValue:
 
     def test_supplied_export_name_is_used_in_output(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         export_name = "some_export_name"
         func = ImportValue(export_name)
 
@@ -479,7 +474,7 @@ class TestImportValue:
 
     def test_nested_function_forces_longform_name(self):
         # Setup
-        dumper = _create_refsafe_dumper(Stack())
+        dumper = create_refsafe_dumper(Stack())
         func = ImportValue(Sub("${AWS::Region}-SharedLogBucket"))
 
         # Exercise
@@ -532,7 +527,7 @@ class TestJoin:
 
     def test_uses_abbreviated_tag(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = Join(".", "foo", "bar")
 
         # Exercise
@@ -543,7 +538,7 @@ class TestJoin:
 
     def test_supplied_values_are_used_in_output(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         expected_delimiter = "."
         expected_values = ["foo", "bar", "baz"]
         func = Join(expected_delimiter, *expected_values)
@@ -604,7 +599,7 @@ class TestJoin:
 
     def test_delimiter_can_be_empty_string(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = Join("", "foo", "bar")
 
         # Exercise
@@ -632,7 +627,7 @@ class TestJoin:
 
     def test_delimiter_can_have_more_than_one_character(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = Join("::", "foo", "bar")
 
         # Exercise
@@ -652,7 +647,7 @@ class TestJoin:
 
     def test_input_values_can_be_a_single_list_parameter(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         expected_delimiter = "."
         expected_values = ["foo", "bar", "baz"]
         func = Join(expected_delimiter, expected_values)
@@ -668,7 +663,7 @@ class TestJoin:
 
     def test_input_values_can_include_functions(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = Join(".", [Base64("Something"), "foo", "bar"])
 
         # Exercise
@@ -694,7 +689,7 @@ class TestRef:
 
     def test_uses_bang_ref_tag_for_yaml_scalar(self):
         # Setup
-        dumper = _create_refsafe_dumper(Mock(Stack))
+        dumper = create_refsafe_dumper(Mock(Stack))
         ref = Ref(ZeroAttributeObject())
 
         # Exercise
@@ -711,7 +706,7 @@ class TestRef:
         stack = Stack(Resources={name: data})
         ref = Ref(data)
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         # Exercise
         node = ref.as_yaml_node(dumper)
@@ -746,7 +741,7 @@ class TestRef:
         stack = Stack(Resources={name: data})
         ref = Ref(data)
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         # Exercise
         node = ref.as_yaml_node(dumper)
@@ -760,7 +755,7 @@ class TestRef:
         ref = Ref(AWS_Region)
         stack = Stack(Resources={name: ref})
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         # Exercise
         node = ref.as_yaml_node(dumper)
@@ -789,7 +784,7 @@ class TestRef:
         stack[object_type][name] = data
         ref = Ref(data)
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         # Exercise
         node = ref.as_yaml_node(dumper)
@@ -806,7 +801,7 @@ class TestRef:
         setattr(stack, object_type, {name: data})
         ref = Ref(data)
 
-        dumper = _create_refsafe_dumper(stack)
+        dumper = create_refsafe_dumper(stack)
 
         # Exercise & Verify
         with pytest.raises(Exception):
@@ -877,7 +872,7 @@ class TestSubWithoutExplicitVariables:
     # -----------
     def test_uses_abbreviated_tag_for_yaml_scalar(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = Sub("Something something")
 
         # Exercise
@@ -889,7 +884,7 @@ class TestSubWithoutExplicitVariables:
 
     def test_uses_string_quoting(self):
         # Setup
-        dumper = _create_refsafe_dumper(None)
+        dumper = create_refsafe_dumper(None)
         func = Sub("Something something")
 
         # Exercise
