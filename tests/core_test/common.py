@@ -1,5 +1,8 @@
 """Common base test classes and helper methods."""
 
+from typing import Any
+from typing import Dict
+
 import hypothesis.strategies as st
 import pytest
 from attr import attrib
@@ -8,6 +11,7 @@ from attr import attrs
 from flyingcircus.core import ATTRSCONFIG
 from flyingcircus.core import AWSObject
 from flyingcircus.core import Resource
+from flyingcircus.core import ResourceProperties
 
 
 class CommonAWSObjectTests:
@@ -91,13 +95,40 @@ def aws_logical_name_strategy(draw):
     ))
 
 
-SIMPLE_RESOURCE_NAME = "NameSpace::Service::Resource"
-SIMPLE_RESOURCE_PROPERTIES = {"props", "kudos"}
+@attrs(**ATTRSCONFIG)
+class SimpleResourceProperties(ResourceProperties):
+    props = attrib(default=None)
+    kudos = attrib(default=None)
 
 
+@attrs(**ATTRSCONFIG)
 class SimpleResource(Resource):
-    RESOURCE_TYPE = SIMPLE_RESOURCE_NAME
-    RESOURCE_PROPERTIES = SIMPLE_RESOURCE_PROPERTIES
+    """A minimal resource."""
+    RESOURCE_TYPE = "NameSpace::Service::SimpleResource"
+    Properties: SimpleResourceProperties = attrib(factory=SimpleResourceProperties)
+
+
+@attrs(**ATTRSCONFIG)
+class FullResource(Resource):
+    """A basic resource with all Resource attributes defined."""
+    RESOURCE_TYPE = "NameSpace::Service::FullResource"
+
+    CreationPolicy: Dict[str, Any] = attrib(factory=dict)
+    Properties: SimpleResourceProperties = attrib(factory=SimpleResourceProperties)
+    UpdatePolicy: Dict[str, Any] = attrib(factory=dict)
+
+
+@attrs(**ATTRSCONFIG)
+class TaggableProperties(ResourceProperties):
+    SomeProperty = attrib(default=None)
+    AnotherProperty = attrib(default=None)
+    Tags = attrib(factory=list)
+
+
+@attrs(**ATTRSCONFIG)
+class TaggableResource(Resource):
+    RESOURCE_TYPE = "NameSpace::Service::TaggableResource"
+    Properties: TaggableProperties = attrib(factory=TaggableProperties)
 
 
 LOREM_IPSUM = """\
