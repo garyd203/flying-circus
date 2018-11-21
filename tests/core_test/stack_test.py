@@ -12,7 +12,6 @@ from flyingcircus.core import AWSObject
 from flyingcircus.core import AWS_Region
 from flyingcircus.core import Output
 from flyingcircus.core import Parameter
-from flyingcircus.core import Resource
 from flyingcircus.core import ResourceProperties
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
@@ -21,6 +20,7 @@ from .common import BaseTaggingTest
 from .common import LOREM_IPSUM
 from .common import SimpleResource
 from .common import SingleAttributeObject
+from .common import TaggableResource
 from .common import ZeroAttributeObject
 from .common import aws_logical_name_strategy
 from .common import parametrize_tagging_techniques
@@ -612,10 +612,6 @@ class TestTagStack(BaseTaggingTest):
     @parametrize_tagging_techniques()
     def test_resource_object_has_tags_applied(self, apply_tags):
         # Setup
-        class TaggableResource(Resource):
-            RESOURCE_TYPE = "NameSpace::Service::TaggableResource"
-            RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty", "Tags"}
-
         resource = TaggableResource()
         stack = Stack(Resources={"Foo": resource})
 

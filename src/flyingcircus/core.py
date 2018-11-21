@@ -133,10 +133,13 @@ class AWSObject(CustomYamlObject):
         # We treat the object like a dictionary for iteration. This means
         # we return a sorted list of CloudFormation attribute names.
 
-        # TODO sorting by declaration order will be difficult to manage with
-        # subclassing. If there turns out to be a real need for more control,
-        # we can re-introduce partial sort-order declaration like we used to
-        # have
+        # Sorting by declaration order does not work with subclassing. For
+        # now, we achieve this by having the sorted subclass override the
+        # behaviour of this function.
+        #
+        # If there turns out to be a real need for more control, we can
+        # re-introduce partial sort-order declaration like we used to
+        # have, controlled by a class constant.
 
         # noinspection PyUnresolvedReferences
         for attrib in self.__attrs_attrs__:
@@ -533,85 +536,126 @@ AWS_StackName = PseudoParameter._create_standard_parameter("AWS::StackName")
 AWS_URLSuffix = PseudoParameter._create_standard_parameter("AWS::URLSuffix")
 
 
+@attrs(**ATTRSCONFIG)
 class Resource(AWSObject):
     """Represents a CloudFormation Resource in a Stack.
 
     See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
     and http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
+
+    Subclasses need to:
+     * Use the @attrs decorator
+     * Define RESOURCE_TYPE
+     * Define a ResourceProperties subclass and the Properties attribute
+       using fields specific to that resource type
+     * Define attributes for CreationPolicy and UpdatePolicy, if relevant.
     """
 
-    # This list includes the attributes that are defined at this level by
-    # CloudFormation, but only listed in AWS_ATTRIBUTES in some subclasses.
-    EXPORT_ORDER = ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "DeletionPolicy", "Properties"]
+    # `CreationPolicy` is defined as a Resource-level attribute in
+    # CloudFormation, but is currently only valid for a few resource types.
+    # Therefore we leave it to concrete subclasses to defined the attribute
+    # when it exists.
+    #
+    # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
+    #
+    # CreationPolicy: Dict[str, Any] = attrib(factory=dict)
 
-    AWS_ATTRIBUTES = {
-        # NB: CreationPolicy is defined as a Resource-level attribute, but is
-        # currently only valid for a few resource types.
-        #
-        # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
-        #
-        # "CreationPolicy",
-        "DeletionPolicy",
-        "DependsOn",
-        #: Note that Metadata is not expected to be used by Flying Circus
-        #: users, so it can't be set in the constructor. However, you can
-        #: still modify it and set it as an attribute if you must.
-        "Metadata",
-        "Properties",
-        #: Note that Type is coupled to the Flying Circus Python type, and
-        #: can't be directly set
-        "Type",
-        # NB: UpdatePolicy is defined as a Resource-level attribute, but is
-        # currently only valid for a few resource types.
-        #
-        # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
-        #
-        # "UpdatePolicy",
-    }
+    DeletionPolicy: str = attrib(default=None)
+    DependsOn: List[str] = attrib(factory=list)
+
+    #: Note that Resource-level Metadata is not expected to be used by Flying
+    #: Circus users, so it can't be set in the constructor. However, they can
+    #: still modify it and set it as an attribute.
+    Metadata: Optional[Dict[str, Any]] = attrib(factory=dict, init=False)
+
+    # `Properties` has a resource-type-specific Python type, so we leave it to
+    # each concrete subtype to define the attribute appropriately.
+    #
+    # Properties: Dict[str, Any] = attrib(factory=dict)
+
+    # `Type` is defined as a Python property - see below
+    #
+    # Type: str = attrib(init=False)
+
+    # `UpdatePolicy` is defined as a Resource-level attribute in
+    # CloudFormation, but is currently only valid for a few resource types.
+    # Therefore we leave it to concrete subclasses to define the attribute
+    # when it exists.
+    #
+    # See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
+    #
+    # UpdatePolicy: Dict[str, Any] = attrib(factory=dict)
+
+    #: Customised sort order for a Resource class. We need to implement
+    #: special functionality to sort the attributes on a Resource, because
+    #: they are defined in several different (non-standard) places.
+    #:
+    #: This list includes all the attributes that are defined on a
+    #: CloudFormation Resource, even if they may not exist on every concrete
+    #: Resource subclass
+    _SORT_ORDER = ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "DeletionPolicy", "Properties"]
 
     #: The AWS CloudFormation string for this resource's Type
     RESOURCE_TYPE = None
 
-    #: Set of valid property names for this Resource class
-    RESOURCE_PROPERTIES = set()
-
     #: The name of the property that tags are stored in (if any)
     TAG_PROPERTY = "Tags"
 
-    # TODO classmethod to instantiate a Properties object for this resource type. Or better, have a hard-wired Properties initialised in __init__
     # TODO implement a shortcut function for get_ref(), instead of having to bring in the fn.Ref function?
 
-    def __init__(self, DeletionPolicy=None, DependsOn=None, Properties=None):
-        if Properties is None:
-            # TODO better to use the (not yet existing) generic hook to pre-initialise all complex objects. See issue #45
-            Properties = ResourceProperties(self.RESOURCE_PROPERTIES)
+    def __attrs_post_init__(self):
+        # Check that the resource type is specified
+        try:
+            _ = self.Type
+        except AttributeError as ex:
+            raise TypeError(ex)
 
-        AWSObject.__init__(**locals())
-
-        if not self.RESOURCE_TYPE:
+        # Check that the Properties attribute has been defined correctly
+        if not (hasattr(self, "Properties") and isinstance(self.Properties, (dict, ResourceProperties))):
             raise TypeError(
+                "Concrete Resource class {} needs to define an attribute "
+                "called `Properties`".format(self.__class__.__name__)
+            )
+
+    @property
+    def Type(self) -> str:
+        # The `Type` attribute is a class-specific fixed-value attribute.
+        # It is coupled to the underlying concrete subclass via this class
+        # constant.
+        #
+        # We can't achieve this functionality by declaring it as a normal
+        # `attrs`-style attribute, so we implement it as a property and
+        # override all the base-class functionality that is aware of
+        # CloudFormation attributes.
+        if not self.RESOURCE_TYPE:
+            raise AttributeError(
                 "Concrete Resource class {} needs to define the "
                 "CloudFormation Type as a class variable called "
                 "RESOURCE_TYPE".format(
                     self.__class__.__name__
                 )
             )
-
-        # TODO #45: Better to auto-initialise this
-        if not hasattr(self, "DependsOn"):
-            self.DependsOn = []
-
-    @property
-    def Type(self):
-        # The Type attribute is read-only because it is coupled to the
-        # underlying class via this class constant. The easiest way to
-        # achieve this is through a property
         return self.RESOURCE_TYPE
+
+    def __iter__(self) -> Iterator[str]:
+        # Get the attributes for this Resource type
+        attribs = set(super().__iter__())
+
+        # Type is a class-specific fixed-value attribute, which means we
+        # define it specially. We need to explicitly add it to the list
+        # of attributes here
+        attribs.add("Type")
+
+        # Filter our custom sort order based on which fields actually exist
+        # for this Resource class
+        for name in self._SORT_ORDER:
+            if name in attribs:
+                yield name
 
     @property
     def is_taggable(self):
         """Is this resource taggable."""
-        return self.TAG_PROPERTY in self.RESOURCE_PROPERTIES
+        return hasattr(self.Properties, self.TAG_PROPERTY)
 
     def tag(self, tags=None, tag_derived_resources=True, **more_tags):
         """Apply tags to this resource, if they are supported.
@@ -726,9 +770,11 @@ class Resource(AWSObject):
 
 
 class ResourceProperties(AWSObject):
-    def __init__(self, property_names, **properties):
-        self.AWS_ATTRIBUTES = property_names
-        AWSObject.__init__(self, **properties)
+    """Base class for a Properties object on a Resource."""
+
+    # TODO put default tagging functionality in here, instead of on the resource?
+
+    pass
 
 
 class LogicalName(CustomYamlObject):

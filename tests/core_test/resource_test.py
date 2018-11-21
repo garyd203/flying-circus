@@ -4,23 +4,41 @@ import importlib
 
 import hypothesis.strategies as st
 import pytest
+from attr import attrib
+from attr import attrs
 from hypothesis import given
 
+from flyingcircus.core import ATTRSCONFIG
 from flyingcircus.core import LogicalName
 from flyingcircus.core import Parameter
 from flyingcircus.core import Resource
 from flyingcircus.core import Stack
 from flyingcircus.core import dedent
 from .common import BaseTaggingTest
-from .common import SIMPLE_RESOURCE_NAME
+from .common import FullResource
 from .common import SimpleResource
+from .common import SimpleResourceProperties
 from .common import SingleAttributeObject
+from .common import TaggableResource
 from .common import parametrize_tagging_techniques
 from ..pyyaml_helper import create_refsafe_dumper
 
 
-class TestResourceUnusualAttributes:
+class TestResourceSpecialAttributes:
     """Verify special behaviour for some attributes on a CloudFormation Resource"""
+
+    # Sorting
+    # -------
+    def test_attributes_are_sorted_in_custom_order(self):
+        # Setup
+        data = FullResource()
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert list(attribs) == ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "DeletionPolicy",
+                                 "Properties"]
 
     # Type
     # ----
@@ -28,98 +46,87 @@ class TestResourceUnusualAttributes:
     def test_type_attribute_always_exists_and_is_from_class_constant(self):
         data = SimpleResource()
 
-        assert data.Type == SIMPLE_RESOURCE_NAME
+        assert data.Type == SimpleResource.RESOURCE_TYPE
 
-    def test_type_cannot_be_set_in_constructor(self):
-        with pytest.raises(TypeError) as excinfo:
-            # noinspection PyArgumentList
-            _ = SimpleResource(Type="CantSetThis")
-
-        assert "Type" in str(excinfo.value)
-
-    def test_type_cannot_be_set_as_attribute(self):
+    def test_type_cannot_be_set(self):
         data = SimpleResource()
 
         with pytest.raises(AttributeError):
             # noinspection PyPropertyAccess
             data.Type = "CantSetThis"
 
-        assert data.Type == SIMPLE_RESOURCE_NAME
+        assert data.Type == SimpleResource.RESOURCE_TYPE
 
     def test_type_must_be_specified_in_concrete_class(self):
-        class InvalidResource(Resource):
-            # RESOURCE_TYPE = "SomethingSomething
-            pass
+        @attrs(**ATTRSCONFIG)
+        class BrokenResourceClass(Resource):
+            # RESOURCE_TYPE = "NameSpace::Service::Resource"
+            Properties: SimpleResourceProperties = attrib(factory=SimpleResourceProperties)
 
-        with pytest.raises(TypeError) as excinfo:
-            _ = InvalidResource()
+        with pytest.raises(TypeError, match=r"BrokenResourceClass.*RESOURCE_TYPE"):
+            _ = BrokenResourceClass()
 
-        error_message = str(excinfo.value)
-        assert "RESOURCE_TYPE" in error_message \
-               and "InvalidResource" in error_message
+    def test_type_is_included_in_iterator(self):
+        data = SimpleResource()
+
+        # Exercise
+        attribs = iter(data)
+
+        # Verify
+        assert "Type" in set(attribs)
+        assert len(data) == 5
+
+    # Properties
+    # ----------
+
+    def test_properties_must_be_specified_in_concrete_class(self):
+        @attrs(**ATTRSCONFIG)
+        class BrokenResourceClass(Resource):
+            RESOURCE_TYPE = "NameSpace::Service::Resource"
+            # Properties: SimpleResourceProperties = attrib(factory=SimpleResourceProperties)
+
+        with pytest.raises(TypeError, match=r"BrokenResourceClass.*Properties"):
+            _ = BrokenResourceClass()
 
     # Metadata
     # --------
 
-    def test_metadata_attribute_can_be_set_and_read(self):
-        data = SimpleResource()
-
-        foo_value = 'bar'
-        data.Metadata = {'foo': foo_value}
-
-        assert data.Metadata['foo'] is foo_value
-
     def test_metadata_cannot_be_set_in_constructor(self):
-        with pytest.raises(TypeError) as excinfo:
+        with pytest.raises(TypeError, match=r"Metadata"):
             # noinspection PyArgumentList
             _ = SimpleResource(Metadata={"CantSetThis": "Nope"})
 
-        assert "Metadata" in str(excinfo.value)
+    # Optional Attributes
+    # -------------------
 
-    # Resource-Specific Attributes
-    # ----------------------------
-
-    def test_creationpolicy_cannot_be_set_on_normal_resource(self):
+    @pytest.mark.parametrize("fieldname", [
+        "CreationPolicy",
+        "UpdatePolicy",
+    ])
+    def test_optional_attribute_does_not_exist_on_standard_resource(self, fieldname):
+        # Setup
         data = SimpleResource()
 
-        with pytest.raises(AttributeError) as excinfo:
-            data.CreationPolicy = "CantSetThis"
+        # Exercise & Verify
+        with pytest.raises(AttributeError, match=fieldname):
+            setattr(data, fieldname, "CantSetThis")
 
-        assert "CreationPolicy" in str(excinfo.value)
+        with pytest.raises(AttributeError, match=fieldname):
+            _ = getattr(data, fieldname)
 
-    def test_updatepolicy_cannot_be_set_on_normal_resource(self):
-        data = SimpleResource()
+        assert fieldname not in list(iter(data))
 
-        with pytest.raises(AttributeError) as excinfo:
-            data.UpdatePolicy = "CantSetThis"
+    def test_optional_attributes_are_included_in_iterator(self):
+        # Setup
+        data = FullResource()
 
-        assert "UpdatePolicy" in str(excinfo.value)
+        # Exercise
+        attribs = set(iter(data))
 
-
-class TestProperties:
-    """Test the Properties attribute on a Resource."""
-
-    def test_properties_attribute_always_exists(self):
-        data = SimpleResource()
-
-        assert hasattr(data, "Properties")
-        assert data.Properties is not None
-
-    def test_properties_has_attributes_from_resource_definition(self):
-        data = SimpleResource()
-
-        data.Properties.kudos = 1
-        data.Properties.props = 'hello'
-
-
-class _UntaggableResource(Resource):
-    RESOURCE_TYPE = "NameSpace::Service::UntaggableResource"
-    RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty"}
-
-
-class _TaggableResource(Resource):
-    RESOURCE_TYPE = "NameSpace::Service::TaggableResource"
-    RESOURCE_PROPERTIES = {"SomeProperty", "AnotherProperty", "Tags"}
+        # Verify
+        assert "CreationPolicy" in attribs
+        assert "UpdatePolicy" in attribs
+        assert len(data) == 7
 
 
 class TestGetTag(BaseTaggingTest):
@@ -129,7 +136,7 @@ class TestGetTag(BaseTaggingTest):
         # Setup
         key = "SomeTag"
         value = "To be or not to be"
-        res = _TaggableResource()
+        res = TaggableResource()
         res.tag({key: value, "SomethingElse": "42"})
 
         # Exercise & Verify
@@ -137,7 +144,7 @@ class TestGetTag(BaseTaggingTest):
 
     def test_return_none_when_tag_not_set(self):
         # Setup
-        res = _TaggableResource()
+        res = TaggableResource()
         res.tag({"SomethingElse": "42"})
 
         # Exercise & Verify
@@ -145,14 +152,14 @@ class TestGetTag(BaseTaggingTest):
 
     def test_return_none_when_no_tags_set(self):
         # Setup
-        res = _TaggableResource()
+        res = TaggableResource()
 
         # Exercise & Verify
         assert res.get_tag("MissingKey") is None
 
     def test_throws_error_when_untaggable(self):
         # Setup
-        res = _UntaggableResource()
+        res = SimpleResource()
 
         # Exercise & Verify
         with pytest.raises(AttributeError) as excinfo:
@@ -185,7 +192,7 @@ class TestTagging(BaseTaggingTest):
         key = "foo"
         value = "bar"
 
-        res = _TaggableResource()
+        res = TaggableResource()
 
         # Exercise
         tagged = apply_tags(res, key, value)
@@ -202,7 +209,7 @@ class TestTagging(BaseTaggingTest):
         key2 = "foo"
         value2 = "bar"
 
-        res = _TaggableResource()
+        res = TaggableResource()
         res.Properties.Tags = [{"Key": key1, "Value": value1}]
 
         # Exercise
@@ -222,7 +229,7 @@ class TestTagging(BaseTaggingTest):
         value2 = "bar"
         new_value = "new"
 
-        res = _TaggableResource()
+        res = TaggableResource()
         res.Properties.Tags = [
             {"Key": key1, "Value": old_value},
             {"Key": key2, "Value": value2},
@@ -239,7 +246,7 @@ class TestTagging(BaseTaggingTest):
 
     def test_resource_doesnt_support_tagging(self):
         # Setup
-        res = _UntaggableResource()
+        res = SimpleResource()
 
         # Exercise
         tagged = res.tag(foo="bar")
@@ -283,7 +290,7 @@ class TestNameAccess:
     def test_fetches_name_tag(self):
         # Setup
         name = "Some extraordinary name"
-        res = _TaggableResource()
+        res = TaggableResource()
         res.tag(Name=name)
 
         # Exercise & Verify
@@ -292,7 +299,7 @@ class TestNameAccess:
     def test_sets_name_tag(self):
         # Setup
         name = "Some extraordinary name"
-        res = _TaggableResource()
+        res = TaggableResource()
 
         # Exercise
         res.name = name
@@ -302,7 +309,7 @@ class TestNameAccess:
 
     def test_set_throws_error_when_untaggable(self):
         # Setup
-        res = _UntaggableResource()
+        res = SimpleResource()
 
         # Exercise & Verify
         with pytest.raises(AttributeError):
