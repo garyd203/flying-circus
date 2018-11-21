@@ -18,7 +18,6 @@ from .common import BaseTaggingTest
 from .common import FullResource
 from .common import SimpleResource
 from .common import SimpleResourceProperties
-from .common import SingleAttributeObject
 from .common import TaggableResource
 from .common import parametrize_tagging_techniques
 from ..pyyaml_helper import create_refsafe_dumper
@@ -344,7 +343,7 @@ class TestLogicalName:
     @given(st.text(min_size=1))
     def test_uses_logical_name_from_stack(self, name):
         # Setup
-        data = SingleAttributeObject(one=42)
+        data = SimpleResource(Properties={"props": 42})
         stack = Stack(Resources={name: data})
         ref = LogicalName(data)
 
@@ -359,7 +358,7 @@ class TestLogicalName:
     def test_stack_yaml_output(self):
         """An integration test, yay!"""
         # Setup
-        data = SingleAttributeObject(one=42)
+        data = SimpleResource(Properties={"props": 42})
         stack = Stack(Resources=dict(Foo=data, Bar=LogicalName(data)))
         del stack.Metadata
 
@@ -373,7 +372,9 @@ class TestLogicalName:
             Resources:
               Bar: Foo
               Foo:
-                one: 42
+                Type: NameSpace::Service::SimpleResource
+                Properties:
+                  props: 42
             """)
 
     def test_non_resource_cannot_be_found(self):
