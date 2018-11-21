@@ -8,8 +8,8 @@ from itertools import chain
 import yaml
 import yaml.resolver
 
-from .exceptions import StackMergeError
 from . import _about
+from .exceptions import StackMergeError
 from .yaml import AmazonCFNDumper
 from .yaml import CustomYamlObject
 
@@ -797,6 +797,38 @@ class ResourceProperties(AWSObject):
     def __init__(self, property_names, **properties):
         self.AWS_ATTRIBUTES = property_names
         AWSObject.__init__(self, **properties)
+
+
+class LogicalName(CustomYamlObject):
+    """Represents the logical name of a resource in an exported stack.
+
+    The logical name of a resource in a CloudFormation template is the
+    internal variable name for that resource, which is unique within
+    that template.
+
+    Sometimes, when describing infrastructure with Flying Circus, you have a
+    reference to the Flying Circus object but CloudFormation requires the
+    template's logical name for the resource. This allows you to dereference
+    the object, rather than carrying around hard-coded names (yay!)
+
+    The name is exported to CloudFormation as a string, but internally it's an
+    object that is dynamically resolved to the correct logical name on export.
+    """
+
+    # TODO Find a better module for this to live in
+    # TODO consider subclassing from _Function
+    # TODO also (primarily) be able to create these Name's from a method on the referenced object
+
+    def __init__(self, resource: Resource):
+        """Create a reference to the logical name of a Resource
+
+        :param data: The Python object that is being referenced.
+        """
+        self._resource = resource
+
+    def as_yaml_node(self, dumper):
+        name = dumper.cfn_stack.get_logical_name(self._resource, resources_only=True)  # Pass error through
+        return dumper.represent_str(name)
 
 
 class Output(AWSObject):
