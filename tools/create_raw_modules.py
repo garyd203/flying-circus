@@ -133,22 +133,30 @@ def generate_modules(packagedir, specification):
             "module_name": service_name.lower(),
             "name": service_name,
             "resources": {},
+            "typing_imports": set(),
         })
 
         # Augment the resource data and add it to the service
         assert resource_name not in service["resources"], "resource type is defined twice"
         service["resources"][resource_name] = resource_data
 
+        resource_extra_attributes = RESOURCES_WITH_EXTRA_ATTRIBUTES.get(resource_type, [])
+        assert not (set(resource_extra_attributes) - {"CreationPolicy", "UpdatePolicy"}), \
+            "We have defined extra AWS attributes that we don't know what to do with yet"
+
         resource_data.update({
-            "extra_aws_attributes": RESOURCES_WITH_EXTRA_ATTRIBUTES.get(resource_type, []),
             "friendly_name": inflection.titleize(resource_name),
+            "has_create_policy": "CreatePolicy" in resource_extra_attributes,
+            "has_update_policy": "UpdatePolicy" in resource_extra_attributes,
             "type": {
                 "fullname": resource_type,
             },
         })
 
-        assert not set(resource_data["extra_aws_attributes"]).difference({"CreationPolicy", "UpdatePolicy"}), \
-            "We have defined extra AWS attributes that are not handled by the class constructor in the Jinja template"
+        if resource_data["has_create_policy"]:
+            service["typing_imports"].update(["Any", "Dict"])
+        if resource_data["has_update_policy"]:
+            service["typing_imports"].update(["Any", "Dict"])
 
     # TODO collect property types in the same way
     # TODO verify that a property doesn't have the same name as a resource (nor an existing property)
