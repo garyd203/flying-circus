@@ -14,6 +14,8 @@ from .._raw.ec2 import *
 
 
 class VPC(_raw.VPC):
+    __slots__ = []
+
     @property
     def internet_gateway(self) -> InternetGateway:
         """Get the Internet Gateway associated with this VPC.

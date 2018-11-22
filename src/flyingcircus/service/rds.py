@@ -12,6 +12,8 @@ from .._raw.rds import *
 
 
 class DBInstance(_raw.DBInstance):
+    __slots__ = []
+
     # Implement Naming
     # ----------------
     @property

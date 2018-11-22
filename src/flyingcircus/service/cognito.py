@@ -12,6 +12,8 @@ from .._raw.cognito import *
 
 
 class UserPool(_raw.UserPool):
+    __slots__ = []
+
     # Implement Tagging
     # -----------------
     #
