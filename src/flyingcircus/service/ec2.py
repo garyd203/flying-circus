@@ -5,16 +5,20 @@ See Also:
     <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/>`_
 """
 
+from attr import attrib
+from attr import attrs
+
+from flyingcircus.core import ATTRSCONFIG
 from flyingcircus.core import Stack
 from flyingcircus.intrinsic_function import Ref
 from .._raw import ec2 as _raw
-
-# noinspection PyUnresolvedReferences
 from .._raw.ec2 import *
 
 
+@attrs(**ATTRSCONFIG)
 class VPC(_raw.VPC):
-    __slots__ = []
+    _internet_gateway: InternetGateway = attrib(default=None)
+    _internet_gateway_attachment: VPCGatewayAttachment = attrib(default=None)
 
     @property
     def internet_gateway(self) -> InternetGateway:
@@ -23,7 +27,7 @@ class VPC(_raw.VPC):
         This will only work if the internet gateway was created using
         `ensure_internet_gateway_exists`.
         """
-        assert hasattr(self, "_internet_gateway"), "`ensure_internet_gateway_exists` should be called first"
+        assert self._internet_gateway is not None, "`ensure_internet_gateway_exists` should be called first"
         return self._internet_gateway
 
     @property
@@ -33,14 +37,14 @@ class VPC(_raw.VPC):
         This will only work if the internet gateway was created using
         `ensure_internet_gateway_exists`.
         """
-        assert hasattr(self, "_internet_gateway_attachment"), "`ensure_internet_gateway_exists` should be called first"
+        assert self._internet_gateway_attachment is not None, "`ensure_internet_gateway_exists` should be called first"
         return self._internet_gateway_attachment
 
     def ensure_internet_gateway_exists(self, stack: Stack):
         """Ensure there is an internet gateway attached to this VPC as part of the stack."""
         # If we have already attached a gateway to this VPC, then there is
         # nothing more to do
-        if hasattr(self, "_internet_gateway"):
+        if self._internet_gateway is not None:
             # Check that the internet gateway is in the desired stack
             if not [res for res in stack.Resources.values() if res is self._internet_gateway]:
                 raise RuntimeError("Existing InternetGateway is not in this stack")
