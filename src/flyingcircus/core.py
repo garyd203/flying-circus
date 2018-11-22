@@ -730,18 +730,16 @@ class Resource(AWSObject):
         """Get the internal list of all the tag objects on this resource,
         creating it if necessary
         """
-        # Try to get the property as quickly as possible
+        if not self.is_taggable:
+            raise AttributeError("Tags are not supported by {}".format(self.Type))
+
+        # Get or create the Tags property
         #
         # Note that Properties might be a `ResourceProperties` object, which
         # doesn't support `setdefault`
-        try:
-            return self.Properties[self.TAG_PROPERTY]
-        except KeyError:
-            pass
-
-        # Create the Tags list, if allowed
-        if not self.is_taggable:
-            raise AttributeError("Tags are not supported by {}".format(self.Type))
+        taglist = self.Properties[self.TAG_PROPERTY]
+        if taglist is not None:
+            return taglist
 
         self.Properties[self.TAG_PROPERTY] = []
         return self.Properties[self.TAG_PROPERTY]
