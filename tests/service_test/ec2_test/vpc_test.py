@@ -1,11 +1,12 @@
 """Test VPC service components."""
+
 import pytest
 
-from flyingcircus._raw.ec2 import VPCGatewayAttachment
 from flyingcircus.core import Stack
 from flyingcircus.intrinsic_function import Ref
 from flyingcircus.service.ec2 import InternetGateway
 from flyingcircus.service.ec2 import VPC
+from flyingcircus.service.ec2 import VPCGatewayAttachment
 from flyingcircus.service.ec2 import VPNGateway
 
 
