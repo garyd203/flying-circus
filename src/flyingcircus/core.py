@@ -772,6 +772,8 @@ class Resource(AWSObject):
 class ResourceProperties(AWSObject):
     """Base class for a Properties object on a Resource."""
 
+    __slots__ = []
+
     # TODO put default tagging functionality in here, instead of on the resource?
 
     pass
