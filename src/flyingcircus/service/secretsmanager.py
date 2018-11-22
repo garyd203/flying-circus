@@ -18,11 +18,7 @@ class Secret(_raw.Secret):
     # ----------------
     @property
     def name(self):
-        try:
-            return self.Properties["Name"]
-        except KeyError:
-            # No name set yet
-            return None
+        return self.Properties["Name"]  # Might be default of None
 
     @name.setter
     def name(self, value: str):

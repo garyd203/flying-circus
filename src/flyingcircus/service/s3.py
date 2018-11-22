@@ -39,8 +39,8 @@ class Bucket(_raw.Bucket):
         # Get the top-level encryption config object
         config = self.Properties["BucketEncryption"]
         if not config:
-            config = {}
-            self.Properties["BucketEncryption"] = config
+            self.Properties["BucketEncryption"] = {}
+            config = self.Properties["BucketEncryption"] = {}
 
         # Create a fresh single-value list of server-side encryption rules
         if s3_managed:
@@ -86,6 +86,6 @@ class Bucket(_raw.Bucket):
     def versioning(self, value: bool):
         config = self.Properties["VersioningConfiguration"]
         if not config:
-            config = {}
-            self.Properties["VersioningConfiguration"] = config
+            self.Properties["VersioningConfiguration"] = {}
+            config = self.Properties["VersioningConfiguration"]
         config["Status"] = "Enabled" if value else "Suspended"

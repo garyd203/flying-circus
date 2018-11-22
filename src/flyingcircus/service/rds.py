@@ -18,11 +18,7 @@ class DBInstance(_raw.DBInstance):
     # ----------------
     @property
     def name(self):
-        try:
-            return self.Properties["DBInstanceIdentifier"]
-        except KeyError:
-            # No name set yet
-            return None
+        return self.Properties["DBInstanceIdentifier"]  # Might be default of None
 
     @name.setter
     def name(self, value: str):
