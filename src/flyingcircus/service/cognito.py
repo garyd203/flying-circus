@@ -22,11 +22,12 @@ class UserPool(_raw.UserPool):
     TAG_PROPERTY = "UserPoolTags"
 
     def tag(self, tags=None, tag_derived_resources=True, **more_tags):
-        try:
-            tagdata = self.Properties[self.TAG_PROPERTY]
-        except KeyError:
+        tagdata = self.Properties[self.TAG_PROPERTY]
+
+        if tagdata is None:
             # No tags set yet
-            self.Properties[self.TAG_PROPERTY] = tagdata = {}
+            self.Properties[self.TAG_PROPERTY] = {}
+            tagdata = self.Properties[self.TAG_PROPERTY]
 
         tagdata.update(tags or {})
         tagdata.update(more_tags)
@@ -34,9 +35,9 @@ class UserPool(_raw.UserPool):
         return True
 
     def get_tag(self, key: str):
-        try:
-            tagdata = self.Properties[self.TAG_PROPERTY]
-        except KeyError:
+        tagdata = self.Properties[self.TAG_PROPERTY]
+
+        if tagdata is None:
             # No tags set yet
             return None
 
@@ -46,11 +47,7 @@ class UserPool(_raw.UserPool):
     # ----------------
     @property
     def name(self):
-        try:
-            return self.Properties["UserPoolName"]
-        except KeyError:
-            # No name set yet
-            return None
+        return self.Properties["UserPoolName"]  # Might be default of None
 
     @name.setter
     def name(self, value: str):
