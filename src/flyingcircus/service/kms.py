@@ -12,6 +12,8 @@ from .._raw.kms import *
 
 
 class Key(_raw.Key):
+    __slots__ = []
+
     @property
     def name(self):
         # TODO #113 create an Alias instead

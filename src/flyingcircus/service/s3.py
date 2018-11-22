@@ -11,6 +11,8 @@ from .._raw.s3 import *
 
 
 class Bucket(_raw.Bucket):
+    __slots__ = []
+
     #: Key ID for the AWS-supplied KMS Master Key used for server-side
     #: encryption if a customer-managed key is not explicitly specified.
     SSE_KMS_DEFAULT_MASTER_KEY = "aws/s3"

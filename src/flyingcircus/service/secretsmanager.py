@@ -12,6 +12,8 @@ from .._raw.secretsmanager import *
 
 
 class Secret(_raw.Secret):
+    __slots__ = []
+
     # Implement Naming
     # ----------------
     @property
