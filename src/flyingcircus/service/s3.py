@@ -37,10 +37,10 @@ class Bucket(_raw.Bucket):
             raise ValueError("Unable to set both S3-managed and KMS-managed bucket encryption")
 
         # Get the top-level encryption config object
-        try:
-            config = self.Properties["BucketEncryption"]
-        except KeyError:
-            config = self.Properties["BucketEncryption"] = {}
+        config = self.Properties["BucketEncryption"]
+        if not config:
+            config = {}
+            self.Properties["BucketEncryption"] = config
 
         # Create a fresh single-value list of server-side encryption rules
         if s3_managed:
@@ -72,10 +72,10 @@ class Bucket(_raw.Bucket):
             `VersioningConfiguration documentation
             <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-versioningconfig.html>`_
         """
-        try:
-            status = self.Properties["VersioningConfiguration"]["Status"]
-        except KeyError:
+        config = self.Properties["VersioningConfiguration"]
+        if not config:
             return False
+        status = config["Status"]
 
         try:
             return self._VERSIONING_STATUSES[status]
@@ -84,8 +84,8 @@ class Bucket(_raw.Bucket):
 
     @versioning.setter
     def versioning(self, value: bool):
-        try:
-            config = self.Properties["VersioningConfiguration"]
-        except KeyError:
-            config = self.Properties["VersioningConfiguration"] = {}
+        config = self.Properties["VersioningConfiguration"]
+        if not config:
+            config = {}
+            self.Properties["VersioningConfiguration"] = config
         config["Status"] = "Enabled" if value else "Suspended"

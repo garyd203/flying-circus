@@ -1,4 +1,5 @@
 """Test enhanced S3 Bucket functionality."""
+
 import pytest
 
 from flyingcircus.service.s3 import Bucket
