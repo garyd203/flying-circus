@@ -669,6 +669,10 @@ class Resource(AWSObject):
                 )
             )
 
+        # TODO #45: Better to auto-initialise this
+        if not hasattr(self, "DependsOn"):
+            self.DependsOn = []
+
     @property
     def Type(self):
         # The Type attribute is read-only because it is coupled to the
