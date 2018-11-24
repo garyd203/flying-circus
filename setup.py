@@ -29,7 +29,7 @@ setup(
     keywords="cloud formation",
     url="https://github.com/garyd203/flying-circus",
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
         'Natural Language :: English',
