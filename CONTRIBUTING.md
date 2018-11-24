@@ -11,7 +11,7 @@ in GitHub.
 This is a manual process at the moment. See the
 [python packaging guide](https://packaging.python.org/tutorials/distributing-packages/#packaging-your-project)
 for some background and guidance. Or just do the following steps
-(hand wavy description) on your local workstation
+(hand wavy description) on your local workstation (Linux works best)
 
 1. Make sure there are no uncommitted changes in your local workspace
 2. Checkout `master` branch and get the latest:
@@ -23,7 +23,7 @@ for some background and guidance. Or just do the following steps
    ```bash
    rm -rf venv
    virtualenv -p python3 venv
-   ./venv/bin/activate
+   source ./venv/bin/activate
    pip install -r requirements.txt
    pip install -e . # Install the local working copy of flying circus in "edit" mode
    export AWS_PROFILE=your-aws-test-profile
