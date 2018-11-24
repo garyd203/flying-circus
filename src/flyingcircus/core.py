@@ -489,7 +489,7 @@ class Parameter(AWSObject):
     https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
     """
 
-    Type: str = attrib()
+    Type: Optional[str] = attrib(default=None)
     AllowedPattern: Optional[str] = attrib(default=None)
     AllowedValues: List[Any] = attrib(factory=list)
     ConstraintDescription: Optional[str] = attrib(default=None)
