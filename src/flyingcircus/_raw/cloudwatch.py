@@ -17,8 +17,33 @@ from ..core import create_object_converter
 
 __all__ = [
     "Alarm",
+    "AlarmProperties",
     "Dashboard",
+    "DashboardProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class AlarmProperties(ResourceProperties):
+    ActionsEnabled = attrib(default=None)
+    AlarmActions = attrib(default=None)
+    AlarmDescription = attrib(default=None)
+    AlarmName = attrib(default=None)
+    ComparisonOperator = attrib(default=None)
+    DatapointsToAlarm = attrib(default=None)
+    Dimensions = attrib(default=None)
+    EvaluateLowSampleCountPercentile = attrib(default=None)
+    EvaluationPeriods = attrib(default=None)
+    ExtendedStatistic = attrib(default=None)
+    InsufficientDataActions = attrib(default=None)
+    MetricName = attrib(default=None)
+    Namespace = attrib(default=None)
+    OKActions = attrib(default=None)
+    Period = attrib(default=None)
+    Statistic = attrib(default=None)
+    Threshold = attrib(default=None)
+    TreatMissingData = attrib(default=None)
+    Unit = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -32,29 +57,16 @@ class Alarm(Resource):
 
     RESOURCE_TYPE = "AWS::CloudWatch::Alarm"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        ActionsEnabled = attrib(default=None)
-        AlarmActions = attrib(default=None)
-        AlarmDescription = attrib(default=None)
-        AlarmName = attrib(default=None)
-        ComparisonOperator = attrib(default=None)
-        DatapointsToAlarm = attrib(default=None)
-        Dimensions = attrib(default=None)
-        EvaluateLowSampleCountPercentile = attrib(default=None)
-        EvaluationPeriods = attrib(default=None)
-        ExtendedStatistic = attrib(default=None)
-        InsufficientDataActions = attrib(default=None)
-        MetricName = attrib(default=None)
-        Namespace = attrib(default=None)
-        OKActions = attrib(default=None)
-        Period = attrib(default=None)
-        Statistic = attrib(default=None)
-        Threshold = attrib(default=None)
-        TreatMissingData = attrib(default=None)
-        Unit = attrib(default=None)
+    Properties: AlarmProperties = attrib(
+        factory=AlarmProperties,
+        converter=create_object_converter(AlarmProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DashboardProperties(ResourceProperties):
+    DashboardBody = attrib(default=None)
+    DashboardName = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -68,9 +80,7 @@ class Dashboard(Resource):
 
     RESOURCE_TYPE = "AWS::CloudWatch::Dashboard"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DashboardBody = attrib(default=None)
-        DashboardName = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: DashboardProperties = attrib(
+        factory=DashboardProperties,
+        converter=create_object_converter(DashboardProperties),
+    )

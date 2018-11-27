@@ -25,10 +25,18 @@ from ..core import create_object_converter
 __all__ = [
 {%- for resource_name in service.resources.keys() | sort %}
     "{{ resource_name }}",
+    "{{ resource_name }}Properties",
 {%- endfor %}
 ]
 
 {%- for resource_name, resource in service.resources.items() | sort %}
+
+
+@attrs(**ATTRSCONFIG)
+class {{ resource_name }}Properties(ResourceProperties):
+{%- for property in resource.Properties.keys() | sort %}
+    {{ property }} = attrib(default=None)
+{%- endfor %}
 
 
 @attrs(**ATTRSCONFIG)
@@ -42,13 +50,10 @@ class {{ resource_name }}(Resource):
 
     RESOURCE_TYPE = "{{ resource.type.fullname }}"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-{%- for property in resource.Properties.keys() | sort %}
-        {{ property }} = attrib(default=None)
-{%- endfor %}
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: {{ resource_name }}Properties = attrib(
+        factory={{ resource_name }}Properties,
+        converter=create_object_converter({{ resource_name }}Properties),
+    )
 
 {%- if resource.has_create_policy %}
 

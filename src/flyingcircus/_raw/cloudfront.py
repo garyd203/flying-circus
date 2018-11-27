@@ -17,9 +17,17 @@ from ..core import create_object_converter
 
 __all__ = [
     "CloudFrontOriginAccessIdentity",
+    "CloudFrontOriginAccessIdentityProperties",
     "Distribution",
+    "DistributionProperties",
     "StreamingDistribution",
+    "StreamingDistributionProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class CloudFrontOriginAccessIdentityProperties(ResourceProperties):
+    CloudFrontOriginAccessIdentityConfig = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -33,11 +41,16 @@ class CloudFrontOriginAccessIdentity(Resource):
 
     RESOURCE_TYPE = "AWS::CloudFront::CloudFrontOriginAccessIdentity"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CloudFrontOriginAccessIdentityConfig = attrib(default=None)
+    Properties: CloudFrontOriginAccessIdentityProperties = attrib(
+        factory=CloudFrontOriginAccessIdentityProperties,
+        converter=create_object_converter(CloudFrontOriginAccessIdentityProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DistributionProperties(ResourceProperties):
+    DistributionConfig = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -51,12 +64,16 @@ class Distribution(Resource):
 
     RESOURCE_TYPE = "AWS::CloudFront::Distribution"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DistributionConfig = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: DistributionProperties = attrib(
+        factory=DistributionProperties,
+        converter=create_object_converter(DistributionProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class StreamingDistributionProperties(ResourceProperties):
+    StreamingDistributionConfig = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -70,9 +87,7 @@ class StreamingDistribution(Resource):
 
     RESOURCE_TYPE = "AWS::CloudFront::StreamingDistribution"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        StreamingDistributionConfig = attrib(default=None)
-        Tags = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: StreamingDistributionProperties = attrib(
+        factory=StreamingDistributionProperties,
+        converter=create_object_converter(StreamingDistributionProperties),
+    )

@@ -17,9 +17,23 @@ from ..core import create_object_converter
 
 __all__ = [
     "Subscription",
+    "SubscriptionProperties",
     "Topic",
+    "TopicProperties",
     "TopicPolicy",
+    "TopicPolicyProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class SubscriptionProperties(ResourceProperties):
+    DeliveryPolicy = attrib(default=None)
+    Endpoint = attrib(default=None)
+    FilterPolicy = attrib(default=None)
+    Protocol = attrib(default=None)
+    RawMessageDelivery = attrib(default=None)
+    Region = attrib(default=None)
+    TopicArn = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -33,17 +47,17 @@ class Subscription(Resource):
 
     RESOURCE_TYPE = "AWS::SNS::Subscription"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DeliveryPolicy = attrib(default=None)
-        Endpoint = attrib(default=None)
-        FilterPolicy = attrib(default=None)
-        Protocol = attrib(default=None)
-        RawMessageDelivery = attrib(default=None)
-        Region = attrib(default=None)
-        TopicArn = attrib(default=None)
+    Properties: SubscriptionProperties = attrib(
+        factory=SubscriptionProperties,
+        converter=create_object_converter(SubscriptionProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class TopicProperties(ResourceProperties):
+    DisplayName = attrib(default=None)
+    Subscription = attrib(default=None)
+    TopicName = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -57,13 +71,16 @@ class Topic(Resource):
 
     RESOURCE_TYPE = "AWS::SNS::Topic"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DisplayName = attrib(default=None)
-        Subscription = attrib(default=None)
-        TopicName = attrib(default=None)
+    Properties: TopicProperties = attrib(
+        factory=TopicProperties,
+        converter=create_object_converter(TopicProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class TopicPolicyProperties(ResourceProperties):
+    PolicyDocument = attrib(default=None)
+    Topics = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -77,9 +94,7 @@ class TopicPolicy(Resource):
 
     RESOURCE_TYPE = "AWS::SNS::TopicPolicy"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        PolicyDocument = attrib(default=None)
-        Topics = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: TopicPolicyProperties = attrib(
+        factory=TopicPolicyProperties,
+        converter=create_object_converter(TopicPolicyProperties),
+    )

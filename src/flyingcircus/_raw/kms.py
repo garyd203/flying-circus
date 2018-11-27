@@ -17,8 +17,16 @@ from ..core import create_object_converter
 
 __all__ = [
     "Alias",
+    "AliasProperties",
     "Key",
+    "KeyProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class AliasProperties(ResourceProperties):
+    AliasName = attrib(default=None)
+    TargetKeyId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -32,12 +40,21 @@ class Alias(Resource):
 
     RESOURCE_TYPE = "AWS::KMS::Alias"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AliasName = attrib(default=None)
-        TargetKeyId = attrib(default=None)
+    Properties: AliasProperties = attrib(
+        factory=AliasProperties,
+        converter=create_object_converter(AliasProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class KeyProperties(ResourceProperties):
+    Description = attrib(default=None)
+    Enabled = attrib(default=None)
+    EnableKeyRotation = attrib(default=None)
+    KeyPolicy = attrib(default=None)
+    KeyUsage = attrib(default=None)
+    PendingWindowInDays = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -51,14 +68,7 @@ class Key(Resource):
 
     RESOURCE_TYPE = "AWS::KMS::Key"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Description = attrib(default=None)
-        Enabled = attrib(default=None)
-        EnableKeyRotation = attrib(default=None)
-        KeyPolicy = attrib(default=None)
-        KeyUsage = attrib(default=None)
-        PendingWindowInDays = attrib(default=None)
-        Tags = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: KeyProperties = attrib(
+        factory=KeyProperties,
+        converter=create_object_converter(KeyProperties),
+    )

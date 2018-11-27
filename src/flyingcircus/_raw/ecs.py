@@ -17,9 +17,17 @@ from ..core import create_object_converter
 
 __all__ = [
     "Cluster",
+    "ClusterProperties",
     "Service",
+    "ServiceProperties",
     "TaskDefinition",
+    "TaskDefinitionProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class ClusterProperties(ResourceProperties):
+    ClusterName = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -33,11 +41,29 @@ class Cluster(Resource):
 
     RESOURCE_TYPE = "AWS::ECS::Cluster"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        ClusterName = attrib(default=None)
+    Properties: ClusterProperties = attrib(
+        factory=ClusterProperties,
+        converter=create_object_converter(ClusterProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class ServiceProperties(ResourceProperties):
+    Cluster = attrib(default=None)
+    DeploymentConfiguration = attrib(default=None)
+    DesiredCount = attrib(default=None)
+    HealthCheckGracePeriodSeconds = attrib(default=None)
+    LaunchType = attrib(default=None)
+    LoadBalancers = attrib(default=None)
+    NetworkConfiguration = attrib(default=None)
+    PlacementConstraints = attrib(default=None)
+    PlacementStrategies = attrib(default=None)
+    PlatformVersion = attrib(default=None)
+    Role = attrib(default=None)
+    SchedulingStrategy = attrib(default=None)
+    ServiceName = attrib(default=None)
+    ServiceRegistries = attrib(default=None)
+    TaskDefinition = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -51,25 +77,24 @@ class Service(Resource):
 
     RESOURCE_TYPE = "AWS::ECS::Service"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Cluster = attrib(default=None)
-        DeploymentConfiguration = attrib(default=None)
-        DesiredCount = attrib(default=None)
-        HealthCheckGracePeriodSeconds = attrib(default=None)
-        LaunchType = attrib(default=None)
-        LoadBalancers = attrib(default=None)
-        NetworkConfiguration = attrib(default=None)
-        PlacementConstraints = attrib(default=None)
-        PlacementStrategies = attrib(default=None)
-        PlatformVersion = attrib(default=None)
-        Role = attrib(default=None)
-        SchedulingStrategy = attrib(default=None)
-        ServiceName = attrib(default=None)
-        ServiceRegistries = attrib(default=None)
-        TaskDefinition = attrib(default=None)
+    Properties: ServiceProperties = attrib(
+        factory=ServiceProperties,
+        converter=create_object_converter(ServiceProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class TaskDefinitionProperties(ResourceProperties):
+    ContainerDefinitions = attrib(default=None)
+    Cpu = attrib(default=None)
+    ExecutionRoleArn = attrib(default=None)
+    Family = attrib(default=None)
+    Memory = attrib(default=None)
+    NetworkMode = attrib(default=None)
+    PlacementConstraints = attrib(default=None)
+    RequiresCompatibilities = attrib(default=None)
+    TaskRoleArn = attrib(default=None)
+    Volumes = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -83,17 +108,7 @@ class TaskDefinition(Resource):
 
     RESOURCE_TYPE = "AWS::ECS::TaskDefinition"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        ContainerDefinitions = attrib(default=None)
-        Cpu = attrib(default=None)
-        ExecutionRoleArn = attrib(default=None)
-        Family = attrib(default=None)
-        Memory = attrib(default=None)
-        NetworkMode = attrib(default=None)
-        PlacementConstraints = attrib(default=None)
-        RequiresCompatibilities = attrib(default=None)
-        TaskRoleArn = attrib(default=None)
-        Volumes = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: TaskDefinitionProperties = attrib(
+        factory=TaskDefinitionProperties,
+        converter=create_object_converter(TaskDefinitionProperties),
+    )
