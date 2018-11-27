@@ -13,6 +13,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "Cluster",
@@ -36,7 +37,7 @@ class Cluster(Resource):
     class PropertiesType(ResourceProperties):
         ClusterName = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -68,7 +69,7 @@ class Service(Resource):
         ServiceRegistries = attrib(default=None)
         TaskDefinition = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -95,4 +96,4 @@ class TaskDefinition(Resource):
         TaskRoleArn = attrib(default=None)
         Volumes = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))

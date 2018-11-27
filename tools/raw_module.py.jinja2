@@ -20,6 +20,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
 {%- for resource_name in service.resources.keys() | sort %}
@@ -47,7 +48,7 @@ class {{ resource_name }}(Resource):
         {{ property }} = attrib(default=None)
 {%- endfor %}
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 {%- if resource.has_create_policy %}
 

@@ -13,6 +13,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "ResourcePolicy",
@@ -38,7 +39,7 @@ class ResourcePolicy(Resource):
         ResourcePolicy = attrib(default=None)
         SecretId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -58,7 +59,7 @@ class RotationSchedule(Resource):
         RotationRules = attrib(default=None)
         SecretId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -81,7 +82,7 @@ class Secret(Resource):
         SecretString = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -101,4 +102,4 @@ class SecretTargetAttachment(Resource):
         TargetId = attrib(default=None)
         TargetType = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))

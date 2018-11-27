@@ -16,6 +16,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "AutoScalingGroup",
@@ -61,7 +62,7 @@ class AutoScalingGroup(Resource):
         TerminationPolicies = attrib(default=None)
         VPCZoneIdentifier = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
     # NB: UpdatePolicy may be set for AutoScalingGroup
     # (unlike most Resource types)
@@ -100,7 +101,7 @@ class LaunchConfiguration(Resource):
         SpotPrice = attrib(default=None)
         UserData = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -125,7 +126,7 @@ class LifecycleHook(Resource):
         NotificationTargetARN = attrib(default=None)
         RoleARN = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -152,7 +153,7 @@ class ScalingPolicy(Resource):
         StepAdjustments = attrib(default=None)
         TargetTrackingConfiguration = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -176,4 +177,4 @@ class ScheduledAction(Resource):
         Recurrence = attrib(default=None)
         StartTime = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))

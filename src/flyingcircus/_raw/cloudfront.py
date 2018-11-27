@@ -13,6 +13,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "CloudFrontOriginAccessIdentity",
@@ -36,7 +37,7 @@ class CloudFrontOriginAccessIdentity(Resource):
     class PropertiesType(ResourceProperties):
         CloudFrontOriginAccessIdentityConfig = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -55,7 +56,7 @@ class Distribution(Resource):
         DistributionConfig = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -74,4 +75,4 @@ class StreamingDistribution(Resource):
         StreamingDistributionConfig = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))

@@ -13,6 +13,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "IdentityPool",
@@ -49,7 +50,7 @@ class IdentityPool(Resource):
         SamlProviderARNs = attrib(default=None)
         SupportedLoginProviders = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -69,7 +70,7 @@ class IdentityPoolRoleAttachment(Resource):
         RoleMappings = attrib(default=None)
         Roles = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -103,7 +104,7 @@ class UserPool(Resource):
         UserPoolName = attrib(default=None)
         UserPoolTags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -127,7 +128,7 @@ class UserPoolClient(Resource):
         UserPoolId = attrib(default=None)
         WriteAttributes = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -149,7 +150,7 @@ class UserPoolGroup(Resource):
         RoleArn = attrib(default=None)
         UserPoolId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -173,7 +174,7 @@ class UserPoolUser(Resource):
         UserPoolId = attrib(default=None)
         ValidationData = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -193,4 +194,4 @@ class UserPoolUserToGroupAttachment(Resource):
         Username = attrib(default=None)
         UserPoolId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
