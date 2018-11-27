@@ -13,6 +13,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "Subscription",
@@ -42,7 +43,7 @@ class Subscription(Resource):
         Region = attrib(default=None)
         TopicArn = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -62,7 +63,7 @@ class Topic(Resource):
         Subscription = attrib(default=None)
         TopicName = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -81,4 +82,4 @@ class TopicPolicy(Resource):
         PolicyDocument = attrib(default=None)
         Topics = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))

@@ -13,6 +13,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "DBCluster",
@@ -65,7 +66,7 @@ class DBCluster(Resource):
         Tags = attrib(default=None)
         VpcSecurityGroupIds = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -86,7 +87,7 @@ class DBClusterParameterGroup(Resource):
         Parameters = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -149,7 +150,7 @@ class DBInstance(Resource):
         Timezone = attrib(default=None)
         VPCSecurityGroups = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -170,7 +171,7 @@ class DBParameterGroup(Resource):
         Parameters = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -191,7 +192,7 @@ class DBSecurityGroup(Resource):
         GroupDescription = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -213,7 +214,7 @@ class DBSecurityGroupIngress(Resource):
         EC2SecurityGroupName = attrib(default=None)
         EC2SecurityGroupOwnerId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -234,7 +235,7 @@ class DBSubnetGroup(Resource):
         SubnetIds = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -256,7 +257,7 @@ class EventSubscription(Resource):
         SourceIds = attrib(default=None)
         SourceType = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -278,4 +279,4 @@ class OptionGroup(Resource):
         OptionGroupDescription = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))

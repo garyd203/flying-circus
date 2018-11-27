@@ -13,6 +13,7 @@ from attr import attrs
 from ..core import ATTRSCONFIG
 from ..core import Resource
 from ..core import ResourceProperties
+from ..core import create_object_converter
 
 __all__ = [
     "CustomerGateway",
@@ -77,7 +78,7 @@ class CustomerGateway(Resource):
         Tags = attrib(default=None)
         Type = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -100,7 +101,7 @@ class DHCPOptions(Resource):
         NtpServers = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -119,7 +120,7 @@ class EIP(Resource):
         Domain = attrib(default=None)
         InstanceId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -141,7 +142,7 @@ class EIPAssociation(Resource):
         NetworkInterfaceId = attrib(default=None)
         PrivateIpAddress = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -159,7 +160,7 @@ class EgressOnlyInternetGateway(Resource):
     class PropertiesType(ResourceProperties):
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -183,7 +184,7 @@ class FlowLog(Resource):
         ResourceType = attrib(default=None)
         TrafficType = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -203,7 +204,7 @@ class Host(Resource):
         AvailabilityZone = attrib(default=None)
         InstanceType = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -252,7 +253,7 @@ class Instance(Resource):
         UserData = attrib(default=None)
         Volumes = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -270,7 +271,7 @@ class InternetGateway(Resource):
     class PropertiesType(ResourceProperties):
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -289,7 +290,7 @@ class LaunchTemplate(Resource):
         LaunchTemplateData = attrib(default=None)
         LaunchTemplateName = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -309,7 +310,7 @@ class NatGateway(Resource):
         SubnetId = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -328,7 +329,7 @@ class NetworkAcl(Resource):
         Tags = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -354,7 +355,7 @@ class NetworkAclEntry(Resource):
         RuleAction = attrib(default=None)
         RuleNumber = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -382,7 +383,7 @@ class NetworkInterface(Resource):
         SubnetId = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -403,7 +404,7 @@ class NetworkInterfaceAttachment(Resource):
         InstanceId = attrib(default=None)
         NetworkInterfaceId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -423,7 +424,7 @@ class NetworkInterfacePermission(Resource):
         NetworkInterfaceId = attrib(default=None)
         Permission = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -441,7 +442,7 @@ class PlacementGroup(Resource):
     class PropertiesType(ResourceProperties):
         Strategy = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -467,7 +468,7 @@ class Route(Resource):
         RouteTableId = attrib(default=None)
         VpcPeeringConnectionId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -486,7 +487,7 @@ class RouteTable(Resource):
         Tags = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -509,7 +510,7 @@ class SecurityGroup(Resource):
         Tags = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -535,7 +536,7 @@ class SecurityGroupEgress(Resource):
         IpProtocol = attrib(default=None)
         ToPort = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -564,7 +565,7 @@ class SecurityGroupIngress(Resource):
         SourceSecurityGroupOwnerId = attrib(default=None)
         ToPort = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -582,7 +583,7 @@ class SpotFleet(Resource):
     class PropertiesType(ResourceProperties):
         SpotFleetRequestConfigData = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -606,7 +607,7 @@ class Subnet(Resource):
         Tags = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -625,7 +626,7 @@ class SubnetCidrBlock(Resource):
         Ipv6CidrBlock = attrib(default=None)
         SubnetId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -644,7 +645,7 @@ class SubnetNetworkAclAssociation(Resource):
         NetworkAclId = attrib(default=None)
         SubnetId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -663,7 +664,7 @@ class SubnetRouteTableAssociation(Resource):
         RouteTableId = attrib(default=None)
         SubnetId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -684,7 +685,7 @@ class TrunkInterfaceAssociation(Resource):
         TrunkInterfaceId = attrib(default=None)
         VLANId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -706,7 +707,7 @@ class VPC(Resource):
         InstanceTenancy = attrib(default=None)
         Tags = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -726,7 +727,7 @@ class VPCCidrBlock(Resource):
         CidrBlock = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -745,7 +746,7 @@ class VPCDHCPOptionsAssociation(Resource):
         DhcpOptionsId = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -770,7 +771,7 @@ class VPCEndpoint(Resource):
         VPCEndpointType = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -789,7 +790,7 @@ class VPCEndpointServicePermissions(Resource):
         AllowedPrincipals = attrib(default=None)
         ServiceId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -809,7 +810,7 @@ class VPCGatewayAttachment(Resource):
         VpcId = attrib(default=None)
         VpnGatewayId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -832,7 +833,7 @@ class VPCPeeringConnection(Resource):
         Tags = attrib(default=None)
         VpcId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -855,7 +856,7 @@ class VPNConnection(Resource):
         VpnGatewayId = attrib(default=None)
         VpnTunnelOptionsSpecifications = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -874,7 +875,7 @@ class VPNConnectionRoute(Resource):
         DestinationCidrBlock = attrib(default=None)
         VpnConnectionId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -894,7 +895,7 @@ class VPNGateway(Resource):
         Tags = attrib(default=None)
         Type = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -913,7 +914,7 @@ class VPNGatewayRoutePropagation(Resource):
         RouteTableIds = attrib(default=None)
         VpnGatewayId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -939,7 +940,7 @@ class Volume(Resource):
         Tags = attrib(default=None)
         VolumeType = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
 
 
 @attrs(**ATTRSCONFIG)
@@ -959,4 +960,4 @@ class VolumeAttachment(Resource):
         InstanceId = attrib(default=None)
         VolumeId = attrib(default=None)
 
-    Properties: PropertiesType = attrib(factory=PropertiesType)
+    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
