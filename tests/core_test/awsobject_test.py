@@ -11,6 +11,7 @@ from hypothesis import given
 
 from flyingcircus.core import ATTRSCONFIG
 from flyingcircus.core import AWSObject
+from flyingcircus.core import create_object_converter
 from .common import DualAttributeObject
 from .common import MixedAttributeObject
 from .common import SingleAttributeObject
@@ -33,6 +34,20 @@ class TestInitMethod:
 
         with pytest.raises(TypeError, match="internal_attribute"):
             _ = InitTestObject(internal_attribute=42)
+
+    def test_init_should_convert_dict_values_to_object_attributes(self):
+        # Setup
+        @attrs(**ATTRSCONFIG)
+        class NestedObject(AWSObject):
+            nested: SingleAttributeObject = attrib(factory=SingleAttributeObject,
+                                                   converter=create_object_converter(SingleAttributeObject))
+
+        # Exercise
+        data = NestedObject(nested=dict(one=42))
+
+        # Verify
+        assert isinstance(data.nested, SingleAttributeObject)
+        assert data.nested.one == 42
 
 
 class TestExport:
@@ -71,6 +86,22 @@ class TestAttributeAccess:
         with pytest.raises(AttributeError, match="WeirdValue"):
             data.WeirdValue = "hello"
         assert not hasattr(data, "WeirdValue")
+
+    def test_dict_values_should_be_converted_to_object_attributes(self):
+        # Setup
+        @attrs(**ATTRSCONFIG)
+        class NestedObject(AWSObject):
+            nested: SingleAttributeObject = attrib(factory=SingleAttributeObject,
+                                                   converter=create_object_converter(SingleAttributeObject))
+
+        data = NestedObject()
+
+        # Exercise
+        data.nested = {"one": 42}
+
+        # Verify
+        assert isinstance(data.nested, SingleAttributeObject)
+        assert data.nested.one == 42
 
 
 class TestDictionaryAccess:
