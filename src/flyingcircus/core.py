@@ -12,7 +12,9 @@ from typing import Optional
 
 import yaml
 import yaml.resolver
+import attr
 from attr import attrib
+from attr import Attribute
 from attr import attrs
 
 from . import _about
@@ -38,6 +40,22 @@ ATTRSCONFIG = dict(
     # Create a constructor with only keyword parameters
     init=True, kw_only=True,
 )
+
+
+def create_object_converter(ObjectClass):
+    """Create a converter for attributes using this AWSObject class"""
+
+    def convert_to_object(value):
+        """Convert a possible dictionary argument into it's object type"""
+        # Convert a dictionary
+        if isinstance(value, dict):
+            return ObjectClass(**value)
+
+        # Leave all other objects untouched. If they have an invalid type,
+        # that will be picked up by a validator later.
+        return value
+
+    return convert_to_object
 
 
 # TODO create some prototypes or helper functions for creating attribs().
@@ -77,6 +95,29 @@ class AWSObject(CustomYamlObject):
 
     # Attribute Access
     # ----------------
+
+    def __setattr__(self, key: str, value: Any):
+        # attrs only applies converters and validators at initialisation, so
+        # we use the existing attribute declaration to also execute them when
+        # attributes are set
+        # TODO push this upstream to the attrs library, controlled by a flag on @attrs ?
+
+        # Convert value first, if necessary
+        try:
+            data: Attribute = attr.fields_dict(self.__class__)[key]
+        except KeyError:
+            # This attribute is not actually an attrs attribute. Let the
+            # superclass deal with that...
+            pass
+        else:
+            if data.converter:
+                value = data.converter(value)
+
+        # Set the value normally
+        super(AWSObject, self).__setattr__(key, value)
+
+        # Run per-attribute and per-class validation
+        attr.validate(self)
 
     def _is_internal_attribute(self, name: str) -> bool:
         """Whether this attribute name corresponds to an internal attribute for this object.
@@ -279,13 +320,13 @@ class Stack(AWSObject):
     # TODO can probably nail down the value types for these dicts - Resource, Output, etc.
     AWSTemplateFormatVersion: str = attrib(default="2010-09-09")
     Description: Optional[str] = attrib(default=None)
-    Metadata: Optional[Dict[str, Any]] = attrib(factory=dict)
-    Parameters: Optional[Dict[str, Any]] = attrib(factory=dict)
-    Mappings: Optional[Dict[str, Any]] = attrib(factory=dict)
-    Conditions: Optional[Dict[str, Any]] = attrib(factory=dict)
+    Metadata: Dict[str, Any] = attrib(factory=dict)
+    Parameters: Dict[str, Any] = attrib(factory=dict)
+    Mappings: Dict[str, Any] = attrib(factory=dict)
+    Conditions: Dict[str, Any] = attrib(factory=dict)
     Transform: Optional[str] = attrib(default=None)
-    Resources: Optional[Dict[str, Any]] = attrib(factory=dict)
-    Outputs: Optional[Dict[str, Any]] = attrib(factory=dict)
+    Resources: Dict[str, Any] = attrib(factory=dict)
+    Outputs: Dict[str, Any] = attrib(factory=dict)
 
     def __attrs_post_init__(self):
         # Set standard Metadata
@@ -566,12 +607,12 @@ class Resource(AWSObject):
     #: Note that Resource-level Metadata is not expected to be used by Flying
     #: Circus users, so it can't be set in the constructor. However, they can
     #: still modify it and set it as an attribute.
-    Metadata: Optional[Dict[str, Any]] = attrib(factory=dict, init=False)
+    Metadata: Dict[str, Any] = attrib(factory=dict, init=False)
 
     # `Properties` has a resource-type-specific Python type, so we leave it to
     # each concrete subtype to define the attribute appropriately.
     #
-    # Properties: Dict[str, Any] = attrib(factory=dict)
+    # Properties: ResourceProperties = attrib(factory=ResourceProperties, converter=create_object_converter(ResourceProperties))
 
     # `Type` is defined as a Python property - see below
     #
