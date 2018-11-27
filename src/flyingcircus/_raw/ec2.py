@@ -17,47 +17,96 @@ from ..core import create_object_converter
 
 __all__ = [
     "CustomerGateway",
+    "CustomerGatewayProperties",
     "DHCPOptions",
+    "DHCPOptionsProperties",
     "EgressOnlyInternetGateway",
+    "EgressOnlyInternetGatewayProperties",
     "EIP",
+    "EIPProperties",
     "EIPAssociation",
+    "EIPAssociationProperties",
     "FlowLog",
+    "FlowLogProperties",
     "Host",
+    "HostProperties",
     "Instance",
+    "InstanceProperties",
     "InternetGateway",
+    "InternetGatewayProperties",
     "LaunchTemplate",
+    "LaunchTemplateProperties",
     "NatGateway",
+    "NatGatewayProperties",
     "NetworkAcl",
+    "NetworkAclProperties",
     "NetworkAclEntry",
+    "NetworkAclEntryProperties",
     "NetworkInterface",
+    "NetworkInterfaceProperties",
     "NetworkInterfaceAttachment",
+    "NetworkInterfaceAttachmentProperties",
     "NetworkInterfacePermission",
+    "NetworkInterfacePermissionProperties",
     "PlacementGroup",
+    "PlacementGroupProperties",
     "Route",
+    "RouteProperties",
     "RouteTable",
+    "RouteTableProperties",
     "SecurityGroup",
+    "SecurityGroupProperties",
     "SecurityGroupEgress",
+    "SecurityGroupEgressProperties",
     "SecurityGroupIngress",
+    "SecurityGroupIngressProperties",
     "SpotFleet",
+    "SpotFleetProperties",
     "Subnet",
+    "SubnetProperties",
     "SubnetCidrBlock",
+    "SubnetCidrBlockProperties",
     "SubnetNetworkAclAssociation",
+    "SubnetNetworkAclAssociationProperties",
     "SubnetRouteTableAssociation",
+    "SubnetRouteTableAssociationProperties",
     "TrunkInterfaceAssociation",
+    "TrunkInterfaceAssociationProperties",
     "Volume",
+    "VolumeProperties",
     "VolumeAttachment",
+    "VolumeAttachmentProperties",
     "VPC",
+    "VPCProperties",
     "VPCCidrBlock",
+    "VPCCidrBlockProperties",
     "VPCDHCPOptionsAssociation",
+    "VPCDHCPOptionsAssociationProperties",
     "VPCEndpoint",
+    "VPCEndpointProperties",
     "VPCEndpointServicePermissions",
+    "VPCEndpointServicePermissionsProperties",
     "VPCGatewayAttachment",
+    "VPCGatewayAttachmentProperties",
     "VPCPeeringConnection",
+    "VPCPeeringConnectionProperties",
     "VPNConnection",
+    "VPNConnectionProperties",
     "VPNConnectionRoute",
+    "VPNConnectionRouteProperties",
     "VPNGateway",
+    "VPNGatewayProperties",
     "VPNGatewayRoutePropagation",
+    "VPNGatewayRoutePropagationProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class CustomerGatewayProperties(ResourceProperties):
+    BgpAsn = attrib(default=None)
+    IpAddress = attrib(default=None)
+    Tags = attrib(default=None)
+    Type = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -71,14 +120,20 @@ class CustomerGateway(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::CustomerGateway"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        BgpAsn = attrib(default=None)
-        IpAddress = attrib(default=None)
-        Tags = attrib(default=None)
-        Type = attrib(default=None)
+    Properties: CustomerGatewayProperties = attrib(
+        factory=CustomerGatewayProperties,
+        converter=create_object_converter(CustomerGatewayProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DHCPOptionsProperties(ResourceProperties):
+    DomainName = attrib(default=None)
+    DomainNameServers = attrib(default=None)
+    NetbiosNameServers = attrib(default=None)
+    NetbiosNodeType = attrib(default=None)
+    NtpServers = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -92,16 +147,16 @@ class DHCPOptions(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::DHCPOptions"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DomainName = attrib(default=None)
-        DomainNameServers = attrib(default=None)
-        NetbiosNameServers = attrib(default=None)
-        NetbiosNodeType = attrib(default=None)
-        NtpServers = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: DHCPOptionsProperties = attrib(
+        factory=DHCPOptionsProperties,
+        converter=create_object_converter(DHCPOptionsProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class EIPProperties(ResourceProperties):
+    Domain = attrib(default=None)
+    InstanceId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -115,12 +170,19 @@ class EIP(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::EIP"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Domain = attrib(default=None)
-        InstanceId = attrib(default=None)
+    Properties: EIPProperties = attrib(
+        factory=EIPProperties,
+        converter=create_object_converter(EIPProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class EIPAssociationProperties(ResourceProperties):
+    AllocationId = attrib(default=None)
+    EIP = attrib(default=None)
+    InstanceId = attrib(default=None)
+    NetworkInterfaceId = attrib(default=None)
+    PrivateIpAddress = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -134,15 +196,15 @@ class EIPAssociation(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::EIPAssociation"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AllocationId = attrib(default=None)
-        EIP = attrib(default=None)
-        InstanceId = attrib(default=None)
-        NetworkInterfaceId = attrib(default=None)
-        PrivateIpAddress = attrib(default=None)
+    Properties: EIPAssociationProperties = attrib(
+        factory=EIPAssociationProperties,
+        converter=create_object_converter(EIPAssociationProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class EgressOnlyInternetGatewayProperties(ResourceProperties):
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -156,11 +218,21 @@ class EgressOnlyInternetGateway(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::EgressOnlyInternetGateway"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        VpcId = attrib(default=None)
+    Properties: EgressOnlyInternetGatewayProperties = attrib(
+        factory=EgressOnlyInternetGatewayProperties,
+        converter=create_object_converter(EgressOnlyInternetGatewayProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class FlowLogProperties(ResourceProperties):
+    DeliverLogsPermissionArn = attrib(default=None)
+    LogDestination = attrib(default=None)
+    LogDestinationType = attrib(default=None)
+    LogGroupName = attrib(default=None)
+    ResourceId = attrib(default=None)
+    ResourceType = attrib(default=None)
+    TrafficType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -174,17 +246,17 @@ class FlowLog(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::FlowLog"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DeliverLogsPermissionArn = attrib(default=None)
-        LogDestination = attrib(default=None)
-        LogDestinationType = attrib(default=None)
-        LogGroupName = attrib(default=None)
-        ResourceId = attrib(default=None)
-        ResourceType = attrib(default=None)
-        TrafficType = attrib(default=None)
+    Properties: FlowLogProperties = attrib(
+        factory=FlowLogProperties,
+        converter=create_object_converter(FlowLogProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class HostProperties(ResourceProperties):
+    AutoPlacement = attrib(default=None)
+    AvailabilityZone = attrib(default=None)
+    InstanceType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -198,13 +270,46 @@ class Host(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::Host"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AutoPlacement = attrib(default=None)
-        AvailabilityZone = attrib(default=None)
-        InstanceType = attrib(default=None)
+    Properties: HostProperties = attrib(
+        factory=HostProperties,
+        converter=create_object_converter(HostProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class InstanceProperties(ResourceProperties):
+    AdditionalInfo = attrib(default=None)
+    Affinity = attrib(default=None)
+    AvailabilityZone = attrib(default=None)
+    BlockDeviceMappings = attrib(default=None)
+    CreditSpecification = attrib(default=None)
+    DisableApiTermination = attrib(default=None)
+    EbsOptimized = attrib(default=None)
+    ElasticGpuSpecifications = attrib(default=None)
+    HostId = attrib(default=None)
+    IamInstanceProfile = attrib(default=None)
+    ImageId = attrib(default=None)
+    InstanceInitiatedShutdownBehavior = attrib(default=None)
+    InstanceType = attrib(default=None)
+    Ipv6AddressCount = attrib(default=None)
+    Ipv6Addresses = attrib(default=None)
+    KernelId = attrib(default=None)
+    KeyName = attrib(default=None)
+    LaunchTemplate = attrib(default=None)
+    Monitoring = attrib(default=None)
+    NetworkInterfaces = attrib(default=None)
+    PlacementGroupName = attrib(default=None)
+    PrivateIpAddress = attrib(default=None)
+    RamdiskId = attrib(default=None)
+    SecurityGroupIds = attrib(default=None)
+    SecurityGroups = attrib(default=None)
+    SourceDestCheck = attrib(default=None)
+    SsmAssociations = attrib(default=None)
+    SubnetId = attrib(default=None)
+    Tags = attrib(default=None)
+    Tenancy = attrib(default=None)
+    UserData = attrib(default=None)
+    Volumes = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -218,42 +323,15 @@ class Instance(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::Instance"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AdditionalInfo = attrib(default=None)
-        Affinity = attrib(default=None)
-        AvailabilityZone = attrib(default=None)
-        BlockDeviceMappings = attrib(default=None)
-        CreditSpecification = attrib(default=None)
-        DisableApiTermination = attrib(default=None)
-        EbsOptimized = attrib(default=None)
-        ElasticGpuSpecifications = attrib(default=None)
-        HostId = attrib(default=None)
-        IamInstanceProfile = attrib(default=None)
-        ImageId = attrib(default=None)
-        InstanceInitiatedShutdownBehavior = attrib(default=None)
-        InstanceType = attrib(default=None)
-        Ipv6AddressCount = attrib(default=None)
-        Ipv6Addresses = attrib(default=None)
-        KernelId = attrib(default=None)
-        KeyName = attrib(default=None)
-        LaunchTemplate = attrib(default=None)
-        Monitoring = attrib(default=None)
-        NetworkInterfaces = attrib(default=None)
-        PlacementGroupName = attrib(default=None)
-        PrivateIpAddress = attrib(default=None)
-        RamdiskId = attrib(default=None)
-        SecurityGroupIds = attrib(default=None)
-        SecurityGroups = attrib(default=None)
-        SourceDestCheck = attrib(default=None)
-        SsmAssociations = attrib(default=None)
-        SubnetId = attrib(default=None)
-        Tags = attrib(default=None)
-        Tenancy = attrib(default=None)
-        UserData = attrib(default=None)
-        Volumes = attrib(default=None)
+    Properties: InstanceProperties = attrib(
+        factory=InstanceProperties,
+        converter=create_object_converter(InstanceProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class InternetGatewayProperties(ResourceProperties):
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -267,11 +345,16 @@ class InternetGateway(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::InternetGateway"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Tags = attrib(default=None)
+    Properties: InternetGatewayProperties = attrib(
+        factory=InternetGatewayProperties,
+        converter=create_object_converter(InternetGatewayProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class LaunchTemplateProperties(ResourceProperties):
+    LaunchTemplateData = attrib(default=None)
+    LaunchTemplateName = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -285,12 +368,17 @@ class LaunchTemplate(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::LaunchTemplate"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        LaunchTemplateData = attrib(default=None)
-        LaunchTemplateName = attrib(default=None)
+    Properties: LaunchTemplateProperties = attrib(
+        factory=LaunchTemplateProperties,
+        converter=create_object_converter(LaunchTemplateProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class NatGatewayProperties(ResourceProperties):
+    AllocationId = attrib(default=None)
+    SubnetId = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -304,13 +392,16 @@ class NatGateway(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::NatGateway"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AllocationId = attrib(default=None)
-        SubnetId = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: NatGatewayProperties = attrib(
+        factory=NatGatewayProperties,
+        converter=create_object_converter(NatGatewayProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class NetworkAclProperties(ResourceProperties):
+    Tags = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -324,12 +415,23 @@ class NetworkAcl(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::NetworkAcl"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Tags = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: NetworkAclProperties = attrib(
+        factory=NetworkAclProperties,
+        converter=create_object_converter(NetworkAclProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class NetworkAclEntryProperties(ResourceProperties):
+    CidrBlock = attrib(default=None)
+    Egress = attrib(default=None)
+    Icmp = attrib(default=None)
+    Ipv6CidrBlock = attrib(default=None)
+    NetworkAclId = attrib(default=None)
+    PortRange = attrib(default=None)
+    Protocol = attrib(default=None)
+    RuleAction = attrib(default=None)
+    RuleNumber = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -343,19 +445,25 @@ class NetworkAclEntry(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::NetworkAclEntry"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CidrBlock = attrib(default=None)
-        Egress = attrib(default=None)
-        Icmp = attrib(default=None)
-        Ipv6CidrBlock = attrib(default=None)
-        NetworkAclId = attrib(default=None)
-        PortRange = attrib(default=None)
-        Protocol = attrib(default=None)
-        RuleAction = attrib(default=None)
-        RuleNumber = attrib(default=None)
+    Properties: NetworkAclEntryProperties = attrib(
+        factory=NetworkAclEntryProperties,
+        converter=create_object_converter(NetworkAclEntryProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class NetworkInterfaceProperties(ResourceProperties):
+    Description = attrib(default=None)
+    GroupSet = attrib(default=None)
+    InterfaceType = attrib(default=None)
+    Ipv6AddressCount = attrib(default=None)
+    Ipv6Addresses = attrib(default=None)
+    PrivateIpAddress = attrib(default=None)
+    PrivateIpAddresses = attrib(default=None)
+    SecondaryPrivateIpAddressCount = attrib(default=None)
+    SourceDestCheck = attrib(default=None)
+    SubnetId = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -369,21 +477,18 @@ class NetworkInterface(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::NetworkInterface"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Description = attrib(default=None)
-        GroupSet = attrib(default=None)
-        InterfaceType = attrib(default=None)
-        Ipv6AddressCount = attrib(default=None)
-        Ipv6Addresses = attrib(default=None)
-        PrivateIpAddress = attrib(default=None)
-        PrivateIpAddresses = attrib(default=None)
-        SecondaryPrivateIpAddressCount = attrib(default=None)
-        SourceDestCheck = attrib(default=None)
-        SubnetId = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: NetworkInterfaceProperties = attrib(
+        factory=NetworkInterfaceProperties,
+        converter=create_object_converter(NetworkInterfaceProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class NetworkInterfaceAttachmentProperties(ResourceProperties):
+    DeleteOnTermination = attrib(default=None)
+    DeviceIndex = attrib(default=None)
+    InstanceId = attrib(default=None)
+    NetworkInterfaceId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -397,14 +502,17 @@ class NetworkInterfaceAttachment(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::NetworkInterfaceAttachment"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DeleteOnTermination = attrib(default=None)
-        DeviceIndex = attrib(default=None)
-        InstanceId = attrib(default=None)
-        NetworkInterfaceId = attrib(default=None)
+    Properties: NetworkInterfaceAttachmentProperties = attrib(
+        factory=NetworkInterfaceAttachmentProperties,
+        converter=create_object_converter(NetworkInterfaceAttachmentProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class NetworkInterfacePermissionProperties(ResourceProperties):
+    AwsAccountId = attrib(default=None)
+    NetworkInterfaceId = attrib(default=None)
+    Permission = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -418,13 +526,15 @@ class NetworkInterfacePermission(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::NetworkInterfacePermission"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AwsAccountId = attrib(default=None)
-        NetworkInterfaceId = attrib(default=None)
-        Permission = attrib(default=None)
+    Properties: NetworkInterfacePermissionProperties = attrib(
+        factory=NetworkInterfacePermissionProperties,
+        converter=create_object_converter(NetworkInterfacePermissionProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class PlacementGroupProperties(ResourceProperties):
+    Strategy = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -438,11 +548,23 @@ class PlacementGroup(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::PlacementGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Strategy = attrib(default=None)
+    Properties: PlacementGroupProperties = attrib(
+        factory=PlacementGroupProperties,
+        converter=create_object_converter(PlacementGroupProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class RouteProperties(ResourceProperties):
+    DestinationCidrBlock = attrib(default=None)
+    DestinationIpv6CidrBlock = attrib(default=None)
+    EgressOnlyInternetGatewayId = attrib(default=None)
+    GatewayId = attrib(default=None)
+    InstanceId = attrib(default=None)
+    NatGatewayId = attrib(default=None)
+    NetworkInterfaceId = attrib(default=None)
+    RouteTableId = attrib(default=None)
+    VpcPeeringConnectionId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -456,19 +578,16 @@ class Route(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::Route"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DestinationCidrBlock = attrib(default=None)
-        DestinationIpv6CidrBlock = attrib(default=None)
-        EgressOnlyInternetGatewayId = attrib(default=None)
-        GatewayId = attrib(default=None)
-        InstanceId = attrib(default=None)
-        NatGatewayId = attrib(default=None)
-        NetworkInterfaceId = attrib(default=None)
-        RouteTableId = attrib(default=None)
-        VpcPeeringConnectionId = attrib(default=None)
+    Properties: RouteProperties = attrib(
+        factory=RouteProperties,
+        converter=create_object_converter(RouteProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class RouteTableProperties(ResourceProperties):
+    Tags = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -482,12 +601,20 @@ class RouteTable(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::RouteTable"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Tags = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: RouteTableProperties = attrib(
+        factory=RouteTableProperties,
+        converter=create_object_converter(RouteTableProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SecurityGroupProperties(ResourceProperties):
+    GroupDescription = attrib(default=None)
+    GroupName = attrib(default=None)
+    SecurityGroupEgress = attrib(default=None)
+    SecurityGroupIngress = attrib(default=None)
+    Tags = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -501,16 +628,23 @@ class SecurityGroup(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::SecurityGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        GroupDescription = attrib(default=None)
-        GroupName = attrib(default=None)
-        SecurityGroupEgress = attrib(default=None)
-        SecurityGroupIngress = attrib(default=None)
-        Tags = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: SecurityGroupProperties = attrib(
+        factory=SecurityGroupProperties,
+        converter=create_object_converter(SecurityGroupProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SecurityGroupEgressProperties(ResourceProperties):
+    CidrIp = attrib(default=None)
+    CidrIpv6 = attrib(default=None)
+    Description = attrib(default=None)
+    DestinationPrefixListId = attrib(default=None)
+    DestinationSecurityGroupId = attrib(default=None)
+    FromPort = attrib(default=None)
+    GroupId = attrib(default=None)
+    IpProtocol = attrib(default=None)
+    ToPort = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -524,19 +658,26 @@ class SecurityGroupEgress(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::SecurityGroupEgress"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CidrIp = attrib(default=None)
-        CidrIpv6 = attrib(default=None)
-        Description = attrib(default=None)
-        DestinationPrefixListId = attrib(default=None)
-        DestinationSecurityGroupId = attrib(default=None)
-        FromPort = attrib(default=None)
-        GroupId = attrib(default=None)
-        IpProtocol = attrib(default=None)
-        ToPort = attrib(default=None)
+    Properties: SecurityGroupEgressProperties = attrib(
+        factory=SecurityGroupEgressProperties,
+        converter=create_object_converter(SecurityGroupEgressProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SecurityGroupIngressProperties(ResourceProperties):
+    CidrIp = attrib(default=None)
+    CidrIpv6 = attrib(default=None)
+    Description = attrib(default=None)
+    FromPort = attrib(default=None)
+    GroupId = attrib(default=None)
+    GroupName = attrib(default=None)
+    IpProtocol = attrib(default=None)
+    SourcePrefixListId = attrib(default=None)
+    SourceSecurityGroupId = attrib(default=None)
+    SourceSecurityGroupName = attrib(default=None)
+    SourceSecurityGroupOwnerId = attrib(default=None)
+    ToPort = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -550,22 +691,15 @@ class SecurityGroupIngress(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::SecurityGroupIngress"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CidrIp = attrib(default=None)
-        CidrIpv6 = attrib(default=None)
-        Description = attrib(default=None)
-        FromPort = attrib(default=None)
-        GroupId = attrib(default=None)
-        GroupName = attrib(default=None)
-        IpProtocol = attrib(default=None)
-        SourcePrefixListId = attrib(default=None)
-        SourceSecurityGroupId = attrib(default=None)
-        SourceSecurityGroupName = attrib(default=None)
-        SourceSecurityGroupOwnerId = attrib(default=None)
-        ToPort = attrib(default=None)
+    Properties: SecurityGroupIngressProperties = attrib(
+        factory=SecurityGroupIngressProperties,
+        converter=create_object_converter(SecurityGroupIngressProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SpotFleetProperties(ResourceProperties):
+    SpotFleetRequestConfigData = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -579,11 +713,21 @@ class SpotFleet(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::SpotFleet"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        SpotFleetRequestConfigData = attrib(default=None)
+    Properties: SpotFleetProperties = attrib(
+        factory=SpotFleetProperties,
+        converter=create_object_converter(SpotFleetProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SubnetProperties(ResourceProperties):
+    AssignIpv6AddressOnCreation = attrib(default=None)
+    AvailabilityZone = attrib(default=None)
+    CidrBlock = attrib(default=None)
+    Ipv6CidrBlock = attrib(default=None)
+    MapPublicIpOnLaunch = attrib(default=None)
+    Tags = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -597,17 +741,16 @@ class Subnet(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::Subnet"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AssignIpv6AddressOnCreation = attrib(default=None)
-        AvailabilityZone = attrib(default=None)
-        CidrBlock = attrib(default=None)
-        Ipv6CidrBlock = attrib(default=None)
-        MapPublicIpOnLaunch = attrib(default=None)
-        Tags = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: SubnetProperties = attrib(
+        factory=SubnetProperties,
+        converter=create_object_converter(SubnetProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SubnetCidrBlockProperties(ResourceProperties):
+    Ipv6CidrBlock = attrib(default=None)
+    SubnetId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -621,12 +764,16 @@ class SubnetCidrBlock(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::SubnetCidrBlock"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Ipv6CidrBlock = attrib(default=None)
-        SubnetId = attrib(default=None)
+    Properties: SubnetCidrBlockProperties = attrib(
+        factory=SubnetCidrBlockProperties,
+        converter=create_object_converter(SubnetCidrBlockProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SubnetNetworkAclAssociationProperties(ResourceProperties):
+    NetworkAclId = attrib(default=None)
+    SubnetId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -640,12 +787,16 @@ class SubnetNetworkAclAssociation(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::SubnetNetworkAclAssociation"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        NetworkAclId = attrib(default=None)
-        SubnetId = attrib(default=None)
+    Properties: SubnetNetworkAclAssociationProperties = attrib(
+        factory=SubnetNetworkAclAssociationProperties,
+        converter=create_object_converter(SubnetNetworkAclAssociationProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SubnetRouteTableAssociationProperties(ResourceProperties):
+    RouteTableId = attrib(default=None)
+    SubnetId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -659,12 +810,18 @@ class SubnetRouteTableAssociation(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::SubnetRouteTableAssociation"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        RouteTableId = attrib(default=None)
-        SubnetId = attrib(default=None)
+    Properties: SubnetRouteTableAssociationProperties = attrib(
+        factory=SubnetRouteTableAssociationProperties,
+        converter=create_object_converter(SubnetRouteTableAssociationProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class TrunkInterfaceAssociationProperties(ResourceProperties):
+    BranchInterfaceId = attrib(default=None)
+    GREKey = attrib(default=None)
+    TrunkInterfaceId = attrib(default=None)
+    VLANId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -678,14 +835,19 @@ class TrunkInterfaceAssociation(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::TrunkInterfaceAssociation"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        BranchInterfaceId = attrib(default=None)
-        GREKey = attrib(default=None)
-        TrunkInterfaceId = attrib(default=None)
-        VLANId = attrib(default=None)
+    Properties: TrunkInterfaceAssociationProperties = attrib(
+        factory=TrunkInterfaceAssociationProperties,
+        converter=create_object_converter(TrunkInterfaceAssociationProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPCProperties(ResourceProperties):
+    CidrBlock = attrib(default=None)
+    EnableDnsHostnames = attrib(default=None)
+    EnableDnsSupport = attrib(default=None)
+    InstanceTenancy = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -699,15 +861,17 @@ class VPC(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPC"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CidrBlock = attrib(default=None)
-        EnableDnsHostnames = attrib(default=None)
-        EnableDnsSupport = attrib(default=None)
-        InstanceTenancy = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: VPCProperties = attrib(
+        factory=VPCProperties,
+        converter=create_object_converter(VPCProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPCCidrBlockProperties(ResourceProperties):
+    AmazonProvidedIpv6CidrBlock = attrib(default=None)
+    CidrBlock = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -721,13 +885,16 @@ class VPCCidrBlock(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPCCidrBlock"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AmazonProvidedIpv6CidrBlock = attrib(default=None)
-        CidrBlock = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: VPCCidrBlockProperties = attrib(
+        factory=VPCCidrBlockProperties,
+        converter=create_object_converter(VPCCidrBlockProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPCDHCPOptionsAssociationProperties(ResourceProperties):
+    DhcpOptionsId = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -741,12 +908,22 @@ class VPCDHCPOptionsAssociation(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPCDHCPOptionsAssociation"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DhcpOptionsId = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: VPCDHCPOptionsAssociationProperties = attrib(
+        factory=VPCDHCPOptionsAssociationProperties,
+        converter=create_object_converter(VPCDHCPOptionsAssociationProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPCEndpointProperties(ResourceProperties):
+    PolicyDocument = attrib(default=None)
+    PrivateDnsEnabled = attrib(default=None)
+    RouteTableIds = attrib(default=None)
+    SecurityGroupIds = attrib(default=None)
+    ServiceName = attrib(default=None)
+    SubnetIds = attrib(default=None)
+    VPCEndpointType = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -760,18 +937,16 @@ class VPCEndpoint(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPCEndpoint"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        PolicyDocument = attrib(default=None)
-        PrivateDnsEnabled = attrib(default=None)
-        RouteTableIds = attrib(default=None)
-        SecurityGroupIds = attrib(default=None)
-        ServiceName = attrib(default=None)
-        SubnetIds = attrib(default=None)
-        VPCEndpointType = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: VPCEndpointProperties = attrib(
+        factory=VPCEndpointProperties,
+        converter=create_object_converter(VPCEndpointProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPCEndpointServicePermissionsProperties(ResourceProperties):
+    AllowedPrincipals = attrib(default=None)
+    ServiceId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -785,12 +960,17 @@ class VPCEndpointServicePermissions(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPCEndpointServicePermissions"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AllowedPrincipals = attrib(default=None)
-        ServiceId = attrib(default=None)
+    Properties: VPCEndpointServicePermissionsProperties = attrib(
+        factory=VPCEndpointServicePermissionsProperties,
+        converter=create_object_converter(VPCEndpointServicePermissionsProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPCGatewayAttachmentProperties(ResourceProperties):
+    InternetGatewayId = attrib(default=None)
+    VpcId = attrib(default=None)
+    VpnGatewayId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -804,13 +984,20 @@ class VPCGatewayAttachment(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPCGatewayAttachment"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        InternetGatewayId = attrib(default=None)
-        VpcId = attrib(default=None)
-        VpnGatewayId = attrib(default=None)
+    Properties: VPCGatewayAttachmentProperties = attrib(
+        factory=VPCGatewayAttachmentProperties,
+        converter=create_object_converter(VPCGatewayAttachmentProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPCPeeringConnectionProperties(ResourceProperties):
+    PeerOwnerId = attrib(default=None)
+    PeerRegion = attrib(default=None)
+    PeerRoleArn = attrib(default=None)
+    PeerVpcId = attrib(default=None)
+    Tags = attrib(default=None)
+    VpcId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -824,16 +1011,20 @@ class VPCPeeringConnection(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPCPeeringConnection"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        PeerOwnerId = attrib(default=None)
-        PeerRegion = attrib(default=None)
-        PeerRoleArn = attrib(default=None)
-        PeerVpcId = attrib(default=None)
-        Tags = attrib(default=None)
-        VpcId = attrib(default=None)
+    Properties: VPCPeeringConnectionProperties = attrib(
+        factory=VPCPeeringConnectionProperties,
+        converter=create_object_converter(VPCPeeringConnectionProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPNConnectionProperties(ResourceProperties):
+    CustomerGatewayId = attrib(default=None)
+    StaticRoutesOnly = attrib(default=None)
+    Tags = attrib(default=None)
+    Type = attrib(default=None)
+    VpnGatewayId = attrib(default=None)
+    VpnTunnelOptionsSpecifications = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -847,16 +1038,16 @@ class VPNConnection(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPNConnection"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CustomerGatewayId = attrib(default=None)
-        StaticRoutesOnly = attrib(default=None)
-        Tags = attrib(default=None)
-        Type = attrib(default=None)
-        VpnGatewayId = attrib(default=None)
-        VpnTunnelOptionsSpecifications = attrib(default=None)
+    Properties: VPNConnectionProperties = attrib(
+        factory=VPNConnectionProperties,
+        converter=create_object_converter(VPNConnectionProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPNConnectionRouteProperties(ResourceProperties):
+    DestinationCidrBlock = attrib(default=None)
+    VpnConnectionId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -870,12 +1061,17 @@ class VPNConnectionRoute(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPNConnectionRoute"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DestinationCidrBlock = attrib(default=None)
-        VpnConnectionId = attrib(default=None)
+    Properties: VPNConnectionRouteProperties = attrib(
+        factory=VPNConnectionRouteProperties,
+        converter=create_object_converter(VPNConnectionRouteProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPNGatewayProperties(ResourceProperties):
+    AmazonSideAsn = attrib(default=None)
+    Tags = attrib(default=None)
+    Type = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -889,13 +1085,16 @@ class VPNGateway(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPNGateway"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AmazonSideAsn = attrib(default=None)
-        Tags = attrib(default=None)
-        Type = attrib(default=None)
+    Properties: VPNGatewayProperties = attrib(
+        factory=VPNGatewayProperties,
+        converter=create_object_converter(VPNGatewayProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VPNGatewayRoutePropagationProperties(ResourceProperties):
+    RouteTableIds = attrib(default=None)
+    VpnGatewayId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -909,12 +1108,23 @@ class VPNGatewayRoutePropagation(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VPNGatewayRoutePropagation"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        RouteTableIds = attrib(default=None)
-        VpnGatewayId = attrib(default=None)
+    Properties: VPNGatewayRoutePropagationProperties = attrib(
+        factory=VPNGatewayRoutePropagationProperties,
+        converter=create_object_converter(VPNGatewayRoutePropagationProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VolumeProperties(ResourceProperties):
+    AutoEnableIO = attrib(default=None)
+    AvailabilityZone = attrib(default=None)
+    Encrypted = attrib(default=None)
+    Iops = attrib(default=None)
+    KmsKeyId = attrib(default=None)
+    Size = attrib(default=None)
+    SnapshotId = attrib(default=None)
+    Tags = attrib(default=None)
+    VolumeType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -928,19 +1138,17 @@ class Volume(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::Volume"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AutoEnableIO = attrib(default=None)
-        AvailabilityZone = attrib(default=None)
-        Encrypted = attrib(default=None)
-        Iops = attrib(default=None)
-        KmsKeyId = attrib(default=None)
-        Size = attrib(default=None)
-        SnapshotId = attrib(default=None)
-        Tags = attrib(default=None)
-        VolumeType = attrib(default=None)
+    Properties: VolumeProperties = attrib(
+        factory=VolumeProperties,
+        converter=create_object_converter(VolumeProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class VolumeAttachmentProperties(ResourceProperties):
+    Device = attrib(default=None)
+    InstanceId = attrib(default=None)
+    VolumeId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -954,10 +1162,7 @@ class VolumeAttachment(Resource):
 
     RESOURCE_TYPE = "AWS::EC2::VolumeAttachment"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Device = attrib(default=None)
-        InstanceId = attrib(default=None)
-        VolumeId = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: VolumeAttachmentProperties = attrib(
+        factory=VolumeAttachmentProperties,
+        converter=create_object_converter(VolumeAttachmentProperties),
+    )

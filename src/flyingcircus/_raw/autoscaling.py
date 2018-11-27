@@ -20,11 +20,41 @@ from ..core import create_object_converter
 
 __all__ = [
     "AutoScalingGroup",
+    "AutoScalingGroupProperties",
     "LaunchConfiguration",
+    "LaunchConfigurationProperties",
     "LifecycleHook",
+    "LifecycleHookProperties",
     "ScalingPolicy",
+    "ScalingPolicyProperties",
     "ScheduledAction",
+    "ScheduledActionProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class AutoScalingGroupProperties(ResourceProperties):
+    AutoScalingGroupName = attrib(default=None)
+    AvailabilityZones = attrib(default=None)
+    Cooldown = attrib(default=None)
+    DesiredCapacity = attrib(default=None)
+    HealthCheckGracePeriod = attrib(default=None)
+    HealthCheckType = attrib(default=None)
+    InstanceId = attrib(default=None)
+    LaunchConfigurationName = attrib(default=None)
+    LaunchTemplate = attrib(default=None)
+    LifecycleHookSpecificationList = attrib(default=None)
+    LoadBalancerNames = attrib(default=None)
+    MaxSize = attrib(default=None)
+    MetricsCollection = attrib(default=None)
+    MinSize = attrib(default=None)
+    NotificationConfigurations = attrib(default=None)
+    PlacementGroup = attrib(default=None)
+    ServiceLinkedRoleARN = attrib(default=None)
+    Tags = attrib(default=None)
+    TargetGroupARNs = attrib(default=None)
+    TerminationPolicies = attrib(default=None)
+    VPCZoneIdentifier = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -38,35 +68,36 @@ class AutoScalingGroup(Resource):
 
     RESOURCE_TYPE = "AWS::AutoScaling::AutoScalingGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AutoScalingGroupName = attrib(default=None)
-        AvailabilityZones = attrib(default=None)
-        Cooldown = attrib(default=None)
-        DesiredCapacity = attrib(default=None)
-        HealthCheckGracePeriod = attrib(default=None)
-        HealthCheckType = attrib(default=None)
-        InstanceId = attrib(default=None)
-        LaunchConfigurationName = attrib(default=None)
-        LaunchTemplate = attrib(default=None)
-        LifecycleHookSpecificationList = attrib(default=None)
-        LoadBalancerNames = attrib(default=None)
-        MaxSize = attrib(default=None)
-        MetricsCollection = attrib(default=None)
-        MinSize = attrib(default=None)
-        NotificationConfigurations = attrib(default=None)
-        PlacementGroup = attrib(default=None)
-        ServiceLinkedRoleARN = attrib(default=None)
-        Tags = attrib(default=None)
-        TargetGroupARNs = attrib(default=None)
-        TerminationPolicies = attrib(default=None)
-        VPCZoneIdentifier = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: AutoScalingGroupProperties = attrib(
+        factory=AutoScalingGroupProperties,
+        converter=create_object_converter(AutoScalingGroupProperties),
+    )
 
     # NB: UpdatePolicy may be set for AutoScalingGroup
     # (unlike most Resource types)
     UpdatePolicy: Dict[str, Any] = attrib(factory=dict)
+
+
+@attrs(**ATTRSCONFIG)
+class LaunchConfigurationProperties(ResourceProperties):
+    AssociatePublicIpAddress = attrib(default=None)
+    BlockDeviceMappings = attrib(default=None)
+    ClassicLinkVPCId = attrib(default=None)
+    ClassicLinkVPCSecurityGroups = attrib(default=None)
+    EbsOptimized = attrib(default=None)
+    IamInstanceProfile = attrib(default=None)
+    ImageId = attrib(default=None)
+    InstanceId = attrib(default=None)
+    InstanceMonitoring = attrib(default=None)
+    InstanceType = attrib(default=None)
+    KernelId = attrib(default=None)
+    KeyName = attrib(default=None)
+    LaunchConfigurationName = attrib(default=None)
+    PlacementTenancy = attrib(default=None)
+    RamDiskId = attrib(default=None)
+    SecurityGroups = attrib(default=None)
+    SpotPrice = attrib(default=None)
+    UserData = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -80,28 +111,22 @@ class LaunchConfiguration(Resource):
 
     RESOURCE_TYPE = "AWS::AutoScaling::LaunchConfiguration"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AssociatePublicIpAddress = attrib(default=None)
-        BlockDeviceMappings = attrib(default=None)
-        ClassicLinkVPCId = attrib(default=None)
-        ClassicLinkVPCSecurityGroups = attrib(default=None)
-        EbsOptimized = attrib(default=None)
-        IamInstanceProfile = attrib(default=None)
-        ImageId = attrib(default=None)
-        InstanceId = attrib(default=None)
-        InstanceMonitoring = attrib(default=None)
-        InstanceType = attrib(default=None)
-        KernelId = attrib(default=None)
-        KeyName = attrib(default=None)
-        LaunchConfigurationName = attrib(default=None)
-        PlacementTenancy = attrib(default=None)
-        RamDiskId = attrib(default=None)
-        SecurityGroups = attrib(default=None)
-        SpotPrice = attrib(default=None)
-        UserData = attrib(default=None)
+    Properties: LaunchConfigurationProperties = attrib(
+        factory=LaunchConfigurationProperties,
+        converter=create_object_converter(LaunchConfigurationProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class LifecycleHookProperties(ResourceProperties):
+    AutoScalingGroupName = attrib(default=None)
+    DefaultResult = attrib(default=None)
+    HeartbeatTimeout = attrib(default=None)
+    LifecycleHookName = attrib(default=None)
+    LifecycleTransition = attrib(default=None)
+    NotificationMetadata = attrib(default=None)
+    NotificationTargetARN = attrib(default=None)
+    RoleARN = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -115,18 +140,24 @@ class LifecycleHook(Resource):
 
     RESOURCE_TYPE = "AWS::AutoScaling::LifecycleHook"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AutoScalingGroupName = attrib(default=None)
-        DefaultResult = attrib(default=None)
-        HeartbeatTimeout = attrib(default=None)
-        LifecycleHookName = attrib(default=None)
-        LifecycleTransition = attrib(default=None)
-        NotificationMetadata = attrib(default=None)
-        NotificationTargetARN = attrib(default=None)
-        RoleARN = attrib(default=None)
+    Properties: LifecycleHookProperties = attrib(
+        factory=LifecycleHookProperties,
+        converter=create_object_converter(LifecycleHookProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class ScalingPolicyProperties(ResourceProperties):
+    AdjustmentType = attrib(default=None)
+    AutoScalingGroupName = attrib(default=None)
+    Cooldown = attrib(default=None)
+    EstimatedInstanceWarmup = attrib(default=None)
+    MetricAggregationType = attrib(default=None)
+    MinAdjustmentMagnitude = attrib(default=None)
+    PolicyType = attrib(default=None)
+    ScalingAdjustment = attrib(default=None)
+    StepAdjustments = attrib(default=None)
+    TargetTrackingConfiguration = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -140,20 +171,21 @@ class ScalingPolicy(Resource):
 
     RESOURCE_TYPE = "AWS::AutoScaling::ScalingPolicy"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AdjustmentType = attrib(default=None)
-        AutoScalingGroupName = attrib(default=None)
-        Cooldown = attrib(default=None)
-        EstimatedInstanceWarmup = attrib(default=None)
-        MetricAggregationType = attrib(default=None)
-        MinAdjustmentMagnitude = attrib(default=None)
-        PolicyType = attrib(default=None)
-        ScalingAdjustment = attrib(default=None)
-        StepAdjustments = attrib(default=None)
-        TargetTrackingConfiguration = attrib(default=None)
+    Properties: ScalingPolicyProperties = attrib(
+        factory=ScalingPolicyProperties,
+        converter=create_object_converter(ScalingPolicyProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class ScheduledActionProperties(ResourceProperties):
+    AutoScalingGroupName = attrib(default=None)
+    DesiredCapacity = attrib(default=None)
+    EndTime = attrib(default=None)
+    MaxSize = attrib(default=None)
+    MinSize = attrib(default=None)
+    Recurrence = attrib(default=None)
+    StartTime = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -167,14 +199,7 @@ class ScheduledAction(Resource):
 
     RESOURCE_TYPE = "AWS::AutoScaling::ScheduledAction"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AutoScalingGroupName = attrib(default=None)
-        DesiredCapacity = attrib(default=None)
-        EndTime = attrib(default=None)
-        MaxSize = attrib(default=None)
-        MinSize = attrib(default=None)
-        Recurrence = attrib(default=None)
-        StartTime = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: ScheduledActionProperties = attrib(
+        factory=ScheduledActionProperties,
+        converter=create_object_converter(ScheduledActionProperties),
+    )

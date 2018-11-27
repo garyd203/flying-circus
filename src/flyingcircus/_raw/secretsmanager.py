@@ -17,10 +17,20 @@ from ..core import create_object_converter
 
 __all__ = [
     "ResourcePolicy",
+    "ResourcePolicyProperties",
     "RotationSchedule",
+    "RotationScheduleProperties",
     "Secret",
+    "SecretProperties",
     "SecretTargetAttachment",
+    "SecretTargetAttachmentProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class ResourcePolicyProperties(ResourceProperties):
+    ResourcePolicy = attrib(default=None)
+    SecretId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -34,12 +44,17 @@ class ResourcePolicy(Resource):
 
     RESOURCE_TYPE = "AWS::SecretsManager::ResourcePolicy"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        ResourcePolicy = attrib(default=None)
-        SecretId = attrib(default=None)
+    Properties: ResourcePolicyProperties = attrib(
+        factory=ResourcePolicyProperties,
+        converter=create_object_converter(ResourcePolicyProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class RotationScheduleProperties(ResourceProperties):
+    RotationLambdaARN = attrib(default=None)
+    RotationRules = attrib(default=None)
+    SecretId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -53,13 +68,20 @@ class RotationSchedule(Resource):
 
     RESOURCE_TYPE = "AWS::SecretsManager::RotationSchedule"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        RotationLambdaARN = attrib(default=None)
-        RotationRules = attrib(default=None)
-        SecretId = attrib(default=None)
+    Properties: RotationScheduleProperties = attrib(
+        factory=RotationScheduleProperties,
+        converter=create_object_converter(RotationScheduleProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SecretProperties(ResourceProperties):
+    Description = attrib(default=None)
+    GenerateSecretString = attrib(default=None)
+    KmsKeyId = attrib(default=None)
+    Name = attrib(default=None)
+    SecretString = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -73,16 +95,17 @@ class Secret(Resource):
 
     RESOURCE_TYPE = "AWS::SecretsManager::Secret"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Description = attrib(default=None)
-        GenerateSecretString = attrib(default=None)
-        KmsKeyId = attrib(default=None)
-        Name = attrib(default=None)
-        SecretString = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: SecretProperties = attrib(
+        factory=SecretProperties,
+        converter=create_object_converter(SecretProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class SecretTargetAttachmentProperties(ResourceProperties):
+    SecretId = attrib(default=None)
+    TargetId = attrib(default=None)
+    TargetType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -96,10 +119,7 @@ class SecretTargetAttachment(Resource):
 
     RESOURCE_TYPE = "AWS::SecretsManager::SecretTargetAttachment"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        SecretId = attrib(default=None)
-        TargetId = attrib(default=None)
-        TargetType = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: SecretTargetAttachmentProperties = attrib(
+        factory=SecretTargetAttachmentProperties,
+        converter=create_object_converter(SecretTargetAttachmentProperties),
+    )

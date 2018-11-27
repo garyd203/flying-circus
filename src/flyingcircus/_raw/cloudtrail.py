@@ -17,7 +17,25 @@ from ..core import create_object_converter
 
 __all__ = [
     "Trail",
+    "TrailProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class TrailProperties(ResourceProperties):
+    CloudWatchLogsLogGroupArn = attrib(default=None)
+    CloudWatchLogsRoleArn = attrib(default=None)
+    EnableLogFileValidation = attrib(default=None)
+    EventSelectors = attrib(default=None)
+    IncludeGlobalServiceEvents = attrib(default=None)
+    IsLogging = attrib(default=None)
+    IsMultiRegionTrail = attrib(default=None)
+    KMSKeyId = attrib(default=None)
+    S3BucketName = attrib(default=None)
+    S3KeyPrefix = attrib(default=None)
+    SnsTopicName = attrib(default=None)
+    Tags = attrib(default=None)
+    TrailName = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -31,20 +49,7 @@ class Trail(Resource):
 
     RESOURCE_TYPE = "AWS::CloudTrail::Trail"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CloudWatchLogsLogGroupArn = attrib(default=None)
-        CloudWatchLogsRoleArn = attrib(default=None)
-        EnableLogFileValidation = attrib(default=None)
-        EventSelectors = attrib(default=None)
-        IncludeGlobalServiceEvents = attrib(default=None)
-        IsLogging = attrib(default=None)
-        IsMultiRegionTrail = attrib(default=None)
-        KMSKeyId = attrib(default=None)
-        S3BucketName = attrib(default=None)
-        S3KeyPrefix = attrib(default=None)
-        SnsTopicName = attrib(default=None)
-        Tags = attrib(default=None)
-        TrailName = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: TrailProperties = attrib(
+        factory=TrailProperties,
+        converter=create_object_converter(TrailProperties),
+    )

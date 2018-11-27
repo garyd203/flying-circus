@@ -17,15 +17,52 @@ from ..core import create_object_converter
 
 __all__ = [
     "DBCluster",
+    "DBClusterProperties",
     "DBClusterParameterGroup",
+    "DBClusterParameterGroupProperties",
     "DBInstance",
+    "DBInstanceProperties",
     "DBParameterGroup",
+    "DBParameterGroupProperties",
     "DBSecurityGroup",
+    "DBSecurityGroupProperties",
     "DBSecurityGroupIngress",
+    "DBSecurityGroupIngressProperties",
     "DBSubnetGroup",
+    "DBSubnetGroupProperties",
     "EventSubscription",
+    "EventSubscriptionProperties",
     "OptionGroup",
+    "OptionGroupProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class DBClusterProperties(ResourceProperties):
+    AvailabilityZones = attrib(default=None)
+    BacktrackWindow = attrib(default=None)
+    BackupRetentionPeriod = attrib(default=None)
+    DatabaseName = attrib(default=None)
+    DBClusterIdentifier = attrib(default=None)
+    DBClusterParameterGroupName = attrib(default=None)
+    DBSubnetGroupName = attrib(default=None)
+    EnableCloudwatchLogsExports = attrib(default=None)
+    EnableIAMDatabaseAuthentication = attrib(default=None)
+    Engine = attrib(default=None)
+    EngineMode = attrib(default=None)
+    EngineVersion = attrib(default=None)
+    KmsKeyId = attrib(default=None)
+    MasterUsername = attrib(default=None)
+    MasterUserPassword = attrib(default=None)
+    Port = attrib(default=None)
+    PreferredBackupWindow = attrib(default=None)
+    PreferredMaintenanceWindow = attrib(default=None)
+    ReplicationSourceIdentifier = attrib(default=None)
+    ScalingConfiguration = attrib(default=None)
+    SnapshotIdentifier = attrib(default=None)
+    StorageEncrypted = attrib(default=None)
+    Tags = attrib(default=None)
+    VpcSecurityGroupIds = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -39,34 +76,18 @@ class DBCluster(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::DBCluster"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AvailabilityZones = attrib(default=None)
-        BacktrackWindow = attrib(default=None)
-        BackupRetentionPeriod = attrib(default=None)
-        DatabaseName = attrib(default=None)
-        DBClusterIdentifier = attrib(default=None)
-        DBClusterParameterGroupName = attrib(default=None)
-        DBSubnetGroupName = attrib(default=None)
-        EnableCloudwatchLogsExports = attrib(default=None)
-        EnableIAMDatabaseAuthentication = attrib(default=None)
-        Engine = attrib(default=None)
-        EngineMode = attrib(default=None)
-        EngineVersion = attrib(default=None)
-        KmsKeyId = attrib(default=None)
-        MasterUsername = attrib(default=None)
-        MasterUserPassword = attrib(default=None)
-        Port = attrib(default=None)
-        PreferredBackupWindow = attrib(default=None)
-        PreferredMaintenanceWindow = attrib(default=None)
-        ReplicationSourceIdentifier = attrib(default=None)
-        ScalingConfiguration = attrib(default=None)
-        SnapshotIdentifier = attrib(default=None)
-        StorageEncrypted = attrib(default=None)
-        Tags = attrib(default=None)
-        VpcSecurityGroupIds = attrib(default=None)
+    Properties: DBClusterProperties = attrib(
+        factory=DBClusterProperties,
+        converter=create_object_converter(DBClusterProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DBClusterParameterGroupProperties(ResourceProperties):
+    Description = attrib(default=None)
+    Family = attrib(default=None)
+    Parameters = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -80,14 +101,60 @@ class DBClusterParameterGroup(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::DBClusterParameterGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Description = attrib(default=None)
-        Family = attrib(default=None)
-        Parameters = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: DBClusterParameterGroupProperties = attrib(
+        factory=DBClusterParameterGroupProperties,
+        converter=create_object_converter(DBClusterParameterGroupProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DBInstanceProperties(ResourceProperties):
+    AllocatedStorage = attrib(default=None)
+    AllowMajorVersionUpgrade = attrib(default=None)
+    AutoMinorVersionUpgrade = attrib(default=None)
+    AvailabilityZone = attrib(default=None)
+    BackupRetentionPeriod = attrib(default=None)
+    CharacterSetName = attrib(default=None)
+    CopyTagsToSnapshot = attrib(default=None)
+    DBClusterIdentifier = attrib(default=None)
+    DBInstanceClass = attrib(default=None)
+    DBInstanceIdentifier = attrib(default=None)
+    DBName = attrib(default=None)
+    DBParameterGroupName = attrib(default=None)
+    DBSecurityGroups = attrib(default=None)
+    DBSnapshotIdentifier = attrib(default=None)
+    DBSubnetGroupName = attrib(default=None)
+    Domain = attrib(default=None)
+    DomainIAMRoleName = attrib(default=None)
+    EnableCloudwatchLogsExports = attrib(default=None)
+    EnableIAMDatabaseAuthentication = attrib(default=None)
+    EnablePerformanceInsights = attrib(default=None)
+    Engine = attrib(default=None)
+    EngineVersion = attrib(default=None)
+    Iops = attrib(default=None)
+    KmsKeyId = attrib(default=None)
+    LicenseModel = attrib(default=None)
+    MasterUsername = attrib(default=None)
+    MasterUserPassword = attrib(default=None)
+    MonitoringInterval = attrib(default=None)
+    MonitoringRoleArn = attrib(default=None)
+    MultiAZ = attrib(default=None)
+    OptionGroupName = attrib(default=None)
+    PerformanceInsightsKMSKeyId = attrib(default=None)
+    PerformanceInsightsRetentionPeriod = attrib(default=None)
+    Port = attrib(default=None)
+    PreferredBackupWindow = attrib(default=None)
+    PreferredMaintenanceWindow = attrib(default=None)
+    ProcessorFeatures = attrib(default=None)
+    PromotionTier = attrib(default=None)
+    PubliclyAccessible = attrib(default=None)
+    SourceDBInstanceIdentifier = attrib(default=None)
+    SourceRegion = attrib(default=None)
+    StorageEncrypted = attrib(default=None)
+    StorageType = attrib(default=None)
+    Tags = attrib(default=None)
+    Timezone = attrib(default=None)
+    VPCSecurityGroups = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -101,56 +168,18 @@ class DBInstance(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::DBInstance"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AllocatedStorage = attrib(default=None)
-        AllowMajorVersionUpgrade = attrib(default=None)
-        AutoMinorVersionUpgrade = attrib(default=None)
-        AvailabilityZone = attrib(default=None)
-        BackupRetentionPeriod = attrib(default=None)
-        CharacterSetName = attrib(default=None)
-        CopyTagsToSnapshot = attrib(default=None)
-        DBClusterIdentifier = attrib(default=None)
-        DBInstanceClass = attrib(default=None)
-        DBInstanceIdentifier = attrib(default=None)
-        DBName = attrib(default=None)
-        DBParameterGroupName = attrib(default=None)
-        DBSecurityGroups = attrib(default=None)
-        DBSnapshotIdentifier = attrib(default=None)
-        DBSubnetGroupName = attrib(default=None)
-        Domain = attrib(default=None)
-        DomainIAMRoleName = attrib(default=None)
-        EnableCloudwatchLogsExports = attrib(default=None)
-        EnableIAMDatabaseAuthentication = attrib(default=None)
-        EnablePerformanceInsights = attrib(default=None)
-        Engine = attrib(default=None)
-        EngineVersion = attrib(default=None)
-        Iops = attrib(default=None)
-        KmsKeyId = attrib(default=None)
-        LicenseModel = attrib(default=None)
-        MasterUsername = attrib(default=None)
-        MasterUserPassword = attrib(default=None)
-        MonitoringInterval = attrib(default=None)
-        MonitoringRoleArn = attrib(default=None)
-        MultiAZ = attrib(default=None)
-        OptionGroupName = attrib(default=None)
-        PerformanceInsightsKMSKeyId = attrib(default=None)
-        PerformanceInsightsRetentionPeriod = attrib(default=None)
-        Port = attrib(default=None)
-        PreferredBackupWindow = attrib(default=None)
-        PreferredMaintenanceWindow = attrib(default=None)
-        ProcessorFeatures = attrib(default=None)
-        PromotionTier = attrib(default=None)
-        PubliclyAccessible = attrib(default=None)
-        SourceDBInstanceIdentifier = attrib(default=None)
-        SourceRegion = attrib(default=None)
-        StorageEncrypted = attrib(default=None)
-        StorageType = attrib(default=None)
-        Tags = attrib(default=None)
-        Timezone = attrib(default=None)
-        VPCSecurityGroups = attrib(default=None)
+    Properties: DBInstanceProperties = attrib(
+        factory=DBInstanceProperties,
+        converter=create_object_converter(DBInstanceProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DBParameterGroupProperties(ResourceProperties):
+    Description = attrib(default=None)
+    Family = attrib(default=None)
+    Parameters = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -164,14 +193,18 @@ class DBParameterGroup(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::DBParameterGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Description = attrib(default=None)
-        Family = attrib(default=None)
-        Parameters = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: DBParameterGroupProperties = attrib(
+        factory=DBParameterGroupProperties,
+        converter=create_object_converter(DBParameterGroupProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DBSecurityGroupProperties(ResourceProperties):
+    DBSecurityGroupIngress = attrib(default=None)
+    EC2VpcId = attrib(default=None)
+    GroupDescription = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -185,14 +218,19 @@ class DBSecurityGroup(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::DBSecurityGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DBSecurityGroupIngress = attrib(default=None)
-        EC2VpcId = attrib(default=None)
-        GroupDescription = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: DBSecurityGroupProperties = attrib(
+        factory=DBSecurityGroupProperties,
+        converter=create_object_converter(DBSecurityGroupProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DBSecurityGroupIngressProperties(ResourceProperties):
+    CIDRIP = attrib(default=None)
+    DBSecurityGroupName = attrib(default=None)
+    EC2SecurityGroupId = attrib(default=None)
+    EC2SecurityGroupName = attrib(default=None)
+    EC2SecurityGroupOwnerId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -206,15 +244,18 @@ class DBSecurityGroupIngress(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::DBSecurityGroupIngress"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        CIDRIP = attrib(default=None)
-        DBSecurityGroupName = attrib(default=None)
-        EC2SecurityGroupId = attrib(default=None)
-        EC2SecurityGroupName = attrib(default=None)
-        EC2SecurityGroupOwnerId = attrib(default=None)
+    Properties: DBSecurityGroupIngressProperties = attrib(
+        factory=DBSecurityGroupIngressProperties,
+        converter=create_object_converter(DBSecurityGroupIngressProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class DBSubnetGroupProperties(ResourceProperties):
+    DBSubnetGroupDescription = attrib(default=None)
+    DBSubnetGroupName = attrib(default=None)
+    SubnetIds = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -228,14 +269,19 @@ class DBSubnetGroup(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::DBSubnetGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DBSubnetGroupDescription = attrib(default=None)
-        DBSubnetGroupName = attrib(default=None)
-        SubnetIds = attrib(default=None)
-        Tags = attrib(default=None)
+    Properties: DBSubnetGroupProperties = attrib(
+        factory=DBSubnetGroupProperties,
+        converter=create_object_converter(DBSubnetGroupProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class EventSubscriptionProperties(ResourceProperties):
+    Enabled = attrib(default=None)
+    EventCategories = attrib(default=None)
+    SnsTopicArn = attrib(default=None)
+    SourceIds = attrib(default=None)
+    SourceType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -249,15 +295,19 @@ class EventSubscription(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::EventSubscription"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Enabled = attrib(default=None)
-        EventCategories = attrib(default=None)
-        SnsTopicArn = attrib(default=None)
-        SourceIds = attrib(default=None)
-        SourceType = attrib(default=None)
+    Properties: EventSubscriptionProperties = attrib(
+        factory=EventSubscriptionProperties,
+        converter=create_object_converter(EventSubscriptionProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class OptionGroupProperties(ResourceProperties):
+    EngineName = attrib(default=None)
+    MajorEngineVersion = attrib(default=None)
+    OptionConfigurations = attrib(default=None)
+    OptionGroupDescription = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -271,12 +321,7 @@ class OptionGroup(Resource):
 
     RESOURCE_TYPE = "AWS::RDS::OptionGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        EngineName = attrib(default=None)
-        MajorEngineVersion = attrib(default=None)
-        OptionConfigurations = attrib(default=None)
-        OptionGroupDescription = attrib(default=None)
-        Tags = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: OptionGroupProperties = attrib(
+        factory=OptionGroupProperties,
+        converter=create_object_converter(OptionGroupProperties),
+    )

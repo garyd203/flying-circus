@@ -17,7 +17,15 @@ from ..core import create_object_converter
 
 __all__ = [
     "Repository",
+    "RepositoryProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class RepositoryProperties(ResourceProperties):
+    LifecyclePolicy = attrib(default=None)
+    RepositoryName = attrib(default=None)
+    RepositoryPolicyText = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -31,10 +39,7 @@ class Repository(Resource):
 
     RESOURCE_TYPE = "AWS::ECR::Repository"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        LifecyclePolicy = attrib(default=None)
-        RepositoryName = attrib(default=None)
-        RepositoryPolicyText = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: RepositoryProperties = attrib(
+        factory=RepositoryProperties,
+        converter=create_object_converter(RepositoryProperties),
+    )

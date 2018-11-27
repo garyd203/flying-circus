@@ -17,8 +17,29 @@ from ..core import create_object_converter
 
 __all__ = [
     "Bucket",
+    "BucketProperties",
     "BucketPolicy",
+    "BucketPolicyProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class BucketProperties(ResourceProperties):
+    AccelerateConfiguration = attrib(default=None)
+    AccessControl = attrib(default=None)
+    AnalyticsConfigurations = attrib(default=None)
+    BucketEncryption = attrib(default=None)
+    BucketName = attrib(default=None)
+    CorsConfiguration = attrib(default=None)
+    InventoryConfigurations = attrib(default=None)
+    LifecycleConfiguration = attrib(default=None)
+    LoggingConfiguration = attrib(default=None)
+    MetricsConfigurations = attrib(default=None)
+    NotificationConfiguration = attrib(default=None)
+    ReplicationConfiguration = attrib(default=None)
+    Tags = attrib(default=None)
+    VersioningConfiguration = attrib(default=None)
+    WebsiteConfiguration = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -32,25 +53,16 @@ class Bucket(Resource):
 
     RESOURCE_TYPE = "AWS::S3::Bucket"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AccelerateConfiguration = attrib(default=None)
-        AccessControl = attrib(default=None)
-        AnalyticsConfigurations = attrib(default=None)
-        BucketEncryption = attrib(default=None)
-        BucketName = attrib(default=None)
-        CorsConfiguration = attrib(default=None)
-        InventoryConfigurations = attrib(default=None)
-        LifecycleConfiguration = attrib(default=None)
-        LoggingConfiguration = attrib(default=None)
-        MetricsConfigurations = attrib(default=None)
-        NotificationConfiguration = attrib(default=None)
-        ReplicationConfiguration = attrib(default=None)
-        Tags = attrib(default=None)
-        VersioningConfiguration = attrib(default=None)
-        WebsiteConfiguration = attrib(default=None)
+    Properties: BucketProperties = attrib(
+        factory=BucketProperties,
+        converter=create_object_converter(BucketProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class BucketPolicyProperties(ResourceProperties):
+    Bucket = attrib(default=None)
+    PolicyDocument = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -64,9 +76,7 @@ class BucketPolicy(Resource):
 
     RESOURCE_TYPE = "AWS::S3::BucketPolicy"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Bucket = attrib(default=None)
-        PolicyDocument = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: BucketPolicyProperties = attrib(
+        factory=BucketPolicyProperties,
+        converter=create_object_converter(BucketPolicyProperties),
+    )

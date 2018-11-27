@@ -109,12 +109,18 @@ class SimpleResource(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class FullResourceProperties(ResourceProperties):
+    props = attrib(default=None)
+    kudos = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
 class FullResource(Resource):
     """A basic resource with all Resource attributes defined."""
     RESOURCE_TYPE = "NameSpace::Service::FullResource"
 
     CreationPolicy: Dict[str, Any] = attrib(factory=dict)
-    Properties: SimpleResourceProperties = attrib(factory=SimpleResourceProperties)
+    Properties: FullResourceProperties = attrib(factory=FullResourceProperties)
     UpdatePolicy: Dict[str, Any] = attrib(factory=dict)
 
 

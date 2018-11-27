@@ -17,13 +17,34 @@ from ..core import create_object_converter
 
 __all__ = [
     "IdentityPool",
+    "IdentityPoolProperties",
     "IdentityPoolRoleAttachment",
+    "IdentityPoolRoleAttachmentProperties",
     "UserPool",
+    "UserPoolProperties",
     "UserPoolClient",
+    "UserPoolClientProperties",
     "UserPoolGroup",
+    "UserPoolGroupProperties",
     "UserPoolUser",
+    "UserPoolUserProperties",
     "UserPoolUserToGroupAttachment",
+    "UserPoolUserToGroupAttachmentProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class IdentityPoolProperties(ResourceProperties):
+    AllowUnauthenticatedIdentities = attrib(default=None)
+    CognitoEvents = attrib(default=None)
+    CognitoIdentityProviders = attrib(default=None)
+    CognitoStreams = attrib(default=None)
+    DeveloperProviderName = attrib(default=None)
+    IdentityPoolName = attrib(default=None)
+    OpenIdConnectProviderARNs = attrib(default=None)
+    PushSync = attrib(default=None)
+    SamlProviderARNs = attrib(default=None)
+    SupportedLoginProviders = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -37,20 +58,17 @@ class IdentityPool(Resource):
 
     RESOURCE_TYPE = "AWS::Cognito::IdentityPool"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AllowUnauthenticatedIdentities = attrib(default=None)
-        CognitoEvents = attrib(default=None)
-        CognitoIdentityProviders = attrib(default=None)
-        CognitoStreams = attrib(default=None)
-        DeveloperProviderName = attrib(default=None)
-        IdentityPoolName = attrib(default=None)
-        OpenIdConnectProviderARNs = attrib(default=None)
-        PushSync = attrib(default=None)
-        SamlProviderARNs = attrib(default=None)
-        SupportedLoginProviders = attrib(default=None)
+    Properties: IdentityPoolProperties = attrib(
+        factory=IdentityPoolProperties,
+        converter=create_object_converter(IdentityPoolProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class IdentityPoolRoleAttachmentProperties(ResourceProperties):
+    IdentityPoolId = attrib(default=None)
+    RoleMappings = attrib(default=None)
+    Roles = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -64,13 +82,31 @@ class IdentityPoolRoleAttachment(Resource):
 
     RESOURCE_TYPE = "AWS::Cognito::IdentityPoolRoleAttachment"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        IdentityPoolId = attrib(default=None)
-        RoleMappings = attrib(default=None)
-        Roles = attrib(default=None)
+    Properties: IdentityPoolRoleAttachmentProperties = attrib(
+        factory=IdentityPoolRoleAttachmentProperties,
+        converter=create_object_converter(IdentityPoolRoleAttachmentProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class UserPoolProperties(ResourceProperties):
+    AdminCreateUserConfig = attrib(default=None)
+    AliasAttributes = attrib(default=None)
+    AutoVerifiedAttributes = attrib(default=None)
+    DeviceConfiguration = attrib(default=None)
+    EmailConfiguration = attrib(default=None)
+    EmailVerificationMessage = attrib(default=None)
+    EmailVerificationSubject = attrib(default=None)
+    LambdaConfig = attrib(default=None)
+    MfaConfiguration = attrib(default=None)
+    Policies = attrib(default=None)
+    Schema = attrib(default=None)
+    SmsAuthenticationMessage = attrib(default=None)
+    SmsConfiguration = attrib(default=None)
+    SmsVerificationMessage = attrib(default=None)
+    UsernameAttributes = attrib(default=None)
+    UserPoolName = attrib(default=None)
+    UserPoolTags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -84,27 +120,21 @@ class UserPool(Resource):
 
     RESOURCE_TYPE = "AWS::Cognito::UserPool"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        AdminCreateUserConfig = attrib(default=None)
-        AliasAttributes = attrib(default=None)
-        AutoVerifiedAttributes = attrib(default=None)
-        DeviceConfiguration = attrib(default=None)
-        EmailConfiguration = attrib(default=None)
-        EmailVerificationMessage = attrib(default=None)
-        EmailVerificationSubject = attrib(default=None)
-        LambdaConfig = attrib(default=None)
-        MfaConfiguration = attrib(default=None)
-        Policies = attrib(default=None)
-        Schema = attrib(default=None)
-        SmsAuthenticationMessage = attrib(default=None)
-        SmsConfiguration = attrib(default=None)
-        SmsVerificationMessage = attrib(default=None)
-        UsernameAttributes = attrib(default=None)
-        UserPoolName = attrib(default=None)
-        UserPoolTags = attrib(default=None)
+    Properties: UserPoolProperties = attrib(
+        factory=UserPoolProperties,
+        converter=create_object_converter(UserPoolProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class UserPoolClientProperties(ResourceProperties):
+    ClientName = attrib(default=None)
+    ExplicitAuthFlows = attrib(default=None)
+    GenerateSecret = attrib(default=None)
+    ReadAttributes = attrib(default=None)
+    RefreshTokenValidity = attrib(default=None)
+    UserPoolId = attrib(default=None)
+    WriteAttributes = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -118,17 +148,19 @@ class UserPoolClient(Resource):
 
     RESOURCE_TYPE = "AWS::Cognito::UserPoolClient"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        ClientName = attrib(default=None)
-        ExplicitAuthFlows = attrib(default=None)
-        GenerateSecret = attrib(default=None)
-        ReadAttributes = attrib(default=None)
-        RefreshTokenValidity = attrib(default=None)
-        UserPoolId = attrib(default=None)
-        WriteAttributes = attrib(default=None)
+    Properties: UserPoolClientProperties = attrib(
+        factory=UserPoolClientProperties,
+        converter=create_object_converter(UserPoolClientProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class UserPoolGroupProperties(ResourceProperties):
+    Description = attrib(default=None)
+    GroupName = attrib(default=None)
+    Precedence = attrib(default=None)
+    RoleArn = attrib(default=None)
+    UserPoolId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -142,15 +174,21 @@ class UserPoolGroup(Resource):
 
     RESOURCE_TYPE = "AWS::Cognito::UserPoolGroup"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        Description = attrib(default=None)
-        GroupName = attrib(default=None)
-        Precedence = attrib(default=None)
-        RoleArn = attrib(default=None)
-        UserPoolId = attrib(default=None)
+    Properties: UserPoolGroupProperties = attrib(
+        factory=UserPoolGroupProperties,
+        converter=create_object_converter(UserPoolGroupProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class UserPoolUserProperties(ResourceProperties):
+    DesiredDeliveryMediums = attrib(default=None)
+    ForceAliasCreation = attrib(default=None)
+    MessageAction = attrib(default=None)
+    UserAttributes = attrib(default=None)
+    Username = attrib(default=None)
+    UserPoolId = attrib(default=None)
+    ValidationData = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -164,17 +202,17 @@ class UserPoolUser(Resource):
 
     RESOURCE_TYPE = "AWS::Cognito::UserPoolUser"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        DesiredDeliveryMediums = attrib(default=None)
-        ForceAliasCreation = attrib(default=None)
-        MessageAction = attrib(default=None)
-        UserAttributes = attrib(default=None)
-        Username = attrib(default=None)
-        UserPoolId = attrib(default=None)
-        ValidationData = attrib(default=None)
+    Properties: UserPoolUserProperties = attrib(
+        factory=UserPoolUserProperties,
+        converter=create_object_converter(UserPoolUserProperties),
+    )
 
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+
+@attrs(**ATTRSCONFIG)
+class UserPoolUserToGroupAttachmentProperties(ResourceProperties):
+    GroupName = attrib(default=None)
+    Username = attrib(default=None)
+    UserPoolId = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -188,10 +226,7 @@ class UserPoolUserToGroupAttachment(Resource):
 
     RESOURCE_TYPE = "AWS::Cognito::UserPoolUserToGroupAttachment"
 
-    @attrs(**ATTRSCONFIG)
-    class PropertiesType(ResourceProperties):
-        GroupName = attrib(default=None)
-        Username = attrib(default=None)
-        UserPoolId = attrib(default=None)
-
-    Properties: PropertiesType = attrib(factory=PropertiesType, converter=create_object_converter(PropertiesType))
+    Properties: UserPoolUserToGroupAttachmentProperties = attrib(
+        factory=UserPoolUserToGroupAttachmentProperties,
+        converter=create_object_converter(UserPoolUserToGroupAttachmentProperties),
+    )
