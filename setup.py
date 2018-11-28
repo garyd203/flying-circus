@@ -20,7 +20,6 @@ setup(
         # We use the `kw_only` only for attribute classes, which was
         # introduced in v18.2.0
         'attrs>=18.2.0',
-        'boto3',
         'PyYAML',
     ],
 
