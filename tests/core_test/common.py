@@ -66,6 +66,11 @@ class NestedAttributeObject(AWSObject):
     )
 
 
+@attrs(**ATTRSCONFIG)
+class InheritedAttributeObject(SingleAttributeObject):
+    two = attrib(default=None)
+
+
 @st.composite
 def aws_attribute_strategy(draw):
     """A strategy that produces an attribute for an AWS CFN object."""

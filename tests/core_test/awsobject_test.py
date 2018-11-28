@@ -12,6 +12,7 @@ from hypothesis import given
 from flyingcircus.core import ATTRSCONFIG
 from flyingcircus.core import AWSObject
 from .common import DualAttributeObject
+from .common import InheritedAttributeObject
 from .common import MixedAttributeObject
 from .common import NestedAttributeObject
 from .common import SingleAttributeObject
@@ -42,6 +43,16 @@ class TestInitMethod:
         # Verify
         assert isinstance(data.top, SingleAttributeObject)
         assert data.top.one == 42
+
+    def test_init_should_set_attributes_on_parent_class(self):
+        # TODO note that init auto-complete is broken in pycharm.
+
+        # Exercise
+        data = InheritedAttributeObject(one=42, two="hello world")
+
+        # Verify
+        assert data.one == 42
+        assert data.two == "hello world"
 
 
 class TestExport:
@@ -90,6 +101,16 @@ class TestAttributeAccess:
         # Verify
         assert isinstance(data.top, SingleAttributeObject)
         assert data.top.one == 42
+
+    def test_attributes_on_parent_class_can_be_set(self):
+        # Setup
+        data = InheritedAttributeObject()
+
+        # Exercise
+        data.one = 42
+
+        # Verify
+        assert data.one == 42
 
 
 class TestDictionaryAccess:
