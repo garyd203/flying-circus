@@ -30,6 +30,11 @@ setup(
     license="LGPL v3",
     keywords="AWS cloudformation infrastructure-as-code",
     url="https://github.com/garyd203/flying-circus",
+    project_urls={
+        'Documentation': "https://flying-circus.readthedocs.io/en/latest/",
+        'Source': "https://github.com/garyd203/flying-circus",
+        'Tracker': "https://github.com/garyd203/flying-circus/issues",
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
