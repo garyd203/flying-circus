@@ -28,7 +28,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
     )
 
     launch_config = stack.Resources["LaunchConfiguration"] = LaunchConfiguration(
-        Properties=dict(
+        Properties=LaunchConfigurationProperties(
             ImageId="ami-1a668878",  # Amazon Linux 2017.09.01 in ap-southeast-2
             InstanceType="t2.micro",  # TODO consider making this a lookup value
             # TODO KeyName would probably be helpful
@@ -36,7 +36,7 @@ def autoscaling_group_by_cpu(low=20, high=80):
     )
 
     asg = stack.Resources["AutoScalingGroup"] = AutoScalingGroup(
-        Properties=dict(
+        Properties=AutoScalingGroupProperties(
             AvailabilityZones=Fn.GetAZs(Fn.Ref(AWS_Region)),
             LaunchConfigurationName=Fn.Ref(launch_config),
             MinSize=1,
@@ -62,7 +62,7 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
     stack = Stack(Description="Resources for a single scaling policy.")
 
     scaling_policy = ScalingPolicy(
-        Properties=dict(
+        Properties=ScalingPolicyProperties(
             AdjustmentType="ChangeInCapacity",  # TODO consider making this a lookup value
             AutoScalingGroupName=asg_name,
             Cooldown=1,
@@ -71,9 +71,14 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
     )
     stack.Resources["ScalingPolicy"] = scaling_policy
 
-    # TODO need properties to be a real object (not a dict), and to auto-create empty lists.
-    alarm.Properties.setdefault("AlarmActions", []).append(Fn.Ref(scaling_policy))
-    alarm.Properties.setdefault("Dimensions", []).append(
+    # TODO need properties to auto-create empty lists.
+    if alarm.Properties.AlarmActions is None:
+        alarm.Properties.AlarmActions = []
+    if alarm.Properties.Dimensions is None:
+        alarm.Properties.Dimensions = []
+
+    alarm.Properties.AlarmActions.append(Fn.Ref(scaling_policy))
+    alarm.Properties.Dimensions.append(
         # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
         dict(
             Name="AutoScalingGroupName",
