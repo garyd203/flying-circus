@@ -12,6 +12,7 @@ from flyingcircus.core import ATTRSCONFIG
 from flyingcircus.core import AWSObject
 from flyingcircus.core import Resource
 from flyingcircus.core import ResourceProperties
+from flyingcircus.core import create_object_converter
 
 
 class CommonAWSObjectTests:
@@ -55,6 +56,14 @@ class MixedAttributeObject(AWSObject):
     two = attrib(default=None)
     _a = attrib(default=None)
     _b = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class NestedAttributeObject(AWSObject):
+    top: SingleAttributeObject = attrib(
+        factory=SingleAttributeObject,
+        converter=create_object_converter(SingleAttributeObject),
+    )
 
 
 @st.composite
