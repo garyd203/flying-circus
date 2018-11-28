@@ -28,7 +28,7 @@ setup(
     author_email="gazza@gazza.id.au",
     description="A tool for managing AWS infrastructure.",
     license="LGPL",  # TODO is this correct? v3?
-    keywords="cloud formation",
+    keywords="AWS cloudformation infrastructure-as-code",
     url="https://github.com/garyd203/flying-circus",
     classifiers=[
         'Development Status :: 4 - Beta',
