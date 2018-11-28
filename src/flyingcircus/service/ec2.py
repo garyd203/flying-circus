@@ -56,12 +56,12 @@ class VPC(_raw.VPC):
         # Look for an existing gateway attached to this VPC
         for res in stack.Resources.values():
             if isinstance(res, VPCGatewayAttachment) \
-                    and res.Properties.get("VpcId", None) == Ref(self) \
-                    and res.Properties.get("InternetGatewayId", None):
+                    and res.Properties.VpcId == Ref(self) \
+                    and res.Properties.InternetGatewayId:
                 self._internet_gateway_attachment = res
 
                 # Try to dodgily unwrap the internet gateway...
-                gateway_ref = res.Properties["InternetGatewayId"]
+                gateway_ref = res.Properties.InternetGatewayId
                 if not isinstance(gateway_ref, Ref):
                     raise RuntimeError("Can't deal with direct ID references!")
                 if not isinstance(gateway_ref._data, InternetGateway):
@@ -82,10 +82,12 @@ class VPC(_raw.VPC):
         stack.Resources[igw_stack_name] = self._internet_gateway
 
         # Attach the gateway to this VPC
-        self._internet_gateway_attachment = VPCGatewayAttachment(Properties=dict(
-            InternetGatewayId=Ref(self._internet_gateway),
-            VpcId=Ref(self),
-        ))
+        self._internet_gateway_attachment = VPCGatewayAttachment(
+            Properties=VPCGatewayAttachmentProperties(
+                InternetGatewayId=Ref(self._internet_gateway),
+                VpcId=Ref(self),
+            ),
+        )
 
         attachment_stack_name = igw_stack_name + "Attachment"
         if attachment_stack_name in stack.Resources:
