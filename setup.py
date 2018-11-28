@@ -27,7 +27,7 @@ setup(
     author="Gary Donovan",
     author_email="gazza@gazza.id.au",
     description="A tool for managing AWS infrastructure.",
-    license="LGPL",  # TODO is this correct? v3?
+    license="LGPL v3",
     keywords="AWS cloudformation infrastructure-as-code",
     url="https://github.com/garyd203/flying-circus",
     classifiers=[
