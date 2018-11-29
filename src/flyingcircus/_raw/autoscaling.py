@@ -48,6 +48,7 @@ class AutoScalingGroupProperties(ResourceProperties):
     MaxSize = attrib(default=None)
     MetricsCollection = attrib(default=None)
     MinSize = attrib(default=None)
+    MixedInstancesPolicy = attrib(default=None)
     NotificationConfigurations = attrib(default=None)
     PlacementGroup = attrib(default=None)
     ServiceLinkedRoleARN = attrib(default=None)

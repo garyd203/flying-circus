@@ -20,6 +20,8 @@ __all__ = [
     "CustomerGatewayProperties",
     "DHCPOptions",
     "DHCPOptionsProperties",
+    "EC2Fleet",
+    "EC2FleetProperties",
     "EgressOnlyInternetGateway",
     "EgressOnlyInternetGatewayProperties",
     "EIP",
@@ -84,6 +86,8 @@ __all__ = [
     "VPCDHCPOptionsAssociationProperties",
     "VPCEndpoint",
     "VPCEndpointProperties",
+    "VPCEndpointConnectionNotification",
+    "VPCEndpointConnectionNotificationProperties",
     "VPCEndpointServicePermissions",
     "VPCEndpointServicePermissionsProperties",
     "VPCGatewayAttachment",
@@ -154,9 +158,42 @@ class DHCPOptions(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class EC2FleetProperties(ResourceProperties):
+    ExcessCapacityTerminationPolicy = attrib(default=None)
+    LaunchTemplateConfigs = attrib(default=None)
+    OnDemandOptions = attrib(default=None)
+    ReplaceUnhealthyInstances = attrib(default=None)
+    SpotOptions = attrib(default=None)
+    TagSpecifications = attrib(default=None)
+    TargetCapacitySpecification = attrib(default=None)
+    TerminateInstancesWithExpiration = attrib(default=None)
+    Type = attrib(default=None)
+    ValidFrom = attrib(default=None)
+    ValidUntil = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class EC2Fleet(Resource):
+    """A Ec2 Fleet for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for EC2Fleet
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ec2fleet.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::EC2Fleet"
+
+    Properties: EC2FleetProperties = attrib(
+        factory=EC2FleetProperties,
+        converter=create_object_converter(EC2FleetProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class EIPProperties(ResourceProperties):
     Domain = attrib(default=None)
     InstanceId = attrib(default=None)
+    PublicIpv4Pool = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -940,6 +977,31 @@ class VPCEndpoint(Resource):
     Properties: VPCEndpointProperties = attrib(
         factory=VPCEndpointProperties,
         converter=create_object_converter(VPCEndpointProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class VPCEndpointConnectionNotificationProperties(ResourceProperties):
+    ConnectionEvents = attrib(default=None)
+    ConnectionNotificationArn = attrib(default=None)
+    ServiceId = attrib(default=None)
+    VPCEndpointId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class VPCEndpointConnectionNotification(Resource):
+    """A Vpc Endpoint Connection Notification for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for VPCEndpointConnectionNotification
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpointconnectionnotification.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::VPCEndpointConnectionNotification"
+
+    Properties: VPCEndpointConnectionNotificationProperties = attrib(
+        factory=VPCEndpointConnectionNotificationProperties,
+        converter=create_object_converter(VPCEndpointConnectionNotificationProperties),
     )
 
 
