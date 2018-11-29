@@ -119,11 +119,12 @@ def generate_modules(packagedir, specification):
         # Break down the resource type
         assert resource_type.count("::") == 2, "Fully qualified resource type should have 3 components"
         provider_name, service_name, resource_name = resource_type.split("::")
-        assert provider_name == "AWS", "Resource provider is expected to be AWS"
 
         if service_name not in SUPPORTED_AWS_SERVICES:
             LOGGER.info("Skipping '%s' because we don't yet support that service", resource_type)
             continue
+
+        assert provider_name == "AWS", f"Resource provider for {resource_type} is expected to be AWS"
 
         # Ensure the service data exists
         service = services.setdefault(service_name, {
