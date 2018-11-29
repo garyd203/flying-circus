@@ -56,6 +56,7 @@ class Subscription(Resource):
 @attrs(**ATTRSCONFIG)
 class TopicProperties(ResourceProperties):
     DisplayName = attrib(default=None)
+    KmsMasterKeyId = attrib(default=None)
     Subscription = attrib(default=None)
     TopicName = attrib(default=None)
 
