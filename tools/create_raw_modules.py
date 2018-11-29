@@ -33,6 +33,7 @@ SUPPORTED_AWS_SERVICES = {
     "ECR",
     "ECS",
     "KMS",
+    "Lambda",
     "RDS",
     "S3",
     "SecretsManager",
@@ -51,6 +52,7 @@ SERVICE_DOCUMENTATION_URLS = {
     "ECR": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/index.html",
     "ECS": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/index.html",
     "KMS": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
+    "Lambda": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
     "RDS": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/index.html",
     "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
     "SecretsManager": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
@@ -137,6 +139,10 @@ def generate_modules(packagedir, specification):
             "typing_imports": set(),
         })
 
+        # Avoid namespace clashes
+        if service["module_name"] in ["lambda"]:
+            service["module_name"] += "_"
+
         # Augment the resource data and add it to the service
         assert resource_name not in service["resources"], "resource type is defined twice"
         service["resources"][resource_name] = resource_data
@@ -177,7 +183,7 @@ def generate_modules(packagedir, specification):
         # Create or update the "raw" python module
         raw_module_name = os.path.join(raw_dirname, service["module_name"] + ".py")
         with open(raw_module_name, "w") as fp:
-            LOGGER.debug("Generating raw module %s.py", service_name.lower())
+            LOGGER.debug("Generating raw module %s.py", service["module_name"])
             fp.write(raw_template.render(service=service))
 
         # Ensure that the "service" module exists, and pre-populate it with
@@ -185,7 +191,7 @@ def generate_modules(packagedir, specification):
         service_module_name = os.path.join(service_dirname, service["module_name"] + ".py")
         if not os.path.exists(service_module_name):
             with open(service_module_name, "w") as fp:
-                LOGGER.debug("Generating service module %s.py", service_name.lower())
+                LOGGER.debug("Generating service module %s.py", service["module_name"])
                 fp.write(service_template.render(service=service))
 
 
