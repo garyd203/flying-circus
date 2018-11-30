@@ -38,6 +38,7 @@ SUPPORTED_AWS_SERVICES = {
     "S3",
     "SecretsManager",
     "SNS",
+    "SSM",
 }
 
 #: Lookup table of documentation URL's for AWS services. This information does
@@ -57,6 +58,7 @@ SERVICE_DOCUMENTATION_URLS = {
     "S3": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html",
     "SecretsManager": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
     "SNS": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
+    "SSM": "https://docs.aws.amazon.com/systems-manager/latest/APIReference/Welcome.html",
 }
 
 #: AWS CFN resources that have non-standard attributes.
