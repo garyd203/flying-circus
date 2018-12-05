@@ -318,6 +318,7 @@ class TestNameAccess:
         "name",
         [
             "cognito.UserPool",
+            "ecs.TaskDefinition",
             # "kms.Key",
             "rds.DBInstance",
             "secretsmanager.Secret",
