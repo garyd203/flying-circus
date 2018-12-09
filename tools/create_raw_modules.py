@@ -24,6 +24,7 @@ LOGGER = logging.getLogger(
 #: up our script
 SUPPORTED_AWS_SERVICES = {
     # FIXME remove this temporary hack when we are satisfied with the output
+    "ApplicationAutoScaling",
     "AutoScaling",
     "CloudFront",
     "CloudTrail",
@@ -32,6 +33,7 @@ SUPPORTED_AWS_SERVICES = {
     "EC2",
     "ECR",
     "ECS",
+    "ElasticLoadBalancingV2",
     "KMS",
     "Lambda",
     "RDS",
@@ -44,6 +46,7 @@ SUPPORTED_AWS_SERVICES = {
 #: Lookup table of documentation URL's for AWS services. This information does
 #: not appear to be in the specification, and does not have a deterministic URL.
 SERVICE_DOCUMENTATION_URLS = {
+    "ApplicationAutoScaling": "https://docs.aws.amazon.com/autoscaling/application/APIReference/Welcome.html",
     "AutoScaling": "http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html",
     "CloudFront": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
     "CloudTrail": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
@@ -52,6 +55,7 @@ SERVICE_DOCUMENTATION_URLS = {
     "EC2": "http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/",
     "ECR": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/index.html",
     "ECS": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/index.html",
+    "ElasticLoadBalancingV2": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/index.html",
     "KMS": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
     "Lambda": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
     "RDS": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/index.html",
