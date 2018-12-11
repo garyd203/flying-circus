@@ -26,6 +26,7 @@ SUPPORTED_AWS_SERVICES = {
     # FIXME remove this temporary hack when we are satisfied with the output
     "ApplicationAutoScaling",
     "AutoScaling",
+    "CertificateManager",
     "CloudFront",
     "CloudTrail",
     "CloudWatch",
@@ -49,6 +50,7 @@ SUPPORTED_AWS_SERVICES = {
 SERVICE_DOCUMENTATION_URLS = {
     "ApplicationAutoScaling": "https://docs.aws.amazon.com/autoscaling/application/APIReference/Welcome.html",
     "AutoScaling": "http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html",
+    "CertificateManager": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html",
     "CloudFront": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
     "CloudTrail": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
     "CloudWatch": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
