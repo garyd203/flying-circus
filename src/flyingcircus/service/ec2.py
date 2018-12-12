@@ -15,6 +15,27 @@ from .._raw import ec2 as _raw
 from .._raw.ec2 import *
 
 
+class SecurityGroup(_raw.SecurityGroup):
+    __slots__ = []
+
+    #: Empty SecurityGroupEgressRule that can be used to replace the default.
+    #:
+    #: When Cloud Formation creates a security group, if there are no egress
+    #: rules specified then it always creates a default egress rule that
+    #: allows all-traffic. Sometimes this is undesirable, so the approved
+    #: workaround is to create an egress rule that has no effect (eg. allows
+    #: traffic to localhost).
+    #:
+    #:  See Also:
+    #:      `Example of replacing the default rule in the SecurityGroup documentation
+    #:      <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html>`_
+    EMPTY_EGRESS_RULE = dict(
+        CidrIp="127.0.0.1/32",
+        Description="NOOP rule to ensure we don't get the default all-traffic rule",
+        IpProtocol="-1",
+    )
+
+
 @attrs(**ATTRSCONFIG)
 class VPC(_raw.VPC):
     _internet_gateway: InternetGateway = attrib(default=None)
