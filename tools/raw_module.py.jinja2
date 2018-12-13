@@ -34,9 +34,14 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class {{ resource_name }}Properties(ResourceProperties):
+{%- if resource.Properties %}
 {%- for property in resource.Properties.keys() | sort %}
     {{ property }} = attrib(default=None)
 {%- endfor %}
+{%- else %}
+    # A {{ resource_name }} doesn't actually have any Properties.
+    pass
+{%- endif %}
 
 
 @attrs(**ATTRSCONFIG)
