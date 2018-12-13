@@ -31,7 +31,7 @@ class SecurityGroup(_raw.SecurityGroup):
     #:      <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html>`_
     EMPTY_EGRESS_RULE = dict(
         CidrIp="127.0.0.1/32",
-        Description="NOOP rule to ensure we don't get the default all-traffic rule",
+        Description="NOOP rule to prevent CloudFormation from adding a rule that allows all traffic",
         IpProtocol="-1",
     )
 
