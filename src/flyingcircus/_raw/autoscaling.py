@@ -74,6 +74,10 @@ class AutoScalingGroup(Resource):
         converter=create_object_converter(AutoScalingGroupProperties),
     )
 
+    # NB: CreationPolicy may be set for AutoScalingGroup
+    # (unlike most Resource types)
+    CreationPolicy: Dict[str, Any] = attrib(factory=dict)
+
     # NB: UpdatePolicy may be set for AutoScalingGroup
     # (unlike most Resource types)
     UpdatePolicy: Dict[str, Any] = attrib(factory=dict)
