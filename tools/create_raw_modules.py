@@ -167,14 +167,14 @@ def generate_modules(packagedir, specification):
 
         resource_data.update({
             "friendly_name": inflection.titleize(resource_name),
-            "has_create_policy": "CreatePolicy" in resource_extra_attributes,
+            "has_creation_policy": "CreationPolicy" in resource_extra_attributes,
             "has_update_policy": "UpdatePolicy" in resource_extra_attributes,
             "type": {
                 "fullname": resource_type,
             },
         })
 
-        if resource_data["has_create_policy"]:
+        if resource_data["has_creation_policy"]:
             service["typing_imports"].update(["Any", "Dict"])
         if resource_data["has_update_policy"]:
             service["typing_imports"].update(["Any", "Dict"])

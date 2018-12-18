@@ -60,7 +60,7 @@ class {{ resource_name }}(Resource):
         converter=create_object_converter({{ resource_name }}Properties),
     )
 
-{%- if resource.has_create_policy %}
+{%- if resource.has_creation_policy %}
 
     # NB: CreationPolicy may be set for {{ resource_name }}
     # (unlike most Resource types)
