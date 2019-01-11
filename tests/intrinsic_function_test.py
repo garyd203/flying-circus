@@ -882,7 +882,7 @@ class TestSubWithoutExplicitVariables:
         assert isinstance(node, ScalarNode)
         assert node.tag == "!Sub"
 
-    def test_uses_string_quoting(self):
+    def test_always_uses_string_quoting_for_input(self):
         # Setup
         dumper = create_refsafe_dumper(None)
         func = Sub("Something something")
@@ -957,18 +957,115 @@ class TestSubWithoutExplicitVariables:
             _ = Sub(input)
 
 
-@pytest.mark.skip("#37: Need to implement Fn::Sub with variable mapping.")
 class TestSubWithVariableMapping:
     """Test behaviour/output of the Sub function, when a variable mapping is used."""
 
-    pass
+    # YAML Output
+    # -----------
+    def test_uses_abbreviated_tag_for_yaml_sequence(self):
+        # Setup
+        dumper = create_refsafe_dumper(None)
+        func = Sub("Something-${foo}", foo="bar")
 
-    # TODO tests
-    #   standard YAML output tests
-    #   standard nested function tests
-    #   any var names + values are strings or subset of intrinsic functions (from list)
-    #   String with no var references is fine
-    #   string with siple var references is exported properly
-    #   string with complex vcar refs is exported properyl
-    #   multi-line strings
-    #   `input` parameter is not a string
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        assert isinstance(node, SequenceNode)
+        assert node.tag == "!Sub"
+
+    def test_yaml_output(self):
+        # Setup
+        func = Sub("Something-${foo}", foo="bar")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Sub
+            - Something-${foo}
+            - foo: bar
+            """)
+
+    def test_yaml_output_doesnt_modify_complex_string(self):
+        # Setup. Use (modified) example from AWS documentation
+        func = Sub("arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}", vpc="someid")
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Sub
+            - arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}
+            - vpc: someid
+            """)
+
+    def test_yaml_output_doesnt_modify_multiline_string(self):
+        # Setup. Use (modified) example from AWS documentation
+        func = Sub(dedent("""
+            #!/bin/bash -xe
+            yum update -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --configsets wordpress_install --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
+            echo hello from ${user}
+            """), user="bobbytables")
+
+        data = SingleAttributeObject(one=func)
+
+        # Exercise
+        output = data.export("yaml")
+
+        # Verify
+        assert output == dedent("""
+            ---
+            one: !Sub
+            - |
+              #!/bin/bash -xe
+              yum update -y aws-cfn-bootstrap
+              /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --configsets wordpress_install --region ${AWS::Region}
+              /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
+              echo hello from ${user}
+            - user: bobbytables
+            """)
+
+    # Variable Map
+    # ------------
+    def test_variable_map_can_include_functions(self):
+        # Setup
+        dumper = create_refsafe_dumper(None)
+        func = Sub(
+            "arn:aws:ec2:${AWS::Region}:${account}:vpc/${vpc}",
+            account="123456789012",
+            vpc=ImportValue("my-vpc-id"),
+        )
+
+        # Exercise
+        node = func.as_yaml_node(dumper)
+
+        # Verify
+        varmap_node = node.value[1]
+        vpc_var_node = varmap_node.value[1]
+        assert vpc_var_node[1].tag == "!ImportValue"  # The dict value is the second element in a tuple
+
+    # Parameters
+    # ----------
+    @pytest.mark.parametrize("input", [
+        AWS_Region,  # string-like PseudoParameter
+        Base64("Some string with ${AWS::Region} embedded"),  # String-like function
+    ])
+    def test_nonstring_input_is_rejected_immediately(self, input):
+        with pytest.raises(TypeError):
+            _ = Sub(input, foo="bar")
+
+    @pytest.mark.parametrize("input", [
+        123,  # number
+    ])
+    def test_nonstring_variable_name_is_rejected_immediately(self, input):
+        with pytest.raises(TypeError):
+            _ = Sub("Something something", **{input: "bar"})

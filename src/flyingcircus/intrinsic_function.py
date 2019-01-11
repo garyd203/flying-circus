@@ -243,7 +243,11 @@ class Sub(_Function):
             raise TypeError("The Fn::Sub function can only accept a string.")
         if isinstance(input, PseudoParameter):
             # Beware that a PseudoParameter is actually a string, in Flying Circus
-            raise TypeError("Don't try to use a Pseudo Parameter as the output of Fn::Sub.")
+            raise TypeError("Don't try to use a Pseudo Parameter as the input of Fn::Sub.")
+
+        for name in vars.keys():
+            if not isinstance(name, str):
+                raise TypeError(f"Variable names for Fn::Sub function must be a string, not `{name}`.")
 
         self._input = input
         self._variables = vars
@@ -251,12 +255,13 @@ class Sub(_Function):
     def as_yaml_node(self, dumper):
         if self._variables:
             # Use long form
-            # TODO #37 need to write tests for long form output
-            # return dumper.represent_sequence("Fn::Sub", [self._input, self._variables])
-            raise NotImplementedError("Fn::Sub with an explicit Variable map is not yet supported")
+            return dumper.represent_sequence("!Sub", [self._input, self._variables])
 
         # Use short form without any extra named variables.
         #
         # Strings used in Sub tend to be full of special characters, so we
         # force them to be quoted in order to improve readability.
+
+        # TODO not sure this forced quoting makes sense. Maybe revisit with some concrete examples.
+        # If we do want it, we need to apply it to the long form as well
         return represent_string(dumper, self._input, tag="!Sub", basicsep="'")
