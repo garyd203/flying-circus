@@ -73,6 +73,6 @@ def test_all_exported_classes_have_slots():
             with pytest.raises(
                     AttributeError,
                     message=f"{full_class_name} hasn't defined __slots__",
-                    match=f"{name}.*{nonexistent_attrib_name}"
+                    match=f"{obj.__name__}.*{nonexistent_attrib_name}"
             ):
                 setattr(instance, nonexistent_attrib_name, 42)
