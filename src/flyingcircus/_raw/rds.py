@@ -61,6 +61,7 @@ class DBClusterProperties(ResourceProperties):
     ReplicationSourceIdentifier = attrib(default=None)
     ScalingConfiguration = attrib(default=None)
     SnapshotIdentifier = attrib(default=None)
+    SourceRegion = attrib(default=None)
     StorageEncrypted = attrib(default=None)
     Tags = attrib(default=None)
     VpcSecurityGroupIds = attrib(default=None)
@@ -157,6 +158,7 @@ class DBInstanceProperties(ResourceProperties):
     StorageType = attrib(default=None)
     Tags = attrib(default=None)
     Timezone = attrib(default=None)
+    UseDefaultProcessorFeatures = attrib(default=None)
     VPCSecurityGroups = attrib(default=None)
 
 
