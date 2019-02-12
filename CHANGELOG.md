@@ -10,3 +10,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Refactor AWSObject to use `attrs` for attribute access. The way you define
   an AWSObject subclass has changed (especially Resource classes).
 * Remove install dependency on `boto3`
+* Update AWS Resource specification to v2.22.0

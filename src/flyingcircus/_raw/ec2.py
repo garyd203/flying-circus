@@ -75,6 +75,18 @@ __all__ = [
     "SubnetNetworkAclAssociationProperties",
     "SubnetRouteTableAssociation",
     "SubnetRouteTableAssociationProperties",
+    "TransitGateway",
+    "TransitGatewayProperties",
+    "TransitGatewayAttachment",
+    "TransitGatewayAttachmentProperties",
+    "TransitGatewayRoute",
+    "TransitGatewayRouteProperties",
+    "TransitGatewayRouteTable",
+    "TransitGatewayRouteTableProperties",
+    "TransitGatewayRouteTableAssociation",
+    "TransitGatewayRouteTableAssociationProperties",
+    "TransitGatewayRouteTablePropagation",
+    "TransitGatewayRouteTablePropagationProperties",
     "TrunkInterfaceAssociation",
     "TrunkInterfaceAssociationProperties",
     "Volume",
@@ -326,6 +338,7 @@ class InstanceProperties(ResourceProperties):
     DisableApiTermination = attrib(default=None)
     EbsOptimized = attrib(default=None)
     ElasticGpuSpecifications = attrib(default=None)
+    ElasticInferenceAccelerators = attrib(default=None)
     HostId = attrib(default=None)
     IamInstanceProfile = attrib(default=None)
     ImageId = attrib(default=None)
@@ -336,6 +349,7 @@ class InstanceProperties(ResourceProperties):
     KernelId = attrib(default=None)
     KeyName = attrib(default=None)
     LaunchTemplate = attrib(default=None)
+    LicenseSpecifications = attrib(default=None)
     Monitoring = attrib(default=None)
     NetworkInterfaces = attrib(default=None)
     PlacementGroupName = attrib(default=None)
@@ -857,6 +871,154 @@ class SubnetRouteTableAssociation(Resource):
     Properties: SubnetRouteTableAssociationProperties = attrib(
         factory=SubnetRouteTableAssociationProperties,
         converter=create_object_converter(SubnetRouteTableAssociationProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayProperties(ResourceProperties):
+    AmazonSideAsn = attrib(default=None)
+    AutoAcceptSharedAttachments = attrib(default=None)
+    DefaultRouteTableAssociation = attrib(default=None)
+    DefaultRouteTablePropagation = attrib(default=None)
+    Description = attrib(default=None)
+    DnsSupport = attrib(default=None)
+    Tags = attrib(default=None)
+    VpnEcmpSupport = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGateway(Resource):
+    """A Transit Gateway for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TransitGateway
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-transitgateway.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TransitGateway"
+
+    Properties: TransitGatewayProperties = attrib(
+        factory=TransitGatewayProperties,
+        converter=create_object_converter(TransitGatewayProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayAttachmentProperties(ResourceProperties):
+    SubnetIds = attrib(default=None)
+    Tags = attrib(default=None)
+    TransitGatewayId = attrib(default=None)
+    VpcId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayAttachment(Resource):
+    """A Transit Gateway Attachment for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TransitGatewayAttachment
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-transitgatewayattachment.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TransitGatewayAttachment"
+
+    Properties: TransitGatewayAttachmentProperties = attrib(
+        factory=TransitGatewayAttachmentProperties,
+        converter=create_object_converter(TransitGatewayAttachmentProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRouteProperties(ResourceProperties):
+    Blackhole = attrib(default=None)
+    DestinationCidrBlock = attrib(default=None)
+    TransitGatewayAttachmentId = attrib(default=None)
+    TransitGatewayRouteTableId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRoute(Resource):
+    """A Transit Gateway Route for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TransitGatewayRoute
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-transitgatewayroute.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TransitGatewayRoute"
+
+    Properties: TransitGatewayRouteProperties = attrib(
+        factory=TransitGatewayRouteProperties,
+        converter=create_object_converter(TransitGatewayRouteProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRouteTableProperties(ResourceProperties):
+    Tags = attrib(default=None)
+    TransitGatewayId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRouteTable(Resource):
+    """A Transit Gateway Route Table for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TransitGatewayRouteTable
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-transitgatewayroutetable.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TransitGatewayRouteTable"
+
+    Properties: TransitGatewayRouteTableProperties = attrib(
+        factory=TransitGatewayRouteTableProperties,
+        converter=create_object_converter(TransitGatewayRouteTableProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRouteTableAssociationProperties(ResourceProperties):
+    TransitGatewayAttachmentId = attrib(default=None)
+    TransitGatewayRouteTableId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRouteTableAssociation(Resource):
+    """A Transit Gateway Route Table Association for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TransitGatewayRouteTableAssociation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-transitgatewayroutetableassociation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TransitGatewayRouteTableAssociation"
+
+    Properties: TransitGatewayRouteTableAssociationProperties = attrib(
+        factory=TransitGatewayRouteTableAssociationProperties,
+        converter=create_object_converter(TransitGatewayRouteTableAssociationProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRouteTablePropagationProperties(ResourceProperties):
+    TransitGatewayAttachmentId = attrib(default=None)
+    TransitGatewayRouteTableId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TransitGatewayRouteTablePropagation(Resource):
+    """A Transit Gateway Route Table Propagation for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TransitGatewayRouteTablePropagation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-transitgatewayroutetablepropagation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TransitGatewayRouteTablePropagation"
+
+    Properties: TransitGatewayRouteTablePropagationProperties = attrib(
+        factory=TransitGatewayRouteTablePropagationProperties,
+        converter=create_object_converter(TransitGatewayRouteTablePropagationProperties),
     )
 
 

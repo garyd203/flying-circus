@@ -25,6 +25,10 @@ __all__ = [
     "EventSourceMappingProperties",
     "Function",
     "FunctionProperties",
+    "LayerVersion",
+    "LayerVersionProperties",
+    "LayerVersionPermission",
+    "LayerVersionPermissionProperties",
     "Permission",
     "PermissionProperties",
     "Version",
@@ -97,6 +101,7 @@ class FunctionProperties(ResourceProperties):
     FunctionName = attrib(default=None)
     Handler = attrib(default=None)
     KmsKeyArn = attrib(default=None)
+    Layers = attrib(default=None)
     MemorySize = attrib(default=None)
     ReservedConcurrentExecutions = attrib(default=None)
     Role = attrib(default=None)
@@ -121,6 +126,57 @@ class Function(Resource):
     Properties: FunctionProperties = attrib(
         factory=FunctionProperties,
         converter=create_object_converter(FunctionProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class LayerVersionProperties(ResourceProperties):
+    CompatibleRuntimes = attrib(default=None)
+    Content = attrib(default=None)
+    Description = attrib(default=None)
+    LayerName = attrib(default=None)
+    LicenseInfo = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class LayerVersion(Resource):
+    """A Layer Version for Lambda.
+
+    See Also:
+        `AWS Cloud Formation documentation for LayerVersion
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversion.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Lambda::LayerVersion"
+
+    Properties: LayerVersionProperties = attrib(
+        factory=LayerVersionProperties,
+        converter=create_object_converter(LayerVersionProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class LayerVersionPermissionProperties(ResourceProperties):
+    Action = attrib(default=None)
+    LayerVersionArn = attrib(default=None)
+    OrganizationId = attrib(default=None)
+    Principal = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class LayerVersionPermission(Resource):
+    """A Layer Version Permission for Lambda.
+
+    See Also:
+        `AWS Cloud Formation documentation for LayerVersionPermission
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversionpermission.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Lambda::LayerVersionPermission"
+
+    Properties: LayerVersionPermissionProperties = attrib(
+        factory=LayerVersionPermissionProperties,
+        converter=create_object_converter(LayerVersionPermissionProperties),
     )
 
 
