@@ -22,7 +22,7 @@ for some background and guidance. Or just do the following steps
 3. Create a fresh venv and run all tests (including integration tests)
    ```bash
    rm -rf venv
-   virtualenv -p python3 venv
+   virtualenv -p python3.6 venv
    source ./venv/bin/activate
    pip install -r requirements.txt
    pip install -e . # Install the local working copy of flying circus in "edit" mode
@@ -36,30 +36,31 @@ for some background and guidance. Or just do the following steps
 6. Ensure `__version__` in `_about.py` reflects what you want to release.
    Pay attention to major/minor/patch numbers, and ensure
    this is not a version that has already been released to PyPI
-7. Commit any changes you may have made :-) If you did make changes,
+7. Update CHANGELOG.md
+8. Commit any changes you may have made :-) If you did make changes,
    then go around the merry go round of branch-commit-pr-merge-pull
    once more, and re-run tests.
-8. Do a clean build and upload to PyPI
+9. Do a clean build and upload to PyPI
    ```bash
    deactivate # Don't do a release from a virtual environment
    rm -rf dist
-   python setup.py sdist
-   python setup.py bdist_wheel # this will be --universal in the future)
+   python3.6 setup.py sdist
+   python3.6 setup.py bdist_wheel # this will be --universal in the future)
    # TODO test upload with twine
    twine upload dist/*
    ```
-9. Check the correct build appears in PyPI
-10. Tag the release in git. Make sure you push the tag to upstream
+10. Check the correct build appears in PyPI
+11. Tag the release in git. Make sure you push the tag to upstream
     ```bash
     git tag -a release-0.4.0 -m "#63: Release version 0.4.0"
     git push origin release-0.4.0
     ```
-11. Bump version in _about.py in order to avoid unfortunate mistakes :-)
-12. Close any relevant github issue and milestone
-13. Make a github release. This seems to magically work from our tag name
+12. Bump version in _about.py in order to avoid unfortunate mistakes :-)
+13. Close any relevant github issue and milestone
+14. Make a github release. This seems to magically work from our tag name
     format
-14. Announce the exciting new release:
+15. Announce the exciting new release:
     * Python announcement lists
     * Twitter
     * Gary's personal mailing list
-15. Sit back for a moment and revel in your excellent-ness
+16. Sit back for a moment and revel in your excellent-ness
