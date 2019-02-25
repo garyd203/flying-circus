@@ -1,5 +1,8 @@
+Licencing
+=========
+
 What?
-====
+-----
 
 Flying Circus uses the LGPL (GNU Lesser General Public Licence), version 3.
 This is a copy-left open source licence intended for libraries that are used
@@ -14,7 +17,7 @@ and any generated artefacts (like Cloud Formation YAML) remains your own,
 which you can do with as you please. However, do note that IANAL :-)
 
 Why?
-====
+----
 
 The open source community nowadays is a fantastic example of something that is
 greater than the sum of it's parts. So much modern software is built on the
@@ -28,5 +31,5 @@ LGPL variant, in particular, allows users to retain IP ownership and secrecy
 for their internal infrastructure, whilst still gaining the power of Flying
 Circus.
 
-Thanks for listening. We sincerely hope that Flying Circus helps you, and look
+Thanks for reading. We sincerely hope that Flying Circus helps you, and look
 forward to hearing from you in our community.
