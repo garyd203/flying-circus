@@ -14,7 +14,7 @@ will make those improvements available to the broader community, ideally via
 a Pull Request on GitHub. When you use Flying Circus to define your AWS
 infrastructure as a separate project or Python module, then that Python code
 and any generated artefacts (like Cloud Formation YAML) remains your own,
-which you can do with as you please. However, do note that IANAL :-)
+which you can do with as you please.
 
 Why?
 ----
