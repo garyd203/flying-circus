@@ -1,7 +1,8 @@
 Introduction
 ============
 
-Tag line: "Putting the Code into Infrastructure as Code"
+.. pull-quote::
+   Putting more Code into Infrastructure as Code
 
 Flying Circus is a tool for describing AWS infrastructure as code (using
 Python). It uses the same data structures as the AWS Cloud Formation service,
