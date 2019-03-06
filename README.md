@@ -21,6 +21,86 @@ and so on.
 You can learn how to use Flying Circus yourself by reading the
 [documentation](http://flying-circus.readthedocs.io/)
 
+# Installation
+
+Install Flying Circus through the Python packaging system:
+
+```bash
+pip install flying-circus
+```
+
+Many people also use the Amazon Web Services command line tools to deploy
+their CloudFormation stacks. If you want this, a good way to install an
+up-to-date version is also with `pip`:
+
+```bash
+# Optional
+pip install awscli
+```
+
+# Example
+
+Here is a simple example of how you can use Flying Circus to describe some EC2
+instances and deploy them using the AWS CloudFormation service.
+
+First, create a python script (called `my_ec2_stack.py` in this case) to
+describe your infrastructure. Any valid Python can be used to create the
+Flying Circus objects, along with any valid CloudFormation properties and
+attributes.
+
+This example is intentionally simplistic - it just creates two EC2 instances
+with varying configuration, and outputs the internal IP for one. However, it
+does hint at some of the more complex and powerful usage patterns.
+
+```python
+import os
+
+from flyingcircus.core import Stack, Output
+from flyingcircus.intrinsic_function import GetAtt
+from flyingcircus.service.ec2 import *
+
+
+def create_ec2_instance(name, instance_type="t2.micro"):
+    instance = Instance(Properties=InstanceProperties(
+        ImageId="ami-942dd1f6",
+        InstanceType=instance_type,
+        Monitoring=False,
+    ))
+    instance.name = name
+    return instance
+
+
+if __name__ == "__main__":
+    stack = Stack()
+
+    stack.Resources["WebServer"] = create_ec2_instance("webserver")
+    stack.Resources["DatabaseServer"] = dbserver = create_ec2_instance("dbserver", "t2.medium")
+    dbserver.DeletionPolicy = "Retain"
+
+    stack.Outputs["DatabaseServerIp"] = Output(
+        Description=f"Internal IP address for the database server",
+        Value=GetAtt(dbserver, "PrivateIp"),
+    )
+
+    stack.tag(application="api-service", environment="test", owner=os.environ.get("USER"))
+
+    print(stack.export("yaml"))
+```
+
+Now generate CloudFormation YAML from your Python script. Note that the result
+will *always* be valid well-formatted YAML, and internal checks mean that it
+is also difficult to generate invalid CloudFormation.
+
+Finally, use the AWS command line tools to create/update a stack and it's
+associated resources.
+
+```bash
+python my_ec2_stack.py > my_ec2_stack.yaml
+aws cloudformation deploy --stack-name demo-flying-circus-ec2 --template-file my_ec2_stack.yaml
+```
+
+You could do these steps in your Continuous Integration server ;-)
+
 # Is/Is Not
 
 There's a lot of tools for managing Infrastructure as Code, often with subtle
