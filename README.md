@@ -118,7 +118,7 @@ help you. This is presented in the simple "Is/Is Not" format.
 ## Flying Circus Is Not...
 
 * ...YAML or JSON. It's Python.
-* ...a tool to make it easier to write YAML or JSON. You write Python, and YAML is an output.
+* ...a tool to make it easier to write YAML or JSON. You write Python, and YAML is an output format.
 * ...a DSL with a completely new syntax. You use normal Python syntax with all
   of it's features and nothing changed.
 * ...a templating language, like Jinja2.
