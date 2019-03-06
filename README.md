@@ -19,7 +19,7 @@ libraries to allow code re-use with versioning, automated refactoring tools
 and so on.
 
 You can learn how to use Flying Circus yourself by reading the
-[documentation](http://flying-circus.readthedocs.io/)
+[documentation](https://flying-circus.readthedocs.io/)
 
 # Installation
 
