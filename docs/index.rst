@@ -10,6 +10,7 @@ convenient and powerful way to describe AWS infrastructure as code.
     :caption: Contents:
 
     introduction.rst
+    getting_started.rst
     licence-notes.rst
 
 
