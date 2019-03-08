@@ -1128,7 +1128,7 @@ class VPCEndpointProperties(ResourceProperties):
     SecurityGroupIds = attrib(default=None)
     ServiceName = attrib(default=None)
     SubnetIds = attrib(default=None)
-    VPCEndpointType = attrib(default=None)
+    VpcEndpointType = attrib(default=None)
     VpcId = attrib(default=None)
 
 
