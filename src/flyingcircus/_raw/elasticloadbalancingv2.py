@@ -136,6 +136,7 @@ class LoadBalancer(Resource):
 
 @attrs(**ATTRSCONFIG)
 class TargetGroupProperties(ResourceProperties):
+    HealthCheckEnabled = attrib(default=None)
     HealthCheckIntervalSeconds = attrib(default=None)
     HealthCheckPath = attrib(default=None)
     HealthCheckPort = attrib(default=None)

@@ -28,7 +28,6 @@ __all__ = [
 @attrs(**ATTRSCONFIG)
 class ClusterProperties(ResourceProperties):
     ClusterName = attrib(default=None)
-    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -64,7 +63,6 @@ class ServiceProperties(ResourceProperties):
     SchedulingStrategy = attrib(default=None)
     ServiceName = attrib(default=None)
     ServiceRegistries = attrib(default=None)
-    Tags = attrib(default=None)
     TaskDefinition = attrib(default=None)
 
 
@@ -95,7 +93,6 @@ class TaskDefinitionProperties(ResourceProperties):
     NetworkMode = attrib(default=None)
     PlacementConstraints = attrib(default=None)
     RequiresCompatibilities = attrib(default=None)
-    Tags = attrib(default=None)
     TaskRoleArn = attrib(default=None)
     Volumes = attrib(default=None)
 

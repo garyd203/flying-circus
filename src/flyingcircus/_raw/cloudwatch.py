@@ -37,6 +37,7 @@ class AlarmProperties(ResourceProperties):
     ExtendedStatistic = attrib(default=None)
     InsufficientDataActions = attrib(default=None)
     MetricName = attrib(default=None)
+    Metrics = attrib(default=None)
     Namespace = attrib(default=None)
     OKActions = attrib(default=None)
     Period = attrib(default=None)

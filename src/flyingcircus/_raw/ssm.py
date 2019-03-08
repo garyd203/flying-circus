@@ -97,6 +97,7 @@ class MaintenanceWindowProperties(ResourceProperties):
     Schedule = attrib(default=None)
     ScheduleTimezone = attrib(default=None)
     StartDate = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
