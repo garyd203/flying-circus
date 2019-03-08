@@ -57,6 +57,7 @@ RESOURCES_WITH_EXTRA_ATTRIBUTES = {
     "AWS::AutoScaling::AutoScalingGroup": ["CreationPolicy", "UpdatePolicy"],
     "AWS::CloudFormation::WaitCondition": ["CreationPolicy"],
     "AWS::EC2::Instance": ["CreationPolicy"],
+    "AWS::ElastiCache::ReplicationGroup": ["UpdatePolicy"],
     "AWS::Lambda::Alias": ["UpdatePolicy"],
 }
 
