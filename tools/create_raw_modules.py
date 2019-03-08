@@ -19,34 +19,6 @@ LOGGER = logging.getLogger(
     os.path.splitext(os.path.basename(__file__))[0]
 )
 
-#: Set of AWS service names that we create Flying Circus modules for.
-#: At the moment we only include some modules because we are still building
-#: up our script
-SUPPORTED_AWS_SERVICES = {
-    # FIXME remove this temporary hack when we are satisfied with the output
-    "ApplicationAutoScaling",
-    "AutoScaling",
-    "CertificateManager",
-    "CloudFormation",
-    "CloudFront",
-    "CloudTrail",
-    "CloudWatch",
-    "Cognito",
-    "EC2",
-    "ECR",
-    "ECS",
-    "ElasticLoadBalancingV2",
-    "Events",
-    "KMS",
-    "Lambda",
-    "RDS",
-    "Route53",
-    "S3",
-    "SecretsManager",
-    "SNS",
-    "SSM",
-}
-
 #: Lookup table of documentation URL's for AWS services. This information does
 #: not appear to be in the specification, and does not have a deterministic URL.
 SERVICE_DOCUMENTATION_URLS = {
@@ -136,8 +108,8 @@ def generate_modules(packagedir, specification):
         assert resource_type.count("::") == 2, "Fully qualified resource type should have 3 components"
         provider_name, service_name, resource_name = resource_type.split("::")
 
-        if service_name not in SUPPORTED_AWS_SERVICES:
-            LOGGER.info("Skipping '%s' because we don't yet support that service", resource_type)
+        if service_name not in SERVICE_DOCUMENTATION_URLS:
+            LOGGER.error("Skipping '%s' because we don't know how to document that service", resource_type)
             continue
 
         assert provider_name == "AWS", f"Resource provider for {resource_type} is expected to be AWS"
@@ -211,6 +183,6 @@ def generate_modules(packagedir, specification):
 
 if __name__ == '__main__':
     logging.basicConfig()
-    LOGGER.setLevel(logging.DEBUG)
+    LOGGER.setLevel(logging.INFO)
 
     generate_modules()
