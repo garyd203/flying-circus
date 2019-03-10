@@ -1,0 +1,12 @@
+"""General-use classes to interact with the DMS service through CloudFormation.
+
+See Also:
+    `AWS developer guide for DMS
+    <https://docs.aws.amazon.com/dms/latest/userguide/index.html>`_
+"""
+
+# noinspection PyUnresolvedReferences
+from .._raw import dms as _raw
+
+# noinspection PyUnresolvedReferences
+from .._raw.dms import *
