@@ -2,7 +2,7 @@
 
 See Also:
     `AWS developer guide for ElasticLoadBalancingV2
-    <https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/index.html>`_
+    <https://docs.aws.amazon.com/elasticloadbalancing/latest/application/index.html>`_
 """
 
 # noinspection PyUnresolvedReferences
