@@ -1,5 +1,7 @@
+[![PyPI release](https://img.shields.io/pypi/v/flying-circus.svg)](https://pypi.python.org/pypi/flying-circus)
+[![Python versions](https://img.shields.io/pypi/pyversions/flying-circus.svg)](https://pypi.python.org/pypi/flying-circus)
 [![Documentation Status](https://readthedocs.org/projects/flying-circus/badge/?version=latest)](http://flying-circus.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://badge.fury.io/py/flying-circus.svg)](https://badge.fury.io/py/flying-circus)
+[![Downloads](https://img.shields.io/pypi/dm/flying-circus.svg)](https://pypi.python.org/pypi/flying-circus)
 
 # flying-circus
 
