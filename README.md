@@ -140,8 +140,7 @@ help you. This is presented in the simple "Is/Is Not" format.
 
 # Sounds Great, Can I Use It?
 
-Sure, of course you can. The [documentation will get you started]
-(https://flying-circus.readthedocs.io/en/latest/getting_started.html).
+Sure, of course you can. The [documentation will get you started](https://flying-circus.readthedocs.io/en/latest/getting_started.html).
 
 Flying Circus is currently in **Beta**. This means it is expected
 to work for the supported AWS services, and is in use by real customers.
