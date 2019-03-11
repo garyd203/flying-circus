@@ -21,7 +21,7 @@ LOGGER = logging.getLogger(
 
 #: Lookup table of documentation URL's for AWS services. This information does
 #: not appear to be in the specification, and does not have a deterministic URL.
-SERVICE_DOCUMENTATION_URLS = {
+AWS_SERVICE_DOCUMENTATION_URLS = {
     "AmazonMQ": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html",
     "ApiGateway": "https://docs.aws.amazon.com/apigateway/latest/developerguide/index.html",
     "ApiGatewayV2": "https://docs.aws.amazon.com/apigateway/latest/developerguide/index.html",
@@ -105,6 +105,13 @@ SERVICE_DOCUMENTATION_URLS = {
     "WorkSpaces": "https://docs.aws.amazon.com/workspaces/latest/adminguide/index.html",
 }
 
+#: Lookup table of documentation URL's for non-AWS services.
+OTHER_SERVICE_DOCUMENTATION_URLS = {
+    "Alexa": {
+        "ASK": "https://developer.amazon.com/docs/ask-overviews/build-skills-with-the-alexa-skills-kit.html",
+    },
+}
+
 #: AWS CFN resources that have non-standard attributes.
 #:
 #: Some of the CloudFormation resource attributes are only valid for a few AWS
@@ -169,16 +176,22 @@ def generate_modules(packagedir, specification):
         assert resource_type.count("::") == 2, "Fully qualified resource type should have 3 components"
         provider_name, service_name, resource_name = resource_type.split("::")
 
-        if service_name not in SERVICE_DOCUMENTATION_URLS:
-            LOGGER.error("Skipping '%s' because we don't know how to document that service", resource_type)
+        if provider_name == "AWS":
+            doc_url = AWS_SERVICE_DOCUMENTATION_URLS.get(service_name)
+        else:
+            # TODO #165: need a new module naming scheme to differentiate top-level providers
+            doc_url = OTHER_SERVICE_DOCUMENTATION_URLS.get(provider_name, {}).get(service_name)
+            LOGGER.warning("Skipping '%s' because we don't handle non-AWS providers yet", resource_type)
             continue
 
-        assert provider_name == "AWS", f"Resource provider for {resource_type} is expected to be AWS"
+        if not doc_url:
+            LOGGER.error("Skipping '%s' because we don't know how to document that service", resource_type)
+            continue
 
         # Ensure the service data exists
         service = services.setdefault(service_name, {
             "documentation": {
-                "url": SERVICE_DOCUMENTATION_URLS.get(service_name)
+                "url": doc_url,
             },
             "module_name": service_name.lower(),
             "name": service_name,
