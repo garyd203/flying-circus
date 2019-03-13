@@ -6,9 +6,18 @@ This is a manual process at the moment. See the
 for some background and guidance. Or just do the following steps
 (hand wavy description) on your local workstation (Linux works best)
 
+#. Ensure the trove classifiers in ``setup.py`` are up to date
+#. Ensure ``install_requires`` in setup_py is up to date with
+   ``requirements.txt``. However, we shouldn't include test dependencies
+   here.
+#. Ensure ``__version__`` in ``_about.py`` reflects what you want to release.
+   Pay attention to major/minor/patch numbers, and ensure
+   this is not a version that has already been released to PyPI
+#. Update ``CHANGELOG.md``
+#. Commit any changes you may have made and merge into master on Github.
 #. Make sure there are no uncommitted changes in your local workspace
 #. Checkout ``master`` branch and get the latest:
-   
+
    .. code-block:: bash
 
       git checkout master
@@ -24,17 +33,6 @@ for some background and guidance. Or just do the following steps
       pip install -e . # Install the local working copy of flying circus in "edit" mode
       export AWS_PROFILE=your-aws-test-profile
       pytest tests --run-aws-integration-tests
-#. Ensure the trove classifiers in ``setup.py`` are up to date
-#. Ensure ``install_requires`` in setup_py is up to date with
-   ``requirements.txt``. However, we shouldn't include test dependencies
-   here.
-#. Ensure ``__version__`` in ``_about.py`` reflects what you want to release.
-   Pay attention to major/minor/patch numbers, and ensure
-   this is not a version that has already been released to PyPI
-#. Update ``CHANGELOG.md``
-#. Commit any changes you may have made :-) If you did make changes,
-   then go around the merry go round of branch-commit-pr-merge-pull
-   once more, and re-run tests.
 #. Do a clean build and upload to PyPI:
 
    .. code-block:: bash
