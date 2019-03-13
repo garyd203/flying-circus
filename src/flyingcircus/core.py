@@ -627,6 +627,8 @@ class Resource(AWSObject):
     #
     # UpdatePolicy: Dict[str, Any] = attrib(factory=dict)
 
+    UpdateReplacePolicy: str = attrib(default=None)
+
     #: Customised sort order for a Resource class. We need to implement
     #: special functionality to sort the attributes on a Resource, because
     #: they are defined in several different (non-standard) places.
@@ -634,7 +636,10 @@ class Resource(AWSObject):
     #: This list includes all the attributes that are defined on a
     #: CloudFormation Resource, even if they may not exist on every concrete
     #: Resource subclass
-    _SORT_ORDER = ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "DeletionPolicy", "Properties"]
+    _SORT_ORDER = [
+        "Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "UpdateReplacePolicy",
+        "DeletionPolicy", "Properties",
+    ]
 
     #: The AWS CloudFormation string for this resource's Type
     RESOURCE_TYPE = None

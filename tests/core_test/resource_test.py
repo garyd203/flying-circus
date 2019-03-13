@@ -36,7 +36,8 @@ class TestResourceSpecialAttributes:
         attribs = iter(data)
 
         # Verify
-        assert list(attribs) == ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "DeletionPolicy",
+        assert list(attribs) == ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy",
+                                 "UpdateReplacePolicy", "DeletionPolicy",
                                  "Properties"]
 
     # Type
@@ -73,7 +74,7 @@ class TestResourceSpecialAttributes:
 
         # Verify
         assert "Type" in set(attribs)
-        assert len(data) == 5
+        assert len(data) == 6
 
     # Properties
     # ----------
@@ -125,7 +126,7 @@ class TestResourceSpecialAttributes:
         # Verify
         assert "CreationPolicy" in attribs
         assert "UpdatePolicy" in attribs
-        assert len(data) == 7
+        assert len(data) == 8
 
 
 class TestGetTag(BaseTaggingTest):
