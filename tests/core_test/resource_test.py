@@ -6,6 +6,7 @@ import hypothesis.strategies as st
 import pytest
 from attr import attrib
 from attr import attrs
+from hypothesis import assume
 from hypothesis import given
 
 from flyingcircus.core import ATTRSCONFIG
@@ -19,6 +20,7 @@ from .common import FullResource
 from .common import SimpleResource
 from .common import SimpleResourceProperties
 from .common import TaggableResource
+from .common import aws_deletion_policy_strategy
 from .common import parametrize_tagging_techniques
 from ..pyyaml_helper import create_refsafe_dumper
 
@@ -127,6 +129,62 @@ class TestResourceSpecialAttributes:
         assert "CreationPolicy" in attribs
         assert "UpdatePolicy" in attribs
         assert len(data) == 8
+
+
+class TestIsRetained:
+    """Test retention policy management with `is_retained`"""
+
+    def test_is_false_when_underlying_policies_are_not_set(self):
+        resource = SimpleResource()
+
+        assert resource.is_retained is False
+
+    def test_is_true_when_underlying_policies_are_both_retain(self):
+        resource = SimpleResource(
+            DeletionPolicy="Retain",
+            UpdateReplacePolicy="Retain",
+        )
+
+        assert resource.is_retained is True
+
+    @given(aws_deletion_policy_strategy(), aws_deletion_policy_strategy())
+    def test_is_false_when_underlying_policies_are_not_both_retain(self, deletion, update):
+        assume(deletion != "Retain" and update != "Retain")
+
+        resource = SimpleResource(
+            DeletionPolicy=deletion,
+            UpdateReplacePolicy=update,
+        )
+
+        assert resource.is_retained is False
+
+    def test_setting_to_true_should_set_underlying_policies(self):
+        # Setup
+        resource = SimpleResource()
+
+        # Exercise
+        resource.is_retained = True
+
+        # Verify
+        assert resource.is_retained is True
+        assert resource.DeletionPolicy == "Retain"
+        assert resource.UpdateReplacePolicy == "Retain"
+
+    @given(aws_deletion_policy_strategy(), aws_deletion_policy_strategy())
+    def test_setting_to_false_should_remove_underlying_policies(self, deletion, update):
+        # Setup
+        resource = SimpleResource(
+            DeletionPolicy=deletion,
+            UpdateReplacePolicy=update,
+        )
+
+        # Exercise
+        resource.is_retained = False
+
+        # Verify
+        assert resource.is_retained is False
+        assert resource.DeletionPolicy is None
+        assert resource.UpdateReplacePolicy is None
 
 
 class TestGetTag(BaseTaggingTest):

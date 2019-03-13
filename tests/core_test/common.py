@@ -109,6 +109,14 @@ def aws_logical_name_strategy(draw):
     ))
 
 
+@st.composite
+def aws_deletion_policy_strategy(draw, include_none=True):
+    policy_values = ["Delete", "Retain", "Snapshot"]
+    if include_none:
+        policy_values.append(None)
+    return draw(st.sampled_from(policy_values))
+
+
 @attrs(**ATTRSCONFIG)
 class SimpleResourceProperties(ResourceProperties):
     props = attrib(default=None)

@@ -10,11 +10,11 @@ from typing import Iterator
 from typing import List
 from typing import Optional
 
+import attr
 import yaml
 import yaml.resolver
-import attr
-from attr import attrib
 from attr import Attribute
+from attr import attrib
 from attr import attrs
 
 from . import _about
@@ -697,6 +697,29 @@ class Resource(AWSObject):
         for name in self._SORT_ORDER:
             if name in attribs:
                 yield name
+
+    @property
+    def is_retained(self) -> bool:
+        """Whether the underlying physical resource will always be retained,
+        regardless of any changes in the stack.
+
+        This reflects whether *both* the underlying policies (`DeletionPolicy`
+        and `UpdateReplacePolicy`) are set to "Retain". It is an effective way
+        to ensure that irreplacable resources cannot be accidentally removed
+        by the CloudFormation.
+
+        Ensure you understand the cost implications of setting this flag.
+        """
+        return self.DeletionPolicy == "Retain" and self.UpdateReplacePolicy == "Retain"
+
+    @is_retained.setter
+    def is_retained(self, value: bool):
+        if value:
+            self.DeletionPolicy = "Retain"
+            self.UpdateReplacePolicy = "Retain"
+        else:
+            self.DeletionPolicy = None
+            self.UpdateReplacePolicy = None
 
     @property
     def is_taggable(self):
