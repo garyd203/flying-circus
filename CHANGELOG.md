@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Create some introductory documentation
 * Update AWS Resource specification to v2.25.0
 * Create classes for all AWS services
+* [#171](https://github.com/garyd203/flying-circus/issues/171): Support
+  `UpdateReplacePolicy` and introduce `is_retained` property for a resource.
 
 ## [v0.6.1] - 2019-02-12
 ### Changed
