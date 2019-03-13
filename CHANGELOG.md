@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+
+## [v0.6.2] - 2019-03-14
+### Changed
 * Create some introductory documentation
 * Update AWS Resource specification to v2.25.0
 * Create classes for all AWS services
