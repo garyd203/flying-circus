@@ -25,7 +25,7 @@ setup(
     version=get_version_data()['__version__'],
     description="A tool for describing AWS infrastructure.",
     long_description=get_readme(),
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
 
     # Project Packaging
     package_dir={'': 'src'},
