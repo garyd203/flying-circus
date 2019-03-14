@@ -39,8 +39,7 @@ for some background and guidance. Or just do the following steps
 
       deactivate # Don't do a release from a virtual environment
       rm -rf dist
-      python3.6 setup.py sdist
-      python3.6 setup.py bdist_wheel # this will be --universal in the future
+      python3.6 setup.py sdist bdist_wheel
       # TODO test upload with twine
       twine upload dist/*
 #. Check the correct build appears in PyPI
@@ -52,8 +51,6 @@ for some background and guidance. Or just do the following steps
       git push origin release-0.4.0
 #. Bump version in ``_about.py`` in order to avoid unfortunate mistakes :-)
 #. Close any relevant github issue and milestone
-#. Make a github release. This seems to magically work from our tag name
-   format.
 #. Announce the exciting new release:
 
    * Python announcement lists
