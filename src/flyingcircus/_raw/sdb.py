@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Domain",
-    "DomainProperties",
-]
+__all__ = ["Domain", "DomainProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -38,6 +35,5 @@ class Domain(Resource):
     RESOURCE_TYPE = "AWS::SDB::Domain"
 
     Properties: DomainProperties = attrib(
-        factory=DomainProperties,
-        converter=create_object_converter(DomainProperties),
+        factory=DomainProperties, converter=create_object_converter(DomainProperties)
     )

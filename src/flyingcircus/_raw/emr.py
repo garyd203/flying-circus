@@ -64,8 +64,7 @@ class Cluster(Resource):
     RESOURCE_TYPE = "AWS::EMR::Cluster"
 
     Properties: ClusterProperties = attrib(
-        factory=ClusterProperties,
-        converter=create_object_converter(ClusterProperties),
+        factory=ClusterProperties, converter=create_object_converter(ClusterProperties)
     )
 
 
@@ -171,6 +170,5 @@ class Step(Resource):
     RESOURCE_TYPE = "AWS::EMR::Step"
 
     Properties: StepProperties = attrib(
-        factory=StepProperties,
-        converter=create_object_converter(StepProperties),
+        factory=StepProperties, converter=create_object_converter(StepProperties)
     )

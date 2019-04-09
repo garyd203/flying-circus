@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Alias",
-    "AliasProperties",
-    "Key",
-    "KeyProperties",
-]
+__all__ = ["Alias", "AliasProperties", "Key", "KeyProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -41,8 +36,7 @@ class Alias(Resource):
     RESOURCE_TYPE = "AWS::KMS::Alias"
 
     Properties: AliasProperties = attrib(
-        factory=AliasProperties,
-        converter=create_object_converter(AliasProperties),
+        factory=AliasProperties, converter=create_object_converter(AliasProperties)
     )
 
 
@@ -69,6 +63,5 @@ class Key(Resource):
     RESOURCE_TYPE = "AWS::KMS::Key"
 
     Properties: KeyProperties = attrib(
-        factory=KeyProperties,
-        converter=create_object_converter(KeyProperties),
+        factory=KeyProperties, converter=create_object_converter(KeyProperties)
     )

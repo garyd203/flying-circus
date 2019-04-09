@@ -74,8 +74,7 @@ class Account(Resource):
     RESOURCE_TYPE = "AWS::ApiGateway::Account"
 
     Properties: AccountProperties = attrib(
-        factory=AccountProperties,
-        converter=create_object_converter(AccountProperties),
+        factory=AccountProperties, converter=create_object_converter(AccountProperties)
     )
 
 
@@ -102,8 +101,7 @@ class ApiKey(Resource):
     RESOURCE_TYPE = "AWS::ApiGateway::ApiKey"
 
     Properties: ApiKeyProperties = attrib(
-        factory=ApiKeyProperties,
-        converter=create_object_converter(ApiKeyProperties),
+        factory=ApiKeyProperties, converter=create_object_converter(ApiKeyProperties)
     )
 
 
@@ -339,8 +337,7 @@ class Method(Resource):
     RESOURCE_TYPE = "AWS::ApiGateway::Method"
 
     Properties: MethodProperties = attrib(
-        factory=MethodProperties,
-        converter=create_object_converter(MethodProperties),
+        factory=MethodProperties, converter=create_object_converter(MethodProperties)
     )
 
 
@@ -365,8 +362,7 @@ class Model(Resource):
     RESOURCE_TYPE = "AWS::ApiGateway::Model"
 
     Properties: ModelProperties = attrib(
-        factory=ModelProperties,
-        converter=create_object_converter(ModelProperties),
+        factory=ModelProperties, converter=create_object_converter(ModelProperties)
     )
 
 
@@ -447,8 +443,7 @@ class RestApi(Resource):
     RESOURCE_TYPE = "AWS::ApiGateway::RestApi"
 
     Properties: RestApiProperties = attrib(
-        factory=RestApiProperties,
-        converter=create_object_converter(RestApiProperties),
+        factory=RestApiProperties, converter=create_object_converter(RestApiProperties)
     )
 
 
@@ -482,8 +477,7 @@ class Stage(Resource):
     RESOURCE_TYPE = "AWS::ApiGateway::Stage"
 
     Properties: StageProperties = attrib(
-        factory=StageProperties,
-        converter=create_object_converter(StageProperties),
+        factory=StageProperties, converter=create_object_converter(StageProperties)
     )
 
 
@@ -556,6 +550,5 @@ class VpcLink(Resource):
     RESOURCE_TYPE = "AWS::ApiGateway::VpcLink"
 
     Properties: VpcLinkProperties = attrib(
-        factory=VpcLinkProperties,
-        converter=create_object_converter(VpcLinkProperties),
+        factory=VpcLinkProperties, converter=create_object_converter(VpcLinkProperties)
     )

@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Trail",
-    "TrailProperties",
-]
+__all__ = ["Trail", "TrailProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -50,6 +47,5 @@ class Trail(Resource):
     RESOURCE_TYPE = "AWS::CloudTrail::Trail"
 
     Properties: TrailProperties = attrib(
-        factory=TrailProperties,
-        converter=create_object_converter(TrailProperties),
+        factory=TrailProperties, converter=create_object_converter(TrailProperties)
     )

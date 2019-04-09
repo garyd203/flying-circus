@@ -96,8 +96,7 @@ class Secret(Resource):
     RESOURCE_TYPE = "AWS::SecretsManager::Secret"
 
     Properties: SecretProperties = attrib(
-        factory=SecretProperties,
-        converter=create_object_converter(SecretProperties),
+        factory=SecretProperties, converter=create_object_converter(SecretProperties)
     )
 
 

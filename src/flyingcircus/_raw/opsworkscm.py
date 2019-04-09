@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Server",
-    "ServerProperties",
-]
+__all__ = ["Server", "ServerProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -54,6 +51,5 @@ class Server(Resource):
     RESOURCE_TYPE = "AWS::OpsWorksCM::Server"
 
     Properties: ServerProperties = attrib(
-        factory=ServerProperties,
-        converter=create_object_converter(ServerProperties),
+        factory=ServerProperties, converter=create_object_converter(ServerProperties)
     )

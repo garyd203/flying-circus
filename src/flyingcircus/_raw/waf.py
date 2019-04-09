@@ -74,8 +74,7 @@ class IPSet(Resource):
     RESOURCE_TYPE = "AWS::WAF::IPSet"
 
     Properties: IPSetProperties = attrib(
-        factory=IPSetProperties,
-        converter=create_object_converter(IPSetProperties),
+        factory=IPSetProperties, converter=create_object_converter(IPSetProperties)
     )
 
 
@@ -98,8 +97,7 @@ class Rule(Resource):
     RESOURCE_TYPE = "AWS::WAF::Rule"
 
     Properties: RuleProperties = attrib(
-        factory=RuleProperties,
-        converter=create_object_converter(RuleProperties),
+        factory=RuleProperties, converter=create_object_converter(RuleProperties)
     )
 
 
@@ -169,8 +167,7 @@ class WebACL(Resource):
     RESOURCE_TYPE = "AWS::WAF::WebACL"
 
     Properties: WebACLProperties = attrib(
-        factory=WebACLProperties,
-        converter=create_object_converter(WebACLProperties),
+        factory=WebACLProperties, converter=create_object_converter(WebACLProperties)
     )
 
 

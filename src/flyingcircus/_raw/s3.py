@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Bucket",
-    "BucketProperties",
-    "BucketPolicy",
-    "BucketPolicyProperties",
-]
+__all__ = ["Bucket", "BucketProperties", "BucketPolicy", "BucketPolicyProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -55,8 +50,7 @@ class Bucket(Resource):
     RESOURCE_TYPE = "AWS::S3::Bucket"
 
     Properties: BucketProperties = attrib(
-        factory=BucketProperties,
-        converter=create_object_converter(BucketProperties),
+        factory=BucketProperties, converter=create_object_converter(BucketProperties)
     )
 
 

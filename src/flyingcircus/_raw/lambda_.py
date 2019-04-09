@@ -57,8 +57,7 @@ class Alias(Resource):
     RESOURCE_TYPE = "AWS::Lambda::Alias"
 
     Properties: AliasProperties = attrib(
-        factory=AliasProperties,
-        converter=create_object_converter(AliasProperties),
+        factory=AliasProperties, converter=create_object_converter(AliasProperties)
     )
 
     # NB: UpdatePolicy may be set for Alias
@@ -226,6 +225,5 @@ class Version(Resource):
     RESOURCE_TYPE = "AWS::Lambda::Version"
 
     Properties: VersionProperties = attrib(
-        factory=VersionProperties,
-        converter=create_object_converter(VersionProperties),
+        factory=VersionProperties, converter=create_object_converter(VersionProperties)
     )

@@ -42,8 +42,7 @@ class Cluster(Resource):
     RESOURCE_TYPE = "AWS::ECS::Cluster"
 
     Properties: ClusterProperties = attrib(
-        factory=ClusterProperties,
-        converter=create_object_converter(ClusterProperties),
+        factory=ClusterProperties, converter=create_object_converter(ClusterProperties)
     )
 
 
@@ -78,8 +77,7 @@ class Service(Resource):
     RESOURCE_TYPE = "AWS::ECS::Service"
 
     Properties: ServiceProperties = attrib(
-        factory=ServiceProperties,
-        converter=create_object_converter(ServiceProperties),
+        factory=ServiceProperties, converter=create_object_converter(ServiceProperties)
     )
 
 

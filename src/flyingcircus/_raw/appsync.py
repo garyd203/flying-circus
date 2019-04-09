@@ -50,8 +50,7 @@ class ApiKey(Resource):
     RESOURCE_TYPE = "AWS::AppSync::ApiKey"
 
     Properties: ApiKeyProperties = attrib(
-        factory=ApiKeyProperties,
-        converter=create_object_converter(ApiKeyProperties),
+        factory=ApiKeyProperties, converter=create_object_converter(ApiKeyProperties)
     )
 
 

@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Project",
-    "ProjectProperties",
-]
+__all__ = ["Project", "ProjectProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -54,6 +51,5 @@ class Project(Resource):
     RESOURCE_TYPE = "AWS::CodeBuild::Project"
 
     Properties: ProjectProperties = attrib(
-        factory=ProjectProperties,
-        converter=create_object_converter(ProjectProperties),
+        factory=ProjectProperties, converter=create_object_converter(ProjectProperties)
     )

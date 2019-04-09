@@ -72,8 +72,7 @@ class Policy(Resource):
     RESOURCE_TYPE = "AWS::IoT::Policy"
 
     Properties: PolicyProperties = attrib(
-        factory=PolicyProperties,
-        converter=create_object_converter(PolicyProperties),
+        factory=PolicyProperties, converter=create_object_converter(PolicyProperties)
     )
 
 
@@ -118,8 +117,7 @@ class Thing(Resource):
     RESOURCE_TYPE = "AWS::IoT::Thing"
 
     Properties: ThingProperties = attrib(
-        factory=ThingProperties,
-        converter=create_object_converter(ThingProperties),
+        factory=ThingProperties, converter=create_object_converter(ThingProperties)
     )
 
 

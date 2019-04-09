@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "EventBusPolicy",
-    "EventBusPolicyProperties",
-    "Rule",
-    "RuleProperties",
-]
+__all__ = ["EventBusPolicy", "EventBusPolicyProperties", "Rule", "RuleProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -71,6 +66,5 @@ class Rule(Resource):
     RESOURCE_TYPE = "AWS::Events::Rule"
 
     Properties: RuleProperties = attrib(
-        factory=RuleProperties,
-        converter=create_object_converter(RuleProperties),
+        factory=RuleProperties, converter=create_object_converter(RuleProperties)
     )

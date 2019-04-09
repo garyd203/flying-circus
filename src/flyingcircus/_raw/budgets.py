@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Budget",
-    "BudgetProperties",
-]
+__all__ = ["Budget", "BudgetProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -39,6 +36,5 @@ class Budget(Resource):
     RESOURCE_TYPE = "AWS::Budgets::Budget"
 
     Properties: BudgetProperties = attrib(
-        factory=BudgetProperties,
-        converter=create_object_converter(BudgetProperties),
+        factory=BudgetProperties, converter=create_object_converter(BudgetProperties)
     )

@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Stream",
-    "StreamProperties",
-    "StreamConsumer",
-    "StreamConsumerProperties",
-]
+__all__ = ["Stream", "StreamProperties", "StreamConsumer", "StreamConsumerProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -44,8 +39,7 @@ class Stream(Resource):
     RESOURCE_TYPE = "AWS::Kinesis::Stream"
 
     Properties: StreamProperties = attrib(
-        factory=StreamProperties,
-        converter=create_object_converter(StreamProperties),
+        factory=StreamProperties, converter=create_object_converter(StreamProperties)
     )
 
 

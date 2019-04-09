@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "MicrosoftAD",
-    "MicrosoftADProperties",
-    "SimpleAD",
-    "SimpleADProperties",
-]
+__all__ = ["MicrosoftAD", "MicrosoftADProperties", "SimpleAD", "SimpleADProperties"]
 
 
 @attrs(**ATTRSCONFIG)

@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "LifecyclePolicy",
-    "LifecyclePolicyProperties",
-]
+__all__ = ["LifecyclePolicy", "LifecyclePolicyProperties"]
 
 
 @attrs(**ATTRSCONFIG)
