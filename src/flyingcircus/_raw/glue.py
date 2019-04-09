@@ -110,8 +110,7 @@ class Crawler(Resource):
     RESOURCE_TYPE = "AWS::Glue::Crawler"
 
     Properties: CrawlerProperties = attrib(
-        factory=CrawlerProperties,
-        converter=create_object_converter(CrawlerProperties),
+        factory=CrawlerProperties, converter=create_object_converter(CrawlerProperties)
     )
 
 
@@ -193,8 +192,7 @@ class Job(Resource):
     RESOURCE_TYPE = "AWS::Glue::Job"
 
     Properties: JobProperties = attrib(
-        factory=JobProperties,
-        converter=create_object_converter(JobProperties),
+        factory=JobProperties, converter=create_object_converter(JobProperties)
     )
 
 
@@ -242,8 +240,7 @@ class Table(Resource):
     RESOURCE_TYPE = "AWS::Glue::Table"
 
     Properties: TableProperties = attrib(
-        factory=TableProperties,
-        converter=create_object_converter(TableProperties),
+        factory=TableProperties, converter=create_object_converter(TableProperties)
     )
 
 
@@ -269,6 +266,5 @@ class Trigger(Resource):
     RESOURCE_TYPE = "AWS::Glue::Trigger"
 
     Properties: TriggerProperties = attrib(
-        factory=TriggerProperties,
-        converter=create_object_converter(TriggerProperties),
+        factory=TriggerProperties, converter=create_object_converter(TriggerProperties)
     )

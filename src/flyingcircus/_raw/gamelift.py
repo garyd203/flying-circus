@@ -44,8 +44,7 @@ class Alias(Resource):
     RESOURCE_TYPE = "AWS::GameLift::Alias"
 
     Properties: AliasProperties = attrib(
-        factory=AliasProperties,
-        converter=create_object_converter(AliasProperties),
+        factory=AliasProperties, converter=create_object_converter(AliasProperties)
     )
 
 
@@ -68,8 +67,7 @@ class Build(Resource):
     RESOURCE_TYPE = "AWS::GameLift::Build"
 
     Properties: BuildProperties = attrib(
-        factory=BuildProperties,
-        converter=create_object_converter(BuildProperties),
+        factory=BuildProperties, converter=create_object_converter(BuildProperties)
     )
 
 
@@ -100,6 +98,5 @@ class Fleet(Resource):
     RESOURCE_TYPE = "AWS::GameLift::Fleet"
 
     Properties: FleetProperties = attrib(
-        factory=FleetProperties,
-        converter=create_object_converter(FleetProperties),
+        factory=FleetProperties, converter=create_object_converter(FleetProperties)
     )

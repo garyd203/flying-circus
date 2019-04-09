@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Certificate",
-    "CertificateProperties",
-]
+__all__ = ["Certificate", "CertificateProperties"]
 
 
 @attrs(**ATTRSCONFIG)

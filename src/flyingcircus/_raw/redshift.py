@@ -74,8 +74,7 @@ class Cluster(Resource):
     RESOURCE_TYPE = "AWS::Redshift::Cluster"
 
     Properties: ClusterProperties = attrib(
-        factory=ClusterProperties,
-        converter=create_object_converter(ClusterProperties),
+        factory=ClusterProperties, converter=create_object_converter(ClusterProperties)
     )
 
 

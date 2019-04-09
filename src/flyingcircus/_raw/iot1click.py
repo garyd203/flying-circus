@@ -43,8 +43,7 @@ class Device(Resource):
     RESOURCE_TYPE = "AWS::IoT1Click::Device"
 
     Properties: DeviceProperties = attrib(
-        factory=DeviceProperties,
-        converter=create_object_converter(DeviceProperties),
+        factory=DeviceProperties, converter=create_object_converter(DeviceProperties)
     )
 
 
@@ -92,6 +91,5 @@ class Project(Resource):
     RESOURCE_TYPE = "AWS::IoT1Click::Project"
 
     Properties: ProjectProperties = attrib(
-        factory=ProjectProperties,
-        converter=create_object_converter(ProjectProperties),
+        factory=ProjectProperties, converter=create_object_converter(ProjectProperties)
     )

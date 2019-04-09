@@ -60,8 +60,7 @@ class Api(Resource):
     RESOURCE_TYPE = "AWS::ApiGatewayV2::Api"
 
     Properties: ApiProperties = attrib(
-        factory=ApiProperties,
-        converter=create_object_converter(ApiProperties),
+        factory=ApiProperties, converter=create_object_converter(ApiProperties)
     )
 
 
@@ -201,8 +200,7 @@ class Model(Resource):
     RESOURCE_TYPE = "AWS::ApiGatewayV2::Model"
 
     Properties: ModelProperties = attrib(
-        factory=ModelProperties,
-        converter=create_object_converter(ModelProperties),
+        factory=ModelProperties, converter=create_object_converter(ModelProperties)
     )
 
 
@@ -234,8 +232,7 @@ class Route(Resource):
     RESOURCE_TYPE = "AWS::ApiGatewayV2::Route"
 
     Properties: RouteProperties = attrib(
-        factory=RouteProperties,
-        converter=create_object_converter(RouteProperties),
+        factory=RouteProperties, converter=create_object_converter(RouteProperties)
     )
 
 
@@ -291,6 +288,5 @@ class Stage(Resource):
     RESOURCE_TYPE = "AWS::ApiGatewayV2::Stage"
 
     Properties: StageProperties = attrib(
-        factory=StageProperties,
-        converter=create_object_converter(StageProperties),
+        factory=StageProperties, converter=create_object_converter(StageProperties)
     )

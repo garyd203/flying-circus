@@ -55,8 +55,7 @@ class Broker(Resource):
     RESOURCE_TYPE = "AWS::AmazonMQ::Broker"
 
     Properties: BrokerProperties = attrib(
-        factory=BrokerProperties,
-        converter=create_object_converter(BrokerProperties),
+        factory=BrokerProperties, converter=create_object_converter(BrokerProperties)
     )
 
 

@@ -49,8 +49,7 @@ class Fleet(Resource):
     RESOURCE_TYPE = "AWS::RoboMaker::Fleet"
 
     Properties: FleetProperties = attrib(
-        factory=FleetProperties,
-        converter=create_object_converter(FleetProperties),
+        factory=FleetProperties, converter=create_object_converter(FleetProperties)
     )
 
 
@@ -75,8 +74,7 @@ class Robot(Resource):
     RESOURCE_TYPE = "AWS::RoboMaker::Robot"
 
     Properties: RobotProperties = attrib(
-        factory=RobotProperties,
-        converter=create_object_converter(RobotProperties),
+        factory=RobotProperties, converter=create_object_converter(RobotProperties)
     )
 
 

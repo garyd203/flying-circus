@@ -76,8 +76,7 @@ class Filter(Resource):
     RESOURCE_TYPE = "AWS::GuardDuty::Filter"
 
     Properties: FilterProperties = attrib(
-        factory=FilterProperties,
-        converter=create_object_converter(FilterProperties),
+        factory=FilterProperties, converter=create_object_converter(FilterProperties)
     )
 
 
@@ -102,8 +101,7 @@ class IPSet(Resource):
     RESOURCE_TYPE = "AWS::GuardDuty::IPSet"
 
     Properties: IPSetProperties = attrib(
-        factory=IPSetProperties,
-        converter=create_object_converter(IPSetProperties),
+        factory=IPSetProperties, converter=create_object_converter(IPSetProperties)
     )
 
 
@@ -126,8 +124,7 @@ class Master(Resource):
     RESOURCE_TYPE = "AWS::GuardDuty::Master"
 
     Properties: MasterProperties = attrib(
-        factory=MasterProperties,
-        converter=create_object_converter(MasterProperties),
+        factory=MasterProperties, converter=create_object_converter(MasterProperties)
     )
 
 
@@ -153,8 +150,7 @@ class Member(Resource):
     RESOURCE_TYPE = "AWS::GuardDuty::Member"
 
     Properties: MemberProperties = attrib(
-        factory=MemberProperties,
-        converter=create_object_converter(MemberProperties),
+        factory=MemberProperties, converter=create_object_converter(MemberProperties)
     )
 
 

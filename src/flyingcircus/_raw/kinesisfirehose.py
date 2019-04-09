@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "DeliveryStream",
-    "DeliveryStreamProperties",
-]
+__all__ = ["DeliveryStream", "DeliveryStreamProperties"]
 
 
 @attrs(**ATTRSCONFIG)

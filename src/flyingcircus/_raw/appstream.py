@@ -86,8 +86,7 @@ class Fleet(Resource):
     RESOURCE_TYPE = "AWS::AppStream::Fleet"
 
     Properties: FleetProperties = attrib(
-        factory=FleetProperties,
-        converter=create_object_converter(FleetProperties),
+        factory=FleetProperties, converter=create_object_converter(FleetProperties)
     )
 
 
@@ -148,8 +147,7 @@ class Stack(Resource):
     RESOURCE_TYPE = "AWS::AppStream::Stack"
 
     Properties: StackProperties = attrib(
-        factory=StackProperties,
-        converter=create_object_converter(StackProperties),
+        factory=StackProperties, converter=create_object_converter(StackProperties)
     )
 
 
@@ -222,6 +220,5 @@ class User(Resource):
     RESOURCE_TYPE = "AWS::AppStream::User"
 
     Properties: UserProperties = attrib(
-        factory=UserProperties,
-        converter=create_object_converter(UserProperties),
+        factory=UserProperties, converter=create_object_converter(UserProperties)
     )

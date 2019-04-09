@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Alarm",
-    "AlarmProperties",
-    "Dashboard",
-    "DashboardProperties",
-]
+__all__ = ["Alarm", "AlarmProperties", "Dashboard", "DashboardProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -59,8 +54,7 @@ class Alarm(Resource):
     RESOURCE_TYPE = "AWS::CloudWatch::Alarm"
 
     Properties: AlarmProperties = attrib(
-        factory=AlarmProperties,
-        converter=create_object_converter(AlarmProperties),
+        factory=AlarmProperties, converter=create_object_converter(AlarmProperties)
     )
 
 

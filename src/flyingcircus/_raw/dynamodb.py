@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Table",
-    "TableProperties",
-]
+__all__ = ["Table", "TableProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -49,6 +46,5 @@ class Table(Resource):
     RESOURCE_TYPE = "AWS::DynamoDB::Table"
 
     Properties: TableProperties = attrib(
-        factory=TableProperties,
-        converter=create_object_converter(TableProperties),
+        factory=TableProperties, converter=create_object_converter(TableProperties)
     )

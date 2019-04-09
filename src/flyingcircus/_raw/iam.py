@@ -81,8 +81,7 @@ class Group(Resource):
     RESOURCE_TYPE = "AWS::IAM::Group"
 
     Properties: GroupProperties = attrib(
-        factory=GroupProperties,
-        converter=create_object_converter(GroupProperties),
+        factory=GroupProperties, converter=create_object_converter(GroupProperties)
     )
 
 
@@ -159,8 +158,7 @@ class Policy(Resource):
     RESOURCE_TYPE = "AWS::IAM::Policy"
 
     Properties: PolicyProperties = attrib(
-        factory=PolicyProperties,
-        converter=create_object_converter(PolicyProperties),
+        factory=PolicyProperties, converter=create_object_converter(PolicyProperties)
     )
 
 
@@ -187,8 +185,7 @@ class Role(Resource):
     RESOURCE_TYPE = "AWS::IAM::Role"
 
     Properties: RoleProperties = attrib(
-        factory=RoleProperties,
-        converter=create_object_converter(RoleProperties),
+        factory=RoleProperties, converter=create_object_converter(RoleProperties)
     )
 
 
@@ -239,8 +236,7 @@ class User(Resource):
     RESOURCE_TYPE = "AWS::IAM::User"
 
     Properties: UserProperties = attrib(
-        factory=UserProperties,
-        converter=create_object_converter(UserProperties),
+        factory=UserProperties, converter=create_object_converter(UserProperties)
     )
 
 

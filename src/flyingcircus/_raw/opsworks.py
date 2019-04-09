@@ -61,8 +61,7 @@ class App(Resource):
     RESOURCE_TYPE = "AWS::OpsWorks::App"
 
     Properties: AppProperties = attrib(
-        factory=AppProperties,
-        converter=create_object_converter(AppProperties),
+        factory=AppProperties, converter=create_object_converter(AppProperties)
     )
 
 
@@ -166,8 +165,7 @@ class Layer(Resource):
     RESOURCE_TYPE = "AWS::OpsWorks::Layer"
 
     Properties: LayerProperties = attrib(
-        factory=LayerProperties,
-        converter=create_object_converter(LayerProperties),
+        factory=LayerProperties, converter=create_object_converter(LayerProperties)
     )
 
 
@@ -212,8 +210,7 @@ class Stack(Resource):
     RESOURCE_TYPE = "AWS::OpsWorks::Stack"
 
     Properties: StackProperties = attrib(
-        factory=StackProperties,
-        converter=create_object_converter(StackProperties),
+        factory=StackProperties, converter=create_object_converter(StackProperties)
     )
 
 
@@ -262,6 +259,5 @@ class Volume(Resource):
     RESOURCE_TYPE = "AWS::OpsWorks::Volume"
 
     Properties: VolumeProperties = attrib(
-        factory=VolumeProperties,
-        converter=create_object_converter(VolumeProperties),
+        factory=VolumeProperties, converter=create_object_converter(VolumeProperties)
     )

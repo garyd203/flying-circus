@@ -75,8 +75,7 @@ class Macro(Resource):
     RESOURCE_TYPE = "AWS::CloudFormation::Macro"
 
     Properties: MacroProperties = attrib(
-        factory=MacroProperties,
-        converter=create_object_converter(MacroProperties),
+        factory=MacroProperties, converter=create_object_converter(MacroProperties)
     )
 
 
@@ -101,8 +100,7 @@ class Stack(Resource):
     RESOURCE_TYPE = "AWS::CloudFormation::Stack"
 
     Properties: StackProperties = attrib(
-        factory=StackProperties,
-        converter=create_object_converter(StackProperties),
+        factory=StackProperties, converter=create_object_converter(StackProperties)
     )
 
 

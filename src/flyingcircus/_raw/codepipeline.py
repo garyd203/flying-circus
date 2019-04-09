@@ -105,6 +105,5 @@ class Webhook(Resource):
     RESOURCE_TYPE = "AWS::CodePipeline::Webhook"
 
     Properties: WebhookProperties = attrib(
-        factory=WebhookProperties,
-        converter=create_object_converter(WebhookProperties),
+        factory=WebhookProperties, converter=create_object_converter(WebhookProperties)
     )

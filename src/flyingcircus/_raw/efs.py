@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "FileSystem",
-    "FileSystemProperties",
-    "MountTarget",
-    "MountTargetProperties",
-]
+__all__ = ["FileSystem", "FileSystemProperties", "MountTarget", "MountTargetProperties"]
 
 
 @attrs(**ATTRSCONFIG)

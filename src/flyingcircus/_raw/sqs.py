@@ -15,12 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Queue",
-    "QueueProperties",
-    "QueuePolicy",
-    "QueuePolicyProperties",
-]
+__all__ = ["Queue", "QueueProperties", "QueuePolicy", "QueuePolicyProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -51,8 +46,7 @@ class Queue(Resource):
     RESOURCE_TYPE = "AWS::SQS::Queue"
 
     Properties: QueueProperties = attrib(
-        factory=QueueProperties,
-        converter=create_object_converter(QueueProperties),
+        factory=QueueProperties, converter=create_object_converter(QueueProperties)
     )
 
 

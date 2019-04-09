@@ -100,8 +100,7 @@ class Model(Resource):
     RESOURCE_TYPE = "AWS::SageMaker::Model"
 
     Properties: ModelProperties = attrib(
-        factory=ModelProperties,
-        converter=create_object_converter(ModelProperties),
+        factory=ModelProperties, converter=create_object_converter(ModelProperties)
     )
 
 

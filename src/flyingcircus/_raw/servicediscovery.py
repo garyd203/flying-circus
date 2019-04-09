@@ -145,6 +145,5 @@ class Service(Resource):
     RESOURCE_TYPE = "AWS::ServiceDiscovery::Service"
 
     Properties: ServiceProperties = attrib(
-        factory=ServiceProperties,
-        converter=create_object_converter(ServiceProperties),
+        factory=ServiceProperties, converter=create_object_converter(ServiceProperties)
     )

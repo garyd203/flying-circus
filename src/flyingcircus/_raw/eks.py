@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "Cluster",
-    "ClusterProperties",
-]
+__all__ = ["Cluster", "ClusterProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -41,6 +38,5 @@ class Cluster(Resource):
     RESOURCE_TYPE = "AWS::EKS::Cluster"
 
     Properties: ClusterProperties = attrib(
-        factory=ClusterProperties,
-        converter=create_object_converter(ClusterProperties),
+        factory=ClusterProperties, converter=create_object_converter(ClusterProperties)
     )

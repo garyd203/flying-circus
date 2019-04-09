@@ -73,8 +73,7 @@ class Topic(Resource):
     RESOURCE_TYPE = "AWS::SNS::Topic"
 
     Properties: TopicProperties = attrib(
-        factory=TopicProperties,
-        converter=create_object_converter(TopicProperties),
+        factory=TopicProperties, converter=create_object_converter(TopicProperties)
     )
 
 

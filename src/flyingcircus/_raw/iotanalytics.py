@@ -46,8 +46,7 @@ class Channel(Resource):
     RESOURCE_TYPE = "AWS::IoTAnalytics::Channel"
 
     Properties: ChannelProperties = attrib(
-        factory=ChannelProperties,
-        converter=create_object_converter(ChannelProperties),
+        factory=ChannelProperties, converter=create_object_converter(ChannelProperties)
     )
 
 
@@ -72,8 +71,7 @@ class Dataset(Resource):
     RESOURCE_TYPE = "AWS::IoTAnalytics::Dataset"
 
     Properties: DatasetProperties = attrib(
-        factory=DatasetProperties,
-        converter=create_object_converter(DatasetProperties),
+        factory=DatasetProperties, converter=create_object_converter(DatasetProperties)
     )
 
 

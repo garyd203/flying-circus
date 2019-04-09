@@ -223,8 +223,7 @@ class EIP(Resource):
     RESOURCE_TYPE = "AWS::EC2::EIP"
 
     Properties: EIPProperties = attrib(
-        factory=EIPProperties,
-        converter=create_object_converter(EIPProperties),
+        factory=EIPProperties, converter=create_object_converter(EIPProperties)
     )
 
 
@@ -299,8 +298,7 @@ class FlowLog(Resource):
     RESOURCE_TYPE = "AWS::EC2::FlowLog"
 
     Properties: FlowLogProperties = attrib(
-        factory=FlowLogProperties,
-        converter=create_object_converter(FlowLogProperties),
+        factory=FlowLogProperties, converter=create_object_converter(FlowLogProperties)
     )
 
 
@@ -323,8 +321,7 @@ class Host(Resource):
     RESOURCE_TYPE = "AWS::EC2::Host"
 
     Properties: HostProperties = attrib(
-        factory=HostProperties,
-        converter=create_object_converter(HostProperties),
+        factory=HostProperties, converter=create_object_converter(HostProperties)
     )
 
 
@@ -637,8 +634,7 @@ class Route(Resource):
     RESOURCE_TYPE = "AWS::EC2::Route"
 
     Properties: RouteProperties = attrib(
-        factory=RouteProperties,
-        converter=create_object_converter(RouteProperties),
+        factory=RouteProperties, converter=create_object_converter(RouteProperties)
     )
 
 
@@ -800,8 +796,7 @@ class Subnet(Resource):
     RESOURCE_TYPE = "AWS::EC2::Subnet"
 
     Properties: SubnetProperties = attrib(
-        factory=SubnetProperties,
-        converter=create_object_converter(SubnetProperties),
+        factory=SubnetProperties, converter=create_object_converter(SubnetProperties)
     )
 
 
@@ -995,7 +990,9 @@ class TransitGatewayRouteTableAssociation(Resource):
 
     Properties: TransitGatewayRouteTableAssociationProperties = attrib(
         factory=TransitGatewayRouteTableAssociationProperties,
-        converter=create_object_converter(TransitGatewayRouteTableAssociationProperties),
+        converter=create_object_converter(
+            TransitGatewayRouteTableAssociationProperties
+        ),
     )
 
 
@@ -1018,7 +1015,9 @@ class TransitGatewayRouteTablePropagation(Resource):
 
     Properties: TransitGatewayRouteTablePropagationProperties = attrib(
         factory=TransitGatewayRouteTablePropagationProperties,
-        converter=create_object_converter(TransitGatewayRouteTablePropagationProperties),
+        converter=create_object_converter(
+            TransitGatewayRouteTablePropagationProperties
+        ),
     )
 
 
@@ -1068,8 +1067,7 @@ class VPC(Resource):
     RESOURCE_TYPE = "AWS::EC2::VPC"
 
     Properties: VPCProperties = attrib(
-        factory=VPCProperties,
-        converter=create_object_converter(VPCProperties),
+        factory=VPCProperties, converter=create_object_converter(VPCProperties)
     )
 
 
@@ -1370,8 +1368,7 @@ class Volume(Resource):
     RESOURCE_TYPE = "AWS::EC2::Volume"
 
     Properties: VolumeProperties = attrib(
-        factory=VolumeProperties,
-        converter=create_object_converter(VolumeProperties),
+        factory=VolumeProperties, converter=create_object_converter(VolumeProperties)
     )
 
 

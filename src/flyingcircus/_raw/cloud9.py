@@ -15,10 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = [
-    "EnvironmentEC2",
-    "EnvironmentEC2Properties",
-]
+__all__ = ["EnvironmentEC2", "EnvironmentEC2Properties"]
 
 
 @attrs(**ATTRSCONFIG)
