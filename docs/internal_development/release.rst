@@ -22,6 +22,11 @@ for some background and guidance. Or just do the following steps
 
       git checkout master
       git pull
+#. Run black to ensure everything is correctly formatted
+
+   .. code-block:: bash
+
+      black --check src tests
 #. Create a fresh venv and run all tests (including integration tests)
 
    .. code-block:: bash

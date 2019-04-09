@@ -1,5 +1,6 @@
 # Python dependencies for development work on the flying-circus library
 attrs==18.2.0
+black==19.3b0
 boto3==1.4.8
 click==6.7
 hypothesis==3.33.0
