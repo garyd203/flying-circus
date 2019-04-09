@@ -11,11 +11,16 @@ import json
 import logging
 import os.path
 
+import black
 import click
 import inflection
 from jinja2 import FileSystemLoader, Environment
 
 LOGGER = logging.getLogger(os.path.splitext(os.path.basename(__file__))[0])
+
+BLACK_SETTINGS = black.FileMode(
+    target_versions={black.TargetVersion.PY36, black.TargetVersion.PY37}
+)
 
 #: Lookup table of documentation URL's for AWS services. This information does
 #: not appear to be in the specification, and does not have a deterministic URL.
@@ -270,7 +275,10 @@ def generate_modules(packagedir, specification):
         raw_module_name = os.path.join(raw_dirname, service["module_name"] + ".py")
         with open(raw_module_name, "w") as fp:
             LOGGER.debug("Generating raw module %s.py", service["module_name"])
-            fp.write(raw_template.render(service=service))
+
+            rendered = raw_template.render(service=service)
+            formatted = black.format_str(rendered, mode=BLACK_SETTINGS)
+            fp.write(formatted)
 
         # Ensure that the "service" module exists, and pre-populate it with
         # the boilerplate if it doesn't
@@ -280,7 +288,9 @@ def generate_modules(packagedir, specification):
         if not os.path.exists(service_module_name):
             with open(service_module_name, "w") as fp:
                 LOGGER.debug("Generating service module %s.py", service["module_name"])
-                fp.write(service_template.render(service=service))
+                rendered = service_template.render(service=service)
+                formatted = black.format_str(rendered, mode=BLACK_SETTINGS)
+                fp.write(formatted)
 
 
 if __name__ == "__main__":
