@@ -38,9 +38,16 @@ class TestResourceSpecialAttributes:
         attribs = iter(data)
 
         # Verify
-        assert list(attribs) == ["Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy",
-                                 "UpdateReplacePolicy", "DeletionPolicy",
-                                 "Properties"]
+        assert list(attribs) == [
+            "Type",
+            "DependsOn",
+            "Metadata",
+            "CreationPolicy",
+            "UpdatePolicy",
+            "UpdateReplacePolicy",
+            "DeletionPolicy",
+            "Properties",
+        ]
 
     # Type
     # ----
@@ -63,7 +70,9 @@ class TestResourceSpecialAttributes:
         @attrs(**ATTRSCONFIG)
         class BrokenResourceClass(Resource):
             # RESOURCE_TYPE = "NameSpace::Service::Resource"
-            Properties: SimpleResourceProperties = attrib(factory=SimpleResourceProperties)
+            Properties: SimpleResourceProperties = attrib(
+                factory=SimpleResourceProperties
+            )
 
         with pytest.raises(TypeError, match=r"BrokenResourceClass.*RESOURCE_TYPE"):
             _ = BrokenResourceClass()
@@ -101,10 +110,7 @@ class TestResourceSpecialAttributes:
     # Optional Attributes
     # -------------------
 
-    @pytest.mark.parametrize("fieldname", [
-        "CreationPolicy",
-        "UpdatePolicy",
-    ])
+    @pytest.mark.parametrize("fieldname", ["CreationPolicy", "UpdatePolicy"])
     def test_optional_attribute_does_not_exist_on_standard_resource(self, fieldname):
         # Setup
         data = SimpleResource()
@@ -140,21 +146,17 @@ class TestIsRetained:
         assert resource.is_retained is False
 
     def test_is_true_when_underlying_policies_are_both_retain(self):
-        resource = SimpleResource(
-            DeletionPolicy="Retain",
-            UpdateReplacePolicy="Retain",
-        )
+        resource = SimpleResource(DeletionPolicy="Retain", UpdateReplacePolicy="Retain")
 
         assert resource.is_retained is True
 
     @given(aws_deletion_policy_strategy(), aws_deletion_policy_strategy())
-    def test_is_false_when_underlying_policies_are_not_both_retain(self, deletion, update):
+    def test_is_false_when_underlying_policies_are_not_both_retain(
+        self, deletion, update
+    ):
         assume(deletion != "Retain" and update != "Retain")
 
-        resource = SimpleResource(
-            DeletionPolicy=deletion,
-            UpdateReplacePolicy=update,
-        )
+        resource = SimpleResource(DeletionPolicy=deletion, UpdateReplacePolicy=update)
 
         assert resource.is_retained is False
 
@@ -173,10 +175,7 @@ class TestIsRetained:
     @given(aws_deletion_policy_strategy(), aws_deletion_policy_strategy())
     def test_setting_to_false_should_remove_underlying_policies(self, deletion, update):
         # Setup
-        resource = SimpleResource(
-            DeletionPolicy=deletion,
-            UpdateReplacePolicy=update,
-        )
+        resource = SimpleResource(DeletionPolicy=deletion, UpdateReplacePolicy=update)
 
         # Exercise
         resource.is_retained = False
@@ -312,14 +311,11 @@ class TestTagging(BaseTaggingTest):
         # Verify
         assert not tagged
 
-    @pytest.mark.parametrize(
-        "name",
-        [
-            "cognito.UserPool",
-        ],
-    )
+    @pytest.mark.parametrize("name", ["cognito.UserPool"])
     @parametrize_tagging_techniques()
-    def test_resource_with_nonstandard_tag_property_is_supported(self, name: str, apply_tags: callable):
+    def test_resource_with_nonstandard_tag_property_is_supported(
+        self, name: str, apply_tags: callable
+    ):
         # Setup: Create a resource of this type
         modulename, classname = name.rsplit(".", 1)
         module = importlib.import_module("flyingcircus.service." + modulename)
@@ -335,7 +331,9 @@ class TestTagging(BaseTaggingTest):
         assert res.is_taggable is True, "This resource type should be taggable"
         assert res.get_tag("Foo") == "1", "Tags should be saved on the resource"
         assert res.get_tag("Bar") == "3", "Tags should be updated on the resource"
-        assert not hasattr(res.Properties, "Tags"), "Tags should not be stored on the 'Tags' property"
+        assert not hasattr(
+            res.Properties, "Tags"
+        ), "Tags should not be stored on the 'Tags' property"
 
 
 class TestNameAccess:
@@ -427,7 +425,8 @@ class TestLogicalName:
         output = stack.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             AWSTemplateFormatVersion: '2010-09-09'
             Resources:
@@ -436,7 +435,8 @@ class TestLogicalName:
                 Type: NameSpace::Service::SimpleResource
                 Properties:
                   props: 42
-            """)
+            """
+        )
 
     def test_non_resource_cannot_be_found(self):
         # Setup

@@ -9,7 +9,8 @@ from ..validation_helper import AwsTemplateValidation
 class TestCpuAutoScalingGroup:
     """Test the behaviour of a CPU-based auto-scaling group."""
 
-    ASG_WITH_CPU_YAML = dedent("""
+    ASG_WITH_CPU_YAML = dedent(
+        """
         ---
         AWSTemplateFormatVersion: '2010-09-09'
         Description: |
@@ -80,7 +81,10 @@ class TestCpuAutoScalingGroup:
               AutoScalingGroupName: !Ref AutoScalingGroup
               Cooldown: 1
               ScalingAdjustment: 1
-    """.format(flyingcircus.__version__))
+    """.format(
+            flyingcircus.__version__
+        )
+    )
 
     def test_yaml(self):
         stack = autoscaling_group_by_cpu(low=49, high=74)

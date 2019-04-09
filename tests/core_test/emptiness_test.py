@@ -1,6 +1,11 @@
 """Tests for the emptiness helper functions."""
 
-from flyingcircus.core import is_non_empty_attribute, remove_empty_values_from_attribute, EMPTY_LIST, EMPTY_DICT
+from flyingcircus.core import (
+    is_non_empty_attribute,
+    remove_empty_values_from_attribute,
+    EMPTY_LIST,
+    EMPTY_DICT,
+)
 from .common import DualAttributeObject
 from .common import ZeroAttributeObject
 
@@ -33,13 +38,13 @@ class TestEmptyAttribute:
         assert is_non_empty_attribute({}) is False
 
     def test_non_empty_dictionary_is_not_empty(self):
-        assert is_non_empty_attribute({'a': 1}) is True
+        assert is_non_empty_attribute({"a": 1}) is True
 
     def test_non_empty_dictionary_with_only_empty_values_is_empty(self):
-        assert is_non_empty_attribute({'a': {}, 'b': [[]]}) is False
+        assert is_non_empty_attribute({"a": {}, "b": [[]]}) is False
 
     def test_non_empty_dictionary_with_some_empty_values_is_not_empty(self):
-        assert is_non_empty_attribute({'a': {}, 'b': 1}) is True
+        assert is_non_empty_attribute({"a": {}, "b": 1}) is True
 
     def test_awsobject_with_no_attributes_is_empty(self):
         assert is_non_empty_attribute(ZeroAttributeObject()) is False
@@ -74,7 +79,7 @@ class TestRemoveEmptyAttributes:
         assert cleaned is data
 
     def test_awsobjects_are_not_modified(self):
-        data = DualAttributeObject(one='hello', two=[1, []])
+        data = DualAttributeObject(one="hello", two=[1, []])
         cleaned = remove_empty_values_from_attribute(data)
         assert cleaned is data
 
@@ -84,6 +89,6 @@ class TestRemoveEmptyAttributes:
         assert cleaned == [1]
 
     def test_empty_dictionary_values_are_removed(self):
-        data = {'a': 1, 'b': []}
+        data = {"a": 1, "b": []}
         cleaned = remove_empty_values_from_attribute(data)
-        assert cleaned == {'a': 1}
+        assert cleaned == {"a": 1}

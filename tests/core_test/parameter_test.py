@@ -18,11 +18,13 @@ class TestBasicParameterBehaviour:
         param = Parameter(Type="String", Default="Hello world")
         output = param.export("yaml")
 
-        assert output == dedent("""
+        assert output == dedent(
+            """
         ---
         Type: String
         Default: Hello world
-        """)
+        """
+        )
 
 
 class TestPseudoParameter:
@@ -41,10 +43,12 @@ class TestPseudoParameter:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: AWS::FakeTestValue
-            """)
+            """
+        )
 
     def test_cannot_be_exported_as_yaml_directly(self):
         value = PseudoParameter("AWS::FakeTestValue")

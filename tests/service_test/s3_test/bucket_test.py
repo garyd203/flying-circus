@@ -10,8 +10,12 @@ class TestEncryption(object):
 
     def _verify_has_kms_encryption(self, bucket: Bucket, keyid):
         """Verify that this bucket has KMS-managed encryption with the specified key."""
-        encryption_rules = bucket.Properties["BucketEncryption"]["ServerSideEncryptionConfiguration"]
-        assert len(encryption_rules) == 1, "There should only be one ServerSideEncryptionRule"
+        encryption_rules = bucket.Properties["BucketEncryption"][
+            "ServerSideEncryptionConfiguration"
+        ]
+        assert (
+            len(encryption_rules) == 1
+        ), "There should only be one ServerSideEncryptionRule"
 
         sse_config = encryption_rules[0]["ServerSideEncryptionByDefault"]
         assert sse_config["SSEAlgorithm"] == "aws:kms"
@@ -19,8 +23,12 @@ class TestEncryption(object):
 
     def _verify_has_s3_encryption(self, bucket: Bucket):
         """Verify that this bucket has S3-managed encryption"""
-        encryption_rules = bucket.Properties["BucketEncryption"]["ServerSideEncryptionConfiguration"]
-        assert len(encryption_rules) == 1, "There should only be one ServerSideEncryptionRule"
+        encryption_rules = bucket.Properties["BucketEncryption"][
+            "ServerSideEncryptionConfiguration"
+        ]
+        assert (
+            len(encryption_rules) == 1
+        ), "There should only be one ServerSideEncryptionRule"
 
         sse_config = encryption_rules[0]["ServerSideEncryptionByDefault"]
         assert sse_config["SSEAlgorithm"] == "AES256"
@@ -100,24 +108,22 @@ class TestEncryption(object):
 
     def test_replaces_existing_multiple_rule_configuration(self):
         # Setup
-        bucket = Bucket(Properties={
-            "BucketEncryption": {
-                "ServerSideEncryptionConfiguration": [
-                    {
-                        "ServerSideEncryptionByDefault": {
-                            "KMSMasterKeyID": "aws/s3",
-                            "SSEAlgorithm": "aws:kms",
-                        }
-                    },
-                    # Note that this is invalid, but hey!
-                    {
-                        "ServerSideEncryptionByDefault": {
-                            "SSEAlgorithm": "AES256",
-                        }
-                    },
-                ],
-            },
-        })
+        bucket = Bucket(
+            Properties={
+                "BucketEncryption": {
+                    "ServerSideEncryptionConfiguration": [
+                        {
+                            "ServerSideEncryptionByDefault": {
+                                "KMSMasterKeyID": "aws/s3",
+                                "SSEAlgorithm": "aws:kms",
+                            }
+                        },
+                        # Note that this is invalid, but hey!
+                        {"ServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}},
+                    ]
+                }
+            }
+        )
 
         keyid = "arn:aws:kms:us-east-1:123456789012:key/52a6b44c-8840-41e3-86cd-78cbb022af5e"
 
@@ -132,10 +138,7 @@ class TestVersioning(object):
     """Verify the behaviour of the `Bucket.versioning` property"""
 
     #: Valid values for the CloudFormation property "VersioningConfiguration.Status"
-    STATUS_VALUES = [
-        ("Enabled", True),
-        ("Suspended", False),
-    ]
+    STATUS_VALUES = [("Enabled", True), ("Suspended", False)]
 
     def test_should_be_false_when_no_property_is_set(self):
         bucket = Bucket()
@@ -143,20 +146,14 @@ class TestVersioning(object):
 
     @pytest.mark.parametrize(("status", "is_enabled"), STATUS_VALUES)
     def test_should_get_value_from_underlying_property(self, status, is_enabled):
-        bucket = Bucket(Properties=dict(
-            VersioningConfiguration=dict(
-                Status=status,
-            ),
-        ))
+        bucket = Bucket(Properties=dict(VersioningConfiguration=dict(Status=status)))
 
         assert bucket.versioning is is_enabled
 
     def test_get_should_raise_error_when_existing_property_is_invalid(self):
-        bucket = Bucket(Properties=dict(
-            VersioningConfiguration=dict(
-                Status="ItsComplicated",
-            ),
-        ))
+        bucket = Bucket(
+            Properties=dict(VersioningConfiguration=dict(Status="ItsComplicated"))
+        )
 
         with pytest.raises(ValueError, match=r"ItsComplicated"):
             _ = bucket.versioning
@@ -170,11 +167,9 @@ class TestVersioning(object):
 
     def test_set_should_override_existing_property(self):
         # Setup
-        bucket = Bucket(Properties=dict(
-            VersioningConfiguration=dict(
-                Status="Suspended",
-            ),
-        ))
+        bucket = Bucket(
+            Properties=dict(VersioningConfiguration=dict(Status="Suspended"))
+        )
 
         # Exercise
         bucket.versioning = True

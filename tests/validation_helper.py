@@ -23,9 +23,17 @@ class AwsTemplateValidation:
             try:
                 cfclient.validate_template(TemplateBody=template)
             except ClientError as ex:
-                print("Error validating template for `{}`".format(stack.Description.replace('\n', ' ')))
+                print(
+                    "Error validating template for `{}`".format(
+                        stack.Description.replace("\n", " ")
+                    )
+                )
                 error_data = getattr(ex, "response", {}).get("Error", None)
                 if error_data and error_data["Code"] == "ValidationError":
-                    pytest.fail("{} template is invalid: {}".format(stack.__class__.__name__, error_data["Message"], ))
+                    pytest.fail(
+                        "{} template is invalid: {}".format(
+                            stack.__class__.__name__, error_data["Message"]
+                        )
+                    )
                 else:
                     raise

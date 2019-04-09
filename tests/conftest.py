@@ -19,7 +19,8 @@ def pytest_collection_modifyitems(config, items):
     # Skip AWS integration tests. This relies on a pytest marker
     if not config.getoption("--run-aws-integration-tests"):
         skip_aws_integration = pytest.mark.skip(
-            reason="Don't attempt to run tests that need AWS authentication and network access")
+            reason="Don't attempt to run tests that need AWS authentication and network access"
+        )
         for item in items:
             if "aws_integration" in item.keywords:
                 item.add_marker(skip_aws_integration)

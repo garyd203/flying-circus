@@ -33,18 +33,21 @@ class ZeroAttributeObject(AWSObject):
     This is the same as using AWSObject directly, but naming it explicitly
     makes the test's intention clearer.
     """
+
     pass
 
 
 @attrs(**ATTRSCONFIG)
 class SingleAttributeObject(AWSObject):
     """Test object with 1 attribute"""
+
     one = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
 class DualAttributeObject(AWSObject):
     """Test object with 2 attributes"""
+
     one = attrib(default=None)
     two = attrib(default=None)
 
@@ -52,6 +55,7 @@ class DualAttributeObject(AWSObject):
 @attrs(**ATTRSCONFIG)
 class MixedAttributeObject(AWSObject):
     """Test object with AWS attributes and internal attributes"""
+
     one = attrib(default=None)
     two = attrib(default=None)
     _a = attrib(default=None)
@@ -74,14 +78,16 @@ class InheritedAttributeObject(SingleAttributeObject):
 @st.composite
 def aws_attribute_strategy(draw):
     """A strategy that produces an attribute for an AWS CFN object."""
-    return draw(st.one_of(
-        st.text(),
-        st.integers(),
-        st.floats(),
-        st.booleans(),
-        st.dictionaries(st.text(), st.text()),
-        aws_object_strategy(),
-    ))
+    return draw(
+        st.one_of(
+            st.text(),
+            st.integers(),
+            st.floats(),
+            st.booleans(),
+            st.dictionaries(st.text(), st.text()),
+            aws_object_strategy(),
+        )
+    )
 
 
 @st.composite
@@ -89,24 +95,28 @@ def aws_object_strategy(draw):
     """A strategy that produces an AWS CFN object."""
     attributes = draw(st.sets(aws_logical_name_strategy()))
 
-    @attrs(
-        these={name: attrib(default=None) for name in attributes},
-        **ATTRSCONFIG
-    )
+    @attrs(these={name: attrib(default=None) for name in attributes}, **ATTRSCONFIG)
     class HypothesisedAWSObject(AWSObject):
         pass
 
-    return draw(st.builds(HypothesisedAWSObject, **{name: aws_attribute_strategy() for name in attributes}))
+    return draw(
+        st.builds(
+            HypothesisedAWSObject,
+            **{name: aws_attribute_strategy() for name in attributes},
+        )
+    )
 
 
 @st.composite
 def aws_logical_name_strategy(draw):
     """A strategy that produces a valid logical name for an AWS Stack object"""
-    return draw(st.builds(
-        lambda a, b: a + b,
-        st.text("ABCDEFGHIJKLMNOPQRSTUVWXYZ", min_size=1, max_size=1),
-        st.text("abcdefghijklmnnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"),
-    ))
+    return draw(
+        st.builds(
+            lambda a, b: a + b,
+            st.text("ABCDEFGHIJKLMNOPQRSTUVWXYZ", min_size=1, max_size=1),
+            st.text("abcdefghijklmnnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"),
+        )
+    )
 
 
 @st.composite
@@ -126,6 +136,7 @@ class SimpleResourceProperties(ResourceProperties):
 @attrs(**ATTRSCONFIG)
 class SimpleResource(Resource):
     """A minimal resource."""
+
     RESOURCE_TYPE = "NameSpace::Service::SimpleResource"
     Properties: SimpleResourceProperties = attrib(factory=SimpleResourceProperties)
 
@@ -139,6 +150,7 @@ class FullResourceProperties(ResourceProperties):
 @attrs(**ATTRSCONFIG)
 class FullResource(Resource):
     """A basic resource with all Resource attributes defined."""
+
     RESOURCE_TYPE = "NameSpace::Service::FullResource"
 
     CreationPolicy: Dict[str, Any] = attrib(factory=dict)
@@ -175,8 +187,7 @@ class BaseTaggingTest:
     # --------------
 
     def verify_tag_doesnt_exist(self, res, key, value):
-        if not hasattr(res, "Properties") \
-                or not hasattr(res.Properties, "Tags"):
+        if not hasattr(res, "Properties") or not hasattr(res.Properties, "Tags"):
             return
         for tag in getattr(res.Properties, "Tags", []):
             assert not (tag["Key"] == key and tag["Value"] == value)
@@ -193,13 +204,10 @@ def parametrize_tagging_techniques():
     """Decorator that parametrizes tests across the two techniques of applying tags."""
 
     return pytest.mark.parametrize(
-        argnames='apply_tags',
+        argnames="apply_tags",
         argvalues=[
             lambda res, key, value: res.tag({key: value}),
             lambda res, key, value: res.tag(**{key: value}),
         ],
-        ids=[
-            "dict",
-            "keywords"
-        ],
+        ids=["dict", "keywords"],
     )

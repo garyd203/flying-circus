@@ -28,15 +28,10 @@ def test_all_exported_classes_have_slots():
     the well-defined behaviour of our types.
     """
     # Modules to inspect
-    public_modules = [
-        flyingcircus.core,
-        flyingcircus.intrinsic_function,
-    ]
+    public_modules = [flyingcircus.core, flyingcircus.intrinsic_function]
 
     # Packages to inspect
-    public_packages = [
-        flyingcircus.service,
-    ]
+    public_packages = [flyingcircus.service]
 
     # Get public module from public packages
     for package in public_packages:
@@ -71,8 +66,8 @@ def test_all_exported_classes_have_slots():
 
             nonexistent_attrib_name = "ThisAttributeDoesNotExist"
             with pytest.raises(
-                    AttributeError,
-                    message=f"{full_class_name} hasn't defined __slots__",
-                    match=f"{obj.__name__}.*{nonexistent_attrib_name}"
+                AttributeError,
+                message=f"{full_class_name} hasn't defined __slots__",
+                match=f"{obj.__name__}.*{nonexistent_attrib_name}",
             ):
                 setattr(instance, nonexistent_attrib_name, 42)
