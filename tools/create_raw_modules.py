@@ -15,9 +15,7 @@ import click
 import inflection
 from jinja2 import FileSystemLoader, Environment
 
-LOGGER = logging.getLogger(
-    os.path.splitext(os.path.basename(__file__))[0]
-)
+LOGGER = logging.getLogger(os.path.splitext(os.path.basename(__file__))[0])
 
 #: Lookup table of documentation URL's for AWS services. This information does
 #: not appear to be in the specification, and does not have a deterministic URL.
@@ -108,8 +106,8 @@ AWS_SERVICE_DOCUMENTATION_URLS = {
 #: Lookup table of documentation URL's for non-AWS services.
 OTHER_SERVICE_DOCUMENTATION_URLS = {
     "Alexa": {
-        "ASK": "https://developer.amazon.com/docs/ask-overviews/build-skills-with-the-alexa-skills-kit.html",
-    },
+        "ASK": "https://developer.amazon.com/docs/ask-overviews/build-skills-with-the-alexa-skills-kit.html"
+    }
 }
 
 #: AWS CFN resources that have non-standard attributes.
@@ -133,19 +131,22 @@ SCRIPTDIR = os.path.dirname(__file__)
 
 
 @click.command()
-@click.argument("packagedir",
-                metavar="FCPACKAGE",
-                type=click.Path(exists=True, file_okay=False),
-                required=True,
-                )
-@click.option("--specification", "-s",
-              type=click.Path(exists=True, dir_okay=False),
-              default=os.path.join(
-                  SCRIPTDIR, "..", "contrib", "CloudFormationResourceSpecification.json"
-              ),
-              help="JSON resource specification from Amazon Web Services.",
-              show_default=True,
-              )
+@click.argument(
+    "packagedir",
+    metavar="FCPACKAGE",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+)
+@click.option(
+    "--specification",
+    "-s",
+    type=click.Path(exists=True, dir_okay=False),
+    default=os.path.join(
+        SCRIPTDIR, "..", "contrib", "CloudFormationResourceSpecification.json"
+    ),
+    help="JSON resource specification from Amazon Web Services.",
+    show_default=True,
+)
 def generate_modules(packagedir, specification):
     """Create the basic Python modules in the `_raw` package,
     and ensure the accompanying modules in the `service` package exist.
@@ -159,66 +160,87 @@ def generate_modules(packagedir, specification):
     assert os.path.isdir(raw_dirname), "The 'flyingcircus._raw' package does not exist"
 
     service_dirname = os.path.join(packagedir, "service")
-    assert os.path.isdir(service_dirname), "The 'flyingcircus.service' package does not exist"
+    assert os.path.isdir(
+        service_dirname
+    ), "The 'flyingcircus.service' package does not exist"
 
     # Load data as a python dictionary
     with open(specification, "r") as fp:
         all_data = json.load(fp)
 
-    assert set(all_data.keys()) == {"PropertyTypes", "ResourceSpecificationVersion", "ResourceTypes"}, \
-        "Found an unknown top-level key"
+    assert set(all_data.keys()) == {
+        "PropertyTypes",
+        "ResourceSpecificationVersion",
+        "ResourceTypes",
+    }, "Found an unknown top-level key"
 
     # Group the data by AWS service and calculate additional data
     services = {}
 
     for resource_type, resource_data in all_data["ResourceTypes"].items():
         # Break down the resource type
-        assert resource_type.count("::") == 2, "Fully qualified resource type should have 3 components"
+        assert (
+            resource_type.count("::") == 2
+        ), "Fully qualified resource type should have 3 components"
         provider_name, service_name, resource_name = resource_type.split("::")
 
         if provider_name == "AWS":
             doc_url = AWS_SERVICE_DOCUMENTATION_URLS.get(service_name)
         else:
             # TODO #165: need a new module naming scheme to differentiate top-level providers
-            doc_url = OTHER_SERVICE_DOCUMENTATION_URLS.get(provider_name, {}).get(service_name)
-            LOGGER.warning("Skipping '%s' because we don't handle non-AWS providers yet", resource_type)
+            doc_url = OTHER_SERVICE_DOCUMENTATION_URLS.get(provider_name, {}).get(
+                service_name
+            )
+            LOGGER.warning(
+                "Skipping '%s' because we don't handle non-AWS providers yet",
+                resource_type,
+            )
             continue
 
         if not doc_url:
-            LOGGER.error("Skipping '%s' because we don't know how to document that service", resource_type)
+            LOGGER.error(
+                "Skipping '%s' because we don't know how to document that service",
+                resource_type,
+            )
             continue
 
         # Ensure the service data exists
-        service = services.setdefault(service_name, {
-            "documentation": {
-                "url": doc_url,
+        service = services.setdefault(
+            service_name,
+            {
+                "documentation": {"url": doc_url},
+                "module_name": service_name.lower(),
+                "name": service_name,
+                "resources": {},
+                "typing_imports": set(),
             },
-            "module_name": service_name.lower(),
-            "name": service_name,
-            "resources": {},
-            "typing_imports": set(),
-        })
+        )
 
         # Avoid namespace clashes
         if service["module_name"] in ["lambda"]:
             service["module_name"] += "_"
 
         # Augment the resource data and add it to the service
-        assert resource_name not in service["resources"], "resource type is defined twice"
+        assert (
+            resource_name not in service["resources"]
+        ), "resource type is defined twice"
         service["resources"][resource_name] = resource_data
 
-        resource_extra_attributes = RESOURCES_WITH_EXTRA_ATTRIBUTES.get(resource_type, [])
-        assert not (set(resource_extra_attributes) - {"CreationPolicy", "UpdatePolicy"}), \
-            "We have defined extra AWS attributes that we don't know what to do with yet"
+        resource_extra_attributes = RESOURCES_WITH_EXTRA_ATTRIBUTES.get(
+            resource_type, []
+        )
+        assert not (
+            set(resource_extra_attributes) - {"CreationPolicy", "UpdatePolicy"}
+        ), "We have defined extra AWS attributes that we don't know what to do with yet"
 
-        resource_data.update({
-            "friendly_name": inflection.titleize(resource_name),
-            "has_creation_policy": "CreationPolicy" in resource_extra_attributes,
-            "has_update_policy": "UpdatePolicy" in resource_extra_attributes,
-            "type": {
-                "fullname": resource_type,
-            },
-        })
+        resource_data.update(
+            {
+                "friendly_name": inflection.titleize(resource_name),
+                "has_creation_policy": "CreationPolicy" in resource_extra_attributes,
+                "has_update_policy": "UpdatePolicy" in resource_extra_attributes,
+                "type": {"fullname": resource_type},
+            }
+        )
 
         if resource_data["has_creation_policy"]:
             service["typing_imports"].update(["Any", "Dict"])
@@ -231,14 +253,18 @@ def generate_modules(packagedir, specification):
     # Create a Python module for each AWS service, with a Python class for
     # each AWS resource type
     env = Environment(
-        loader=FileSystemLoader(SCRIPTDIR),  # TODO put our template into a "standard" location for Jinja
+        loader=FileSystemLoader(
+            SCRIPTDIR
+        )  # TODO put our template into a "standard" location for Jinja
     )
-    raw_template = env.get_template('raw_module.py.jinja2')
-    service_template = env.get_template('service_module.py.jinja2')
+    raw_template = env.get_template("raw_module.py.jinja2")
+    service_template = env.get_template("service_module.py.jinja2")
 
     for service_name, service in sorted(services.items()):
         if not service["documentation"]["url"]:
-            LOGGER.warning("Service %s does not have a documentation URL configured", service_name)
+            LOGGER.warning(
+                "Service %s does not have a documentation URL configured", service_name
+            )
 
         # Create or update the "raw" python module
         raw_module_name = os.path.join(raw_dirname, service["module_name"] + ".py")
@@ -248,14 +274,16 @@ def generate_modules(packagedir, specification):
 
         # Ensure that the "service" module exists, and pre-populate it with
         # the boilerplate if it doesn't
-        service_module_name = os.path.join(service_dirname, service["module_name"] + ".py")
+        service_module_name = os.path.join(
+            service_dirname, service["module_name"] + ".py"
+        )
         if not os.path.exists(service_module_name):
             with open(service_module_name, "w") as fp:
                 LOGGER.debug("Generating service module %s.py", service["module_name"])
                 fp.write(service_template.render(service=service))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig()
     LOGGER.setLevel(logging.INFO)
 
