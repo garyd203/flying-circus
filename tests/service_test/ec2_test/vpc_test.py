@@ -22,10 +22,15 @@ class TestVpcEnsureInternetGatewayExists:
             unique (bool): Whether this should be the only resource of it's
                 type in the stack.
         """
-        all_resources = [res for res in stack.Resources.values() if isinstance(res, resource.__class__)]
+        all_resources = [
+            res
+            for res in stack.Resources.values()
+            if isinstance(res, resource.__class__)
+        ]
         if unique:
-            assert len(all_resources) == 1, \
-                "Stack contains several {} resources".format(resource.Type)
+            assert (
+                len(all_resources) == 1
+            ), "Stack contains several {} resources".format(resource.Type)
 
         identical_resources = [res for res in all_resources if res is resource]
         assert len(identical_resources) == 1, "Resource should be in stack exactly once"
@@ -36,7 +41,9 @@ class TestVpcEnsureInternetGatewayExists:
 
         assert vpc.internet_gateway_attachment is not None
         assert isinstance(vpc.internet_gateway_attachment, VPCGatewayAttachment)
-        assert vpc.internet_gateway_attachment.Properties["InternetGatewayId"] == Ref(vpc.internet_gateway)
+        assert vpc.internet_gateway_attachment.Properties["InternetGatewayId"] == Ref(
+            vpc.internet_gateway
+        )
         assert vpc.internet_gateway_attachment.Properties["VpcId"] == Ref(vpc)
 
     def test_should_create_resources_in_stack(self):
@@ -50,7 +57,9 @@ class TestVpcEnsureInternetGatewayExists:
         # Verify
         self._verify_vpc_has_valid_internet_gateway(vpc)
         self._verify_resource_is_in_stack(vpc.internet_gateway, stack, unique=True)
-        self._verify_resource_is_in_stack(vpc.internet_gateway_attachment, stack, unique=True)
+        self._verify_resource_is_in_stack(
+            vpc.internet_gateway_attachment, stack, unique=True
+        )
 
     def test_should_do_nothing_when_called_a_second_time(self):
         # Setup: Create stack
@@ -68,7 +77,9 @@ class TestVpcEnsureInternetGatewayExists:
         # Verify
         self._verify_vpc_has_valid_internet_gateway(vpc)
         self._verify_resource_is_in_stack(vpc.internet_gateway, stack, unique=True)
-        self._verify_resource_is_in_stack(vpc.internet_gateway_attachment, stack, unique=True)
+        self._verify_resource_is_in_stack(
+            vpc.internet_gateway_attachment, stack, unique=True
+        )
 
         # Verify Internet Gateway hasn't changed
         assert vpc.internet_gateway is original_igw
@@ -94,10 +105,9 @@ class TestVpcEnsureInternetGatewayExists:
         stack = Stack()
         stack.Resources["MyVPC"] = vpc = VPC()
         stack.Resources["MyGateway"] = igw = InternetGateway()
-        stack.Resources["MyGatewayAttachment"] = attachment = VPCGatewayAttachment(Properties=dict(
-            InternetGatewayId=Ref(igw),
-            VpcId=Ref(vpc),
-        ))
+        stack.Resources["MyGatewayAttachment"] = attachment = VPCGatewayAttachment(
+            Properties=dict(InternetGatewayId=Ref(igw), VpcId=Ref(vpc))
+        )
 
         # Exercise
         vpc.ensure_internet_gateway_exists(stack)
@@ -105,7 +115,9 @@ class TestVpcEnsureInternetGatewayExists:
         # Verify
         self._verify_vpc_has_valid_internet_gateway(vpc)
         self._verify_resource_is_in_stack(vpc.internet_gateway, stack, unique=True)
-        self._verify_resource_is_in_stack(vpc.internet_gateway_attachment, stack, unique=True)
+        self._verify_resource_is_in_stack(
+            vpc.internet_gateway_attachment, stack, unique=True
+        )
 
         # Verify existing Internet Gateway is used
         assert vpc.internet_gateway is igw
@@ -117,10 +129,9 @@ class TestVpcEnsureInternetGatewayExists:
         stack.Resources["MyVPC"] = vpc = VPC()
         stack.Resources["OtherVPC"] = other_vpc = VPC()
         stack.Resources["MyGateway"] = igw = InternetGateway()
-        stack.Resources["MyGatewayAttachment"] = attachment = VPCGatewayAttachment(Properties=dict(
-            InternetGatewayId=Ref(igw),
-            VpcId=Ref(other_vpc),
-        ))
+        stack.Resources["MyGatewayAttachment"] = attachment = VPCGatewayAttachment(
+            Properties=dict(InternetGatewayId=Ref(igw), VpcId=Ref(other_vpc))
+        )
 
         # Exercise
         vpc.ensure_internet_gateway_exists(stack)
@@ -141,11 +152,12 @@ class TestVpcEnsureInternetGatewayExists:
         # Setup
         stack = Stack()
         stack.Resources["MyVPC"] = vpc = VPC()
-        stack.Resources["MyGateway"] = vpn_gateway = VPNGateway(Properties=dict(Type="ipsec.1"))
-        stack.Resources["MyGatewayAttachment"] = attachment = VPCGatewayAttachment(Properties=dict(
-            VpcId=Ref(vpc),
-            VpnGatewayId=Ref(vpn_gateway)
-        ))
+        stack.Resources["MyGateway"] = vpn_gateway = VPNGateway(
+            Properties=dict(Type="ipsec.1")
+        )
+        stack.Resources["MyGatewayAttachment"] = attachment = VPCGatewayAttachment(
+            Properties=dict(VpcId=Ref(vpc), VpnGatewayId=Ref(vpn_gateway))
+        )
 
         # Exercise
         vpc.ensure_internet_gateway_exists(stack)

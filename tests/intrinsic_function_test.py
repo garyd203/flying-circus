@@ -53,10 +53,12 @@ class TestBase64:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Base64 Something
-            """)
+            """
+        )
 
     def test_yaml_output_doesnt_modify_string(self):
         # Setup
@@ -67,10 +69,12 @@ class TestBase64:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Base64 Some 6HSsort of text_?:%#
-            """)
+            """
+        )
 
     def test_nested_function_forces_longform_name(self):
         # TODO #37 do this with a Sub to be more realistic
@@ -102,14 +106,16 @@ class TestBase64:
         output = stack.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             AWSTemplateFormatVersion: '2010-09-09'
             Resources:
               SomeResource:
                 one:
                   Fn::Base64: !Ref AWS::StackName
-            """)
+            """
+        )
 
 
 class TestGetAtt:
@@ -156,18 +162,22 @@ class TestGetAtt:
         output = stack.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             AWSTemplateFormatVersion: '2010-09-09'
             Resources:
               Bar: !GetAtt Foo.ResourceAttrib1
               Foo:
                 one: 42
-            """)
+            """
+        )
 
     def test_nested_function_forces_longform_name(self):
         # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Foo", Ref(AWS_Region))
+        dumper, func = self._create_getatt_function(
+            "SomeResource", "Foo", Ref(AWS_Region)
+        )
 
         # Exercise
         node = func.as_yaml_node(dumper)
@@ -182,14 +192,19 @@ class TestGetAtt:
     def test_yaml_output_with_nested_function(self):
         # Setup
         data = SingleAttributeObject(one=42)
-        stack = Stack(Resources=dict(Foo=data, Bar=GetAtt(data, "ResourceAttrib1", Ref(AWS_Region))))
+        stack = Stack(
+            Resources=dict(
+                Foo=data, Bar=GetAtt(data, "ResourceAttrib1", Ref(AWS_Region))
+            )
+        )
         del stack.Metadata
 
         # Exercise
         output = stack.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             AWSTemplateFormatVersion: '2010-09-09'
             Resources:
@@ -200,7 +215,8 @@ class TestGetAtt:
                 - !Ref AWS::Region
               Foo:
                 one: 42
-            """)
+            """
+        )
 
     # Stack Reference Lookup
     # ----------------------
@@ -241,8 +257,10 @@ class TestGetAtt:
 
         assert "directly create a GetAtt on a logical name" in str(excinfo.value)
 
-    @pytest.mark.parametrize('object_type',
-                             ["Parameters", "Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
+    @pytest.mark.parametrize(
+        "object_type",
+        ["Parameters", "Metadata", "Mappings", "Conditions", "Transform", "Outputs"],
+    )
     def test_non_resource_stack_objects_cannot_be_referenced(self, object_type):
         # Setup
         data = {"one": 42}
@@ -288,7 +306,9 @@ class TestGetAtt:
 
     def test_attribute_name_is_a_list_of_strings(self):
         # Setup
-        dumper, func = self._create_getatt_function("SomeResource", "Attrib", "SubAttrib", "SomethingElse")
+        dumper, func = self._create_getatt_function(
+            "SomeResource", "Attrib", "SubAttrib", "SomethingElse"
+        )
 
         # Exercise
         node = func.as_yaml_node(dumper)
@@ -345,10 +365,12 @@ class TestGetAZs:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !GetAZs ap-southeast-2
-            """)
+            """
+        )
 
     def test_nested_function_forces_longform_name(self):
         # Setup
@@ -377,14 +399,16 @@ class TestGetAZs:
         output = stack.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             AWSTemplateFormatVersion: '2010-09-09'
             Resources:
               SomeResource:
                 one:
                   Fn::GetAZs: !Ref AWS::Region
-            """)
+            """
+        )
 
     def test_region_can_be_a_ref_function(self):
         # Setup
@@ -467,10 +491,12 @@ class TestImportValue:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !ImportValue SomeStack-export_name
-            """)
+            """
+        )
 
     def test_nested_function_forces_longform_name(self):
         # Setup
@@ -499,14 +525,16 @@ class TestImportValue:
         output = stack.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             AWSTemplateFormatVersion: '2010-09-09'
             Resources:
               SomeResource:
                 one:
                   Fn::ImportValue: !Sub '${AWS::Region}-SharedLogBucket'
-            """)
+            """
+        )
 
 
 class TestJoin:
@@ -561,13 +589,15 @@ class TestJoin:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Join
             - .
             - - foo
               - bar
-            """)
+            """
+        )
 
     def test_yaml_output_as_list_parameter(self):
         # Setup
@@ -578,21 +608,20 @@ class TestJoin:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Join
             - .
             - - foo
               - bar
-            """)
+            """
+        )
 
     # Delimiter
     # ---------
 
-    @pytest.mark.parametrize("value", [
-        None,
-        Ref(AWS_StackName)
-    ])
+    @pytest.mark.parametrize("value", [None, Ref(AWS_StackName)])
     def test_delimiter_must_be_a_string(self, value):
         with pytest.raises(TypeError, match=re.compile(r"delimiter.*string", re.I)):
             _ = Join(value, "foo", "bar")
@@ -617,13 +646,15 @@ class TestJoin:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Join
             - ''
             - - foo
               - bar
-            """)
+            """
+        )
 
     def test_delimiter_can_have_more_than_one_character(self):
         # Setup
@@ -639,7 +670,9 @@ class TestJoin:
     def test_delimiter_should_not_be_huge(self):
         delimiter = "syzygy" * 10
 
-        with pytest.raises(ValueError, match=re.compile(r"delimiter.*(large|long)", re.I)):
+        with pytest.raises(
+            ValueError, match=re.compile(r"delimiter.*(large|long)", re.I)
+        ):
             _ = Join(delimiter, "foo", "bar")
 
     # Input Values
@@ -725,18 +758,20 @@ class TestRef:
         output = stack.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             AWSTemplateFormatVersion: '2010-09-09'
             Resources:
               Bar: !Ref Foo
               Foo:
                 one: 42
-            """)
+            """
+        )
 
     def test_referred_object_can_be_a_plain_dict(self):
         # Setup
-        data = dict(bar='hello')
+        data = dict(bar="hello")
         name = "Foo"
         stack = Stack(Resources={name: data})
         ref = Ref(data)
@@ -775,7 +810,7 @@ class TestRef:
 
         assert "directly create a Ref to a name" in str(excinfo.value)
 
-    @pytest.mark.parametrize('object_type', ["Parameters", "Resources"])
+    @pytest.mark.parametrize("object_type", ["Parameters", "Resources"])
     def test_all_valid_stack_object_types_can_be_found(self, object_type):
         # Setup
         data = SingleAttributeObject(one=42)
@@ -792,7 +827,9 @@ class TestRef:
         # Verify
         assert node.value == name
 
-    @pytest.mark.parametrize('object_type', ["Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
+    @pytest.mark.parametrize(
+        "object_type", ["Metadata", "Mappings", "Conditions", "Transform", "Outputs"]
+    )
     def test_invalid_stack_object_types_cannot_be_found(self, object_type):
         # Setup
         data = SingleAttributeObject(one=42)
@@ -846,10 +883,9 @@ class TestRef:
         # Verify
         assert hash(data) != hash(ref)
 
-    @pytest.mark.parametrize('func', [
-        Base64,  # A Ref-like object
-        str,  # An unrelated data type
-    ])
+    @pytest.mark.parametrize(
+        "func", [Base64, str]  # A Ref-like object  # An unrelated data type
+    )
     def test_ref_is_not_equal_to_arbitrary_object(self, func):
         # Setup
         data = SingleAttributeObject(one=42)
@@ -903,10 +939,12 @@ class TestSubWithoutExplicitVariables:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Sub 'Something'
-            """)
+            """
+        )
 
     def test_yaml_output_doesnt_modify_complex_string(self):
         # Setup. Use example from AWS documentation
@@ -917,19 +955,25 @@ class TestSubWithoutExplicitVariables:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}'
-            """)
+            """
+        )
 
     def test_yaml_output_doesnt_modify_multiline_string(self):
         # Setup. Use example from AWS documentation
-        func = Sub(dedent("""
+        func = Sub(
+            dedent(
+                """
             #!/bin/bash -xe
             yum update -y aws-cfn-bootstrap
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --configsets wordpress_install --region ${AWS::Region}
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
-            """))
+            """
+            )
+        )
 
         data = SingleAttributeObject(one=func)
 
@@ -937,21 +981,26 @@ class TestSubWithoutExplicitVariables:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Sub |
               #!/bin/bash -xe
               yum update -y aws-cfn-bootstrap
               /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --configsets wordpress_install --region ${AWS::Region}
               /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
-            """)
+            """
+        )
 
     # Parameters
     # ----------
-    @pytest.mark.parametrize("input", [
-        AWS_Region,  # string-like PseudoParameter
-        Base64("Some string with ${AWS::Region} embedded"),  # String-like function
-    ])
+    @pytest.mark.parametrize(
+        "input",
+        [
+            AWS_Region,  # string-like PseudoParameter
+            Base64("Some string with ${AWS::Region} embedded"),  # String-like function
+        ],
+    )
     def test_nonstring_input_is_rejected_immediately(self, input):
         with pytest.raises(TypeError):
             _ = Sub(input)
@@ -983,38 +1032,49 @@ class TestSubWithVariableMapping:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Sub
             - Something-${foo}
             - foo: bar
-            """)
+            """
+        )
 
     def test_yaml_output_doesnt_modify_complex_string(self):
         # Setup. Use (modified) example from AWS documentation
-        func = Sub("arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}", vpc="someid")
+        func = Sub(
+            "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}", vpc="someid"
+        )
         data = SingleAttributeObject(one=func)
 
         # Exercise
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Sub
             - arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}
             - vpc: someid
-            """)
+            """
+        )
 
     def test_yaml_output_doesnt_modify_multiline_string(self):
         # Setup. Use (modified) example from AWS documentation
-        func = Sub(dedent("""
+        func = Sub(
+            dedent(
+                """
             #!/bin/bash -xe
             yum update -y aws-cfn-bootstrap
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --configsets wordpress_install --region ${AWS::Region}
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
             echo hello from ${user}
-            """), user="bobbytables")
+            """
+            ),
+            user="bobbytables",
+        )
 
         data = SingleAttributeObject(one=func)
 
@@ -1022,7 +1082,8 @@ class TestSubWithVariableMapping:
         output = data.export("yaml")
 
         # Verify
-        assert output == dedent("""
+        assert output == dedent(
+            """
             ---
             one: !Sub
             - |
@@ -1032,7 +1093,8 @@ class TestSubWithVariableMapping:
               /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerGroup --region ${AWS::Region}
               echo hello from ${user}
             - user: bobbytables
-            """)
+            """
+        )
 
     # Variable Map
     # ------------
@@ -1051,21 +1113,24 @@ class TestSubWithVariableMapping:
         # Verify
         varmap_node = node.value[1]
         vpc_var_node = varmap_node.value[1]
-        assert vpc_var_node[1].tag == "!ImportValue"  # The dict value is the second element in a tuple
+        assert (
+            vpc_var_node[1].tag == "!ImportValue"
+        )  # The dict value is the second element in a tuple
 
     # Parameters
     # ----------
-    @pytest.mark.parametrize("input", [
-        AWS_Region,  # string-like PseudoParameter
-        Base64("Some string with ${AWS::Region} embedded"),  # String-like function
-    ])
+    @pytest.mark.parametrize(
+        "input",
+        [
+            AWS_Region,  # string-like PseudoParameter
+            Base64("Some string with ${AWS::Region} embedded"),  # String-like function
+        ],
+    )
     def test_nonstring_input_is_rejected_immediately(self, input):
         with pytest.raises(TypeError):
             _ = Sub(input, foo="bar")
 
-    @pytest.mark.parametrize("input", [
-        123,  # number
-    ])
+    @pytest.mark.parametrize("input", [123])  # number
     def test_nonstring_variable_name_is_rejected_immediately(self, input):
         with pytest.raises(TypeError):
             _ = Sub("Something something", **{input: "bar"})

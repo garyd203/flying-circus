@@ -33,7 +33,8 @@ class TestBasicStackBehaviour:
         stack.Resources["SomeName"] = SimpleResource()
         output = stack.export("yaml")
 
-        assert output == dedent("""
+        assert output == dedent(
+            """
         ---
         AWSTemplateFormatVersion: '2010-09-09'
         Metadata:
@@ -42,7 +43,10 @@ class TestBasicStackBehaviour:
         Resources:
           SomeName:
             Type: NameSpace::Service::SimpleResource
-        """.format(flyingcircus.__version__))
+        """.format(
+                flyingcircus.__version__
+            )
+        )
 
     def test_template_version_defaults_to_2010(self):
         stack = Stack()
@@ -108,7 +112,9 @@ class TestGetLogicalName:
         # Exercise & Verify
         assert stack.get_logical_name(data, resources_only=True) == name
 
-    @pytest.mark.parametrize('object_type', ["Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
+    @pytest.mark.parametrize(
+        "object_type", ["Metadata", "Mappings", "Conditions", "Transform", "Outputs"]
+    )
     def test_only_search_parameters_and_resources(self, object_type):
         # Setup
         stack = Stack()
@@ -121,8 +127,10 @@ class TestGetLogicalName:
 
         assert "not part of this stack" in str(excinfo.value)
 
-    @pytest.mark.parametrize('object_type',
-                             ["Parameters", "Metadata", "Mappings", "Conditions", "Transform", "Outputs"])
+    @pytest.mark.parametrize(
+        "object_type",
+        ["Parameters", "Metadata", "Mappings", "Conditions", "Transform", "Outputs"],
+    )
     def test_only_search_resources_when_requested(self, object_type):
         # Setup
         stack = Stack()
@@ -229,7 +237,8 @@ class TestCurrentStack:
 
 class TestMergeStack:
     """Verify the stack merge functionality."""
-    PARAMETRIZE_NAMES = 'stack_attribute,item'
+
+    PARAMETRIZE_NAMES = "stack_attribute,item"
     MERGED_ATTRIBUTE_EXAMPLES = [
         ("Metadata", "Hello World"),
         ("Outputs", Output(Value="HelloWorld")),
@@ -283,7 +292,9 @@ class TestMergeStack:
         assert source[stack_attribute][item_name] is item
 
     @pytest.mark.parametrize(PARAMETRIZE_NAMES, MERGED_ATTRIBUTE_EXAMPLES)
-    def test_does_not_clobber_existing_items_in_target_stack(self, stack_attribute, item):
+    def test_does_not_clobber_existing_items_in_target_stack(
+        self, stack_attribute, item
+    ):
         # Setup
         item_name = "SomeChildProperty"
         source = Stack()
@@ -317,7 +328,7 @@ class TestMergeStack:
     def test_does_not_copy_flying_circus_metadata(self):
         # Setup
         source = Stack()
-        source.Metadata["FlyingCircus"]["version"] = ("gamma-gamma")
+        source.Metadata["FlyingCircus"]["version"] = "gamma-gamma"
 
         target = Stack()
         original_fc_data = target.Metadata["FlyingCircus"]
@@ -349,7 +360,9 @@ class TestMergeStack:
         assert "transform version" in str(excinfo.value).lower()
 
     @pytest.mark.parametrize(PARAMETRIZE_NAMES, MERGED_ATTRIBUTE_EXAMPLES)
-    def test_cannot_merge_if_logical_name_is_already_used_for_that_item_type(self, stack_attribute, item):
+    def test_cannot_merge_if_logical_name_is_already_used_for_that_item_type(
+        self, stack_attribute, item
+    ):
         # Setup
         item_name = "SomeChildProperty"
         source = Stack()
@@ -363,7 +376,9 @@ class TestMergeStack:
         with pytest.raises(StackMergeError) as excinfo:
             target.merge_stack(source)
 
-        assert "in this stack already has an item with the logical name" in str(excinfo.value)
+        assert "in this stack already has an item with the logical name" in str(
+            excinfo.value
+        )
 
     def test_cannot_merge_if_two_outputs_have_the_same_export_name(self):
         # Setup
@@ -384,7 +399,8 @@ class TestMergeStack:
 
 class TestPrefixedNames:
     """Verify the object name prefixing functionality."""
-    ATTRIBUTE_PARAMETRIZE_NAMES = 'stack_attribute,item'
+
+    ATTRIBUTE_PARAMETRIZE_NAMES = "stack_attribute,item"
     PREFIXABLE_ATTRIBUTE_EXAMPLES = [
         ("Parameters", Parameter(Type="String")),
         ("Resources", SimpleResource()),
@@ -394,7 +410,10 @@ class TestPrefixedNames:
     ]
     OUTPUT_EXAMPLES = [
         ("Outputs", Output(Value="HelloWorld")),
-        ("Outputs", Output(Value="HelloWorld", Export={"Name": "SomeGloballyScopedValue"})),
+        (
+            "Outputs",
+            Output(Value="HelloWorld", Export={"Name": "SomeGloballyScopedValue"}),
+        ),
     ]
 
     STACK_PREFIX = "NewScope"
@@ -452,11 +471,7 @@ class TestPrefixedNames:
 
         assert "alphanumeric" in str(excinfo.value).lower()
 
-    @pytest.mark.parametrize('prefix', [
-        None,
-        123,
-        Stack(),
-    ])
+    @pytest.mark.parametrize("prefix", [None, 123, Stack()])
     def test_prefix_must_be_string(self, prefix):
         # Setup
         stack = Stack(Resources={"SomeName": SimpleResource()})
@@ -488,7 +503,9 @@ class TestPrefixedNames:
         assert new_stack[stack_attribute][new_name] is item
 
     @pytest.mark.parametrize(ATTRIBUTE_PARAMETRIZE_NAMES, OUTPUT_EXAMPLES)
-    def test_output_is_prefixed_in_the_new_stack_but_not_same_object(self, stack_attribute, item):
+    def test_output_is_prefixed_in_the_new_stack_but_not_same_object(
+        self, stack_attribute, item
+    ):
         # Setup
         item_name = "SomeItemName"
         stack = Stack()
@@ -505,11 +522,16 @@ class TestPrefixedNames:
 
         new_item = new_stack[stack_attribute][new_name]
         assert new_item is not item
-        assert getattr(new_item, "Description", None) == getattr(item, "Description", None)
-        assert getattr(new_item, "Value", None) is getattr(item, "Value", None), \
-            "This should be the same because it might be a Reference function or some such"
+        assert getattr(new_item, "Description", None) == getattr(
+            item, "Description", None
+        )
+        assert getattr(new_item, "Value", None) is getattr(
+            item, "Value", None
+        ), "This should be the same because it might be a Reference function or some such"
 
-    @pytest.mark.parametrize(ATTRIBUTE_PARAMETRIZE_NAMES, PREFIXABLE_ATTRIBUTE_EXAMPLES + OUTPUT_EXAMPLES)
+    @pytest.mark.parametrize(
+        ATTRIBUTE_PARAMETRIZE_NAMES, PREFIXABLE_ATTRIBUTE_EXAMPLES + OUTPUT_EXAMPLES
+    )
     def test_item_is_not_removed_from_original_stack(self, stack_attribute, item):
         # Setup
         item_name = "SomeItemName"
@@ -538,7 +560,9 @@ class TestPrefixedNames:
 
         # Verify
         assert new_stack.AWSTemplateFormatVersion == version_string
-        assert stack.AWSTemplateFormatVersion == version_string, "Old stack should not be modified"
+        assert (
+            stack.AWSTemplateFormatVersion == version_string
+        ), "Old stack should not be modified"
 
     def test_copy_sam_version_in_transform(self):
         """If set, Transform should be the version of the Serverless Application Model
@@ -576,7 +600,9 @@ class TestPrefixedNames:
 
         # Verify
         assert self.STACK_PREFIX == new_stack.Description
-        assert not hasattr(stack, "Description") or stack.Description is None, "Old stack should not be modified"
+        assert (
+            not hasattr(stack, "Description") or stack.Description is None
+        ), "Old stack should not be modified"
 
     def test_prefix_export_name_for_output(self):
         # Setup
@@ -589,7 +615,10 @@ class TestPrefixedNames:
         new_stack = stack.with_prefixed_names(self.STACK_PREFIX)
 
         # Verify
-        assert new_stack.Outputs[self.STACK_PREFIX + name]["Export"]["Name"] == self.STACK_PREFIX + export_name
+        assert (
+            new_stack.Outputs[self.STACK_PREFIX + name]["Export"]["Name"]
+            == self.STACK_PREFIX + export_name
+        )
 
     def test_dont_create_export_name_for_output_when_it_is_not_set(self):
         # Setup

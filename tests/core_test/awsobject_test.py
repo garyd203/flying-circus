@@ -60,7 +60,7 @@ class TestExport:
 
     VALID_EXPORT_FORMATS = {"yaml"}
 
-    @pytest.mark.parametrize('format', VALID_EXPORT_FORMATS)
+    @pytest.mark.parametrize("format", VALID_EXPORT_FORMATS)
     def test_valid_export_methods_produce_a_result(self, format):
         data = ZeroAttributeObject()
 
@@ -170,13 +170,13 @@ class TestIteratorAccess:
 
     def test_object_iteration_returns_attribute_names(self):
         # Setup
-        data = DualAttributeObject(one=42, two='hello world')
+        data = DualAttributeObject(one=42, two="hello world")
 
         # Exercise
         attribs = iter(data)
 
         # Verify
-        assert list(attribs) == ['one', 'two']
+        assert list(attribs) == ["one", "two"]
         assert len(data) == 2
 
     def test_object_iteration_includes_attributes_set_to_none(self):
@@ -188,7 +188,7 @@ class TestIteratorAccess:
         attribs = iter(data)
 
         # Verify
-        assert list(attribs) == ['one', 'two']
+        assert list(attribs) == ["one", "two"]
         assert len(data) == 2
 
     def test_object_iteration_includes_attributes_set_to_an_empty_object(self):
@@ -199,18 +199,18 @@ class TestIteratorAccess:
         attribs = iter(data)
 
         # Verify
-        assert list(attribs) == ['one', 'two']
+        assert list(attribs) == ["one", "two"]
         assert len(data) == 2
 
     def test_object_iteration_excludes_internal_attributes(self):
         # Setup
-        data = MixedAttributeObject(one=42, two='hello world', a="nope")
+        data = MixedAttributeObject(one=42, two="hello world", a="nope")
 
         # Exercise
         attribs = iter(data)
 
         # Verify
-        assert list(attribs) == ['one', 'two']
+        assert list(attribs) == ["one", "two"]
         assert len(data) == 2
 
     def test_object_iteration_sorts_in_order_of_declaration(self):
@@ -220,11 +220,11 @@ class TestIteratorAccess:
             a = attrib()
 
         # Setup
-        data = OrderedObject(a=42, b='hello world')
+        data = OrderedObject(a=42, b="hello world")
 
         # Exercise
         attribs = iter(data)
 
         # Verify
-        assert list(attribs) == ['b', 'a']
+        assert list(attribs) == ["b", "a"]
         assert len(data) == 2
