@@ -35,8 +35,8 @@ class Alarms:
                 Period=60,
                 Namespace="AWS/EC2",  # FIXME lookup constant?
                 ComparisonOperator="GreaterThanThreshold",  # FIXME lookup constant
-                MetricName="CPUUtilization"  # TODO Lookup a very long list?
-            ),
+                MetricName="CPUUtilization",  # TODO Lookup a very long list?
+            )
         )
 
     @staticmethod
@@ -57,6 +57,6 @@ class Alarms:
                 Namespace="AWS/EC2",  # FIXME lookup constant?
                 ComparisonOperator="LessThanThreshold",  # FIXME lookup constant
                 # FIXME check LessThanThreshold is correct, and it;s not LowerThanThreshold or some similar synonym
-                MetricName="CPUUtilization"  # TODO Lookup a very long list?
-            ),
+                MetricName="CPUUtilization",  # TODO Lookup a very long list?
+            )
         )

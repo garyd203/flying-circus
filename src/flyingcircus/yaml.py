@@ -22,9 +22,7 @@ def register_yaml_representers():
     def unknown_type(dumper, data):
         raise TypeError(
             "{} object cannot be dumped to YAML because it does not "
-            "extend CustomYamlObject".format(
-                data.__class__.__name__
-            )
+            "extend CustomYamlObject".format(data.__class__.__name__)
         )
 
     yaml.add_multi_representer(object, unknown_type)
@@ -32,6 +30,7 @@ def register_yaml_representers():
 
 class CustomYamlObject(object):
     """Mixin class for objects that have a custom YAML export."""
+
     __slots__ = []
 
     def as_yaml_node(self, dumper: yaml.Dumper) -> yaml.Node:
@@ -39,13 +38,19 @@ class CustomYamlObject(object):
         raise NotImplementedError("as_yaml_node")
 
     @classmethod
-    def represent_object(cls, dumper: yaml.Dumper, data: "CustomYamlObject") -> yaml.Node:
+    def represent_object(
+        cls, dumper: yaml.Dumper, data: "CustomYamlObject"
+    ) -> yaml.Node:
         assert isinstance(data, cls)
         return data.as_yaml_node(dumper)
 
 
-def represent_string(dumper: yaml.Dumper, data: str, tag: str = BaseResolver.DEFAULT_SCALAR_TAG,
-                     basicsep: str = "") -> yaml.ScalarNode:
+def represent_string(
+    dumper: yaml.Dumper,
+    data: str,
+    tag: str = BaseResolver.DEFAULT_SCALAR_TAG,
+    basicsep: str = "",
+) -> yaml.ScalarNode:
     """Override the normal string emission rules to produce the most readable text output.
 
     Args:
@@ -57,7 +62,7 @@ def represent_string(dumper: yaml.Dumper, data: str, tag: str = BaseResolver.DEF
     """
     # TODO test cases
 
-    if '\n' in data:
+    if "\n" in data:
         # '|' style means literal block style, so line breaks and formatting are retained.
         # This will be especially handy for inline code.
         return dumper.represent_scalar(tag, data, "|")
@@ -67,7 +72,7 @@ def represent_string(dumper: yaml.Dumper, data: str, tag: str = BaseResolver.DEF
         # compromise by using the literal block style ('|'), which doesn't
         # fold, but does require some special block indicators.
         # TODO need some way to allow folding. Having a helper function probably isn't really good enough. perhaps have the reflow function return a special subclass of string which we can detect here
-        return dumper.represent_scalar(tag, data, '|')
+        return dumper.represent_scalar(tag, data, "|")
     else:
         return dumper.represent_scalar(tag, data, basicsep)
 
@@ -120,6 +125,7 @@ class AmazonCFNDumper(NonAliasingDumper, yaml.Dumper):
         # Checks
         if value is not None:
             from .core import Stack
+
             if not isinstance(value, Stack):
                 raise TypeError(
                     "The current CloudFormation stack must be a Stack object, "

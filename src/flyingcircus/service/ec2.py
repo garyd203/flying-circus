@@ -48,7 +48,9 @@ class VPC(_raw.VPC):
         This will only work if the internet gateway was created using
         `ensure_internet_gateway_exists`.
         """
-        assert self._internet_gateway is not None, "`ensure_internet_gateway_exists` should be called first"
+        assert (
+            self._internet_gateway is not None
+        ), "`ensure_internet_gateway_exists` should be called first"
         return self._internet_gateway
 
     @property
@@ -58,7 +60,9 @@ class VPC(_raw.VPC):
         This will only work if the internet gateway was created using
         `ensure_internet_gateway_exists`.
         """
-        assert self._internet_gateway_attachment is not None, "`ensure_internet_gateway_exists` should be called first"
+        assert (
+            self._internet_gateway_attachment is not None
+        ), "`ensure_internet_gateway_exists` should be called first"
         return self._internet_gateway_attachment
 
     def ensure_internet_gateway_exists(self, stack: Stack):
@@ -67,18 +71,28 @@ class VPC(_raw.VPC):
         # nothing more to do
         if self._internet_gateway is not None:
             # Check that the internet gateway is in the desired stack
-            if not [res for res in stack.Resources.values() if res is self._internet_gateway]:
+            if not [
+                res for res in stack.Resources.values() if res is self._internet_gateway
+            ]:
                 raise RuntimeError("Existing InternetGateway is not in this stack")
-            if not [res for res in stack.Resources.values() if res is self._internet_gateway_attachment]:
-                raise RuntimeError("Existing VPCGatewayAttachment for InternetGateway is not in this stack")
+            if not [
+                res
+                for res in stack.Resources.values()
+                if res is self._internet_gateway_attachment
+            ]:
+                raise RuntimeError(
+                    "Existing VPCGatewayAttachment for InternetGateway is not in this stack"
+                )
 
             return
 
         # Look for an existing gateway attached to this VPC
         for res in stack.Resources.values():
-            if isinstance(res, VPCGatewayAttachment) \
-                    and res.Properties.VpcId == Ref(self) \
-                    and res.Properties.InternetGatewayId:
+            if (
+                isinstance(res, VPCGatewayAttachment)
+                and res.Properties.VpcId == Ref(self)
+                and res.Properties.InternetGatewayId
+            ):
                 self._internet_gateway_attachment = res
 
                 # Try to dodgily unwrap the internet gateway...
@@ -86,7 +100,9 @@ class VPC(_raw.VPC):
                 if not isinstance(gateway_ref, Ref):
                     raise RuntimeError("Can't deal with direct ID references!")
                 if not isinstance(gateway_ref._data, InternetGateway):
-                    raise RuntimeError("There's something weird attached to this VPC instead of an Internet Gateway")
+                    raise RuntimeError(
+                        "There's something weird attached to this VPC instead of an Internet Gateway"
+                    )
                 self._internet_gateway = gateway_ref._data
 
                 return
@@ -105,12 +121,13 @@ class VPC(_raw.VPC):
         # Attach the gateway to this VPC
         self._internet_gateway_attachment = VPCGatewayAttachment(
             Properties=VPCGatewayAttachmentProperties(
-                InternetGatewayId=Ref(self._internet_gateway),
-                VpcId=Ref(self),
-            ),
+                InternetGatewayId=Ref(self._internet_gateway), VpcId=Ref(self)
+            )
         )
 
         attachment_stack_name = igw_stack_name + "Attachment"
         if attachment_stack_name in stack.Resources:
-            raise RuntimeError(f"There's already a resource named {attachment_stack_name}")
+            raise RuntimeError(
+                f"There's already a resource named {attachment_stack_name}"
+            )
         stack.Resources[attachment_stack_name] = self._internet_gateway_attachment

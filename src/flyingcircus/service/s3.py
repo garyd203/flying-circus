@@ -6,6 +6,7 @@ See Also:
 """
 
 from .._raw import s3 as _raw
+
 # noinspection PyUnresolvedReferences
 from .._raw.s3 import *
 
@@ -17,7 +18,9 @@ class Bucket(_raw.Bucket):
     #: encryption if a customer-managed key is not explicitly specified.
     SSE_KMS_DEFAULT_MASTER_KEY = "aws/s3"
 
-    def set_encryption(self, kms_keyid=SSE_KMS_DEFAULT_MASTER_KEY, s3_managed: bool = False):
+    def set_encryption(
+        self, kms_keyid=SSE_KMS_DEFAULT_MASTER_KEY, s3_managed: bool = False
+    ):
         """Set the default server-side encryption approach for this bucket.
 
         This convenience function can be used to set any one of the mutually
@@ -34,7 +37,9 @@ class Bucket(_raw.Bucket):
 
         # Checks
         if s3_managed and kms_keyid != self.SSE_KMS_DEFAULT_MASTER_KEY:
-            raise ValueError("Unable to set both S3-managed and KMS-managed bucket encryption")
+            raise ValueError(
+                "Unable to set both S3-managed and KMS-managed bucket encryption"
+            )
 
         # Get the top-level encryption config object
         config = self.Properties["BucketEncryption"]
@@ -46,18 +51,14 @@ class Bucket(_raw.Bucket):
         if s3_managed:
             rule = {"SSEAlgorithm": "AES256"}
         else:
-            rule = {
-                "KMSMasterKeyID": kms_keyid,
-                "SSEAlgorithm": "aws:kms",
-            }
-        config["ServerSideEncryptionConfiguration"] = [{"ServerSideEncryptionByDefault": rule}]
+            rule = {"KMSMasterKeyID": kms_keyid, "SSEAlgorithm": "aws:kms"}
+        config["ServerSideEncryptionConfiguration"] = [
+            {"ServerSideEncryptionByDefault": rule}
+        ]
 
     #: List of Status values for Bucket versioning, and whether they mean
     #: versioning is enabled
-    _VERSIONING_STATUSES = {
-        "Enabled": True,
-        "Suspended": False,  # Default
-    }
+    _VERSIONING_STATUSES = {"Enabled": True, "Suspended": False}  # Default
 
     @property
     def versioning(self) -> bool:

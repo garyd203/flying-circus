@@ -38,7 +38,8 @@ ATTRSCONFIG = dict(
     # have __slots__ defined.
     slots=True,
     # Create a constructor with only keyword parameters
-    init=True, kw_only=True,
+    init=True,
+    kw_only=True,
 )
 
 
@@ -160,7 +161,9 @@ class AWSObject(CustomYamlObject):
         else:
             raise KeyError(
                 "'{}' is not a CloudFormation attribute, and cannot be retrieved with the dictionary interface".format(
-                    item))
+                    item
+                )
+            )
 
     def __setitem__(self, key: str, value: Any):
         """Set CloudFormation attributes in a dictionary-like manner."""
@@ -168,7 +171,10 @@ class AWSObject(CustomYamlObject):
             setattr(self, key, value)
         else:
             raise KeyError(
-                "'{}' is not a CloudFormation attribute, and cannot be set with the dictionary interface".format(key))
+                "'{}' is not a CloudFormation attribute, and cannot be set with the dictionary interface".format(
+                    key
+                )
+            )
 
     def __iter__(self) -> Iterator[str]:
         # We treat the object like a dictionary for iteration. This means
@@ -223,10 +229,15 @@ class AWSObject(CustomYamlObject):
         attributes = [(key, self[key]) for key in self if self.is_attribute_set(key)]
 
         # Create neater YAML by filtering out empty blocks at this level
-        attributes = [(key, value) for key, value in attributes if is_non_empty_attribute(value)]
+        attributes = [
+            (key, value) for key, value in attributes if is_non_empty_attribute(value)
+        ]
 
         # Create neater YAML by filtering out empty entries in sub-lists
-        attributes = [(key, remove_empty_values_from_attribute(value)) for key, value in attributes]
+        attributes = [
+            (key, remove_empty_values_from_attribute(value))
+            for key, value in attributes
+        ]
 
         # Represent this object as a mapping of it's AWS attributes.
         # Note that `represent_mapping` works on a list of 2-tuples, not a map!
@@ -240,8 +251,15 @@ def remove_empty_values_from_attribute(data):
         cleaned = filter(is_non_empty_attribute, cleaned)
         return list(cleaned)
     elif isinstance(data, dict):
-        cleaned = {key: remove_empty_values_from_attribute(value) for key, value in data.items()}
-        cleaned = {key: value for key, value in cleaned.items() if is_non_empty_attribute(value)}
+        cleaned = {
+            key: remove_empty_values_from_attribute(value)
+            for key, value in data.items()
+        }
+        cleaned = {
+            key: value
+            for key, value in cleaned.items()
+            if is_non_empty_attribute(value)
+        }
         return dict(cleaned)
 
     # Don't modify other types
@@ -330,9 +348,7 @@ class Stack(AWSObject):
 
     def __attrs_post_init__(self):
         # Set standard Metadata
-        self.Metadata["FlyingCircus"] = {
-            "version": _about.__version__,
-        }
+        self.Metadata["FlyingCircus"] = {"version": _about.__version__}
 
     def as_yaml_node(self, dumper):
         dumper.cfn_stack = self
@@ -354,10 +370,14 @@ class Stack(AWSObject):
         # That should do for now, really.
         matches = [name for name, data in self.Resources.items() if data is resource]
         if not resources_only:
-            matches.extend([name for name, data in self.Parameters.items() if data is resource])
+            matches.extend(
+                [name for name, data in self.Parameters.items() if data is resource]
+            )
 
         if len(matches) > 1:
-            raise ValueError("Object has multiple names in this stack: {}".format(resource))
+            raise ValueError(
+                "Object has multiple names in this stack: {}".format(resource)
+            )
         elif len(matches) == 1:
             return matches[0]
         raise ValueError("Object is not part of this stack: {}".format(resource))
@@ -378,9 +398,11 @@ class Stack(AWSObject):
                     self.AWSTemplateFormatVersion, other.AWSTemplateFormatVersion
                 )
             )
-        if self.Transform is not None and \
-                other.Transform is not None and \
-                self.Transform != other.Transform:
+        if (
+            self.Transform is not None
+            and other.Transform is not None
+            and self.Transform != other.Transform
+        ):
             raise StackMergeError(
                 "This template has a different Serverless Application Model "
                 "Transform version ({}) to the other template ({})".format(
@@ -395,13 +417,21 @@ class Stack(AWSObject):
         # Duplicated export names are picked up by cloud formation when we
         # import the template, but when merging stacks it is a lot more
         # helpful to catch these errors early
-        existing_exports = {getattr(output, "Export", {}).get("Name", "") for output in self.Outputs.values()}
-        new_exports = {getattr(output, "Export", {}).get("Name", "") for output in other.Outputs.values()}
+        existing_exports = {
+            getattr(output, "Export", {}).get("Name", "")
+            for output in self.Outputs.values()
+        }
+        new_exports = {
+            getattr(output, "Export", {}).get("Name", "")
+            for output in other.Outputs.values()
+        }
         shared_exports = existing_exports.intersection(new_exports)
         shared_exports.discard("")
         if shared_exports:
             raise StackMergeError(
-                "The target stack already has exports named {}".format(", ".join(sorted(shared_exports)))
+                "The target stack already has exports named {}".format(
+                    ", ".join(sorted(shared_exports))
+                )
             )
 
         # Copy the name and reference for the relevant item types
@@ -411,7 +441,9 @@ class Stack(AWSObject):
             for name, value in new_items.items():
                 if name in existing_items:
                     raise StackMergeError(
-                        "{} in this stack already has an item with the logical name {}".format(item_type, name)
+                        "{} in this stack already has an item with the logical name {}".format(
+                            item_type, name
+                        )
                     )
                 existing_items[name] = value
 
@@ -421,7 +453,9 @@ class Stack(AWSObject):
                 continue
             if name in self.Metadata:
                 raise StackMergeError(
-                    "Metadata in this stack already has an item with the logical name {}".format(name)
+                    "Metadata in this stack already has an item with the logical name {}".format(
+                        name
+                    )
                 )
             self.Metadata[name] = value
 
@@ -568,7 +602,9 @@ class PseudoParameter(str):
 
 # TODO not convinced about the names of the constants, or about putting them in this namespace
 AWS_AccountId = PseudoParameter._create_standard_parameter("AWS::AccountId")
-AWS_NotificationARNs = PseudoParameter._create_standard_parameter("AWS::NotificationARNs")
+AWS_NotificationARNs = PseudoParameter._create_standard_parameter(
+    "AWS::NotificationARNs"
+)
 AWS_NoValue = PseudoParameter._create_standard_parameter("AWS::NoValue")
 AWS_Partition = PseudoParameter._create_standard_parameter("AWS::Partition")
 AWS_Region = PseudoParameter._create_standard_parameter("AWS::Region")
@@ -637,8 +673,14 @@ class Resource(AWSObject):
     #: CloudFormation Resource, even if they may not exist on every concrete
     #: Resource subclass
     _SORT_ORDER = [
-        "Type", "DependsOn", "Metadata", "CreationPolicy", "UpdatePolicy", "UpdateReplacePolicy",
-        "DeletionPolicy", "Properties",
+        "Type",
+        "DependsOn",
+        "Metadata",
+        "CreationPolicy",
+        "UpdatePolicy",
+        "UpdateReplacePolicy",
+        "DeletionPolicy",
+        "Properties",
     ]
 
     #: The AWS CloudFormation string for this resource's Type
@@ -657,7 +699,10 @@ class Resource(AWSObject):
             raise TypeError(ex)
 
         # Check that the Properties attribute has been defined correctly
-        if not (hasattr(self, "Properties") and isinstance(self.Properties, (dict, ResourceProperties))):
+        if not (
+            hasattr(self, "Properties")
+            and isinstance(self.Properties, (dict, ResourceProperties))
+        ):
             raise TypeError(
                 "Concrete Resource class {} needs to define an attribute "
                 "called `Properties`".format(self.__class__.__name__)
@@ -677,9 +722,7 @@ class Resource(AWSObject):
             raise AttributeError(
                 "Concrete Resource class {} needs to define the "
                 "CloudFormation Type as a class variable called "
-                "RESOURCE_TYPE".format(
-                    self.__class__.__name__
-                )
+                "RESOURCE_TYPE".format(self.__class__.__name__)
             )
         return self.RESOURCE_TYPE
 
@@ -767,10 +810,7 @@ class Resource(AWSObject):
                     break
             else:
                 # Key was not found, so append a new tag object
-                self._get_tag_list().append({
-                    "Key": key,
-                    "Value": value,
-                })
+                self._get_tag_list().append({"Key": key, "Value": value})
 
         return True
 
@@ -874,7 +914,9 @@ class LogicalName(CustomYamlObject):
         self._resource = resource
 
     def as_yaml_node(self, dumper):
-        name = dumper.cfn_stack.get_logical_name(self._resource, resources_only=True)  # Pass error through
+        name = dumper.cfn_stack.get_logical_name(
+            self._resource, resources_only=True
+        )  # Pass error through
         return dumper.represent_str(name)
 
 
@@ -894,6 +936,7 @@ class Output(AWSObject):
 
 # TODO new `reflow` function that cleans a long (multi-) line string from IDE padding, and marks it as as suitable for PyYAML flow style
 
+
 def dedent(st):
     """Remove unwanted whitespace from a multi-line string intended for output.
 
@@ -902,13 +945,13 @@ def dedent(st):
     # TODO needs test cases
     # TODO different python module
 
-    lines = st.split('\n')
+    lines = st.split("\n")
 
     # Remove a leading line that contains only a newline character
     if lines and not lines[0]:
         lines = lines[1:]
 
     # Remove python-style leading indentation on each line
-    cleaned_lines = textwrap.dedent('\n'.join(lines))
+    cleaned_lines = textwrap.dedent("\n".join(lines))
 
     return cleaned_lines

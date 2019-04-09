@@ -14,6 +14,7 @@ from .._raw.ecs import *
 
 # TODO specialised Service and TaskDefinition for use with fargate (which explicitly excludes some of the fields)
 
+
 class TaskDefinition(_raw.TaskDefinition):
     __slots__ = []
 

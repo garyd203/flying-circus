@@ -19,10 +19,13 @@ from .yaml import represent_string
 
 # TODO use the rule that every time you detect a nested func, the outer has to use long form
 
+
 class _Function(CustomYamlObject):
     """Base class for all CloudFormation intrinsic functions"""
 
-    def _get_string_node(self, dumper: yaml.Dumper, value: Union["_Function", str], tag: str) -> yaml.Node:
+    def _get_string_node(
+        self, dumper: yaml.Dumper, value: Union["_Function", str], tag: str
+    ) -> yaml.Node:
         """Get a PyYAML node for a function that returns a string.
 
         Lots of the intrinsic functions take a single string as the argument,
@@ -31,9 +34,7 @@ class _Function(CustomYamlObject):
         literal string, and that needs to be handled specially.
         """
         if isinstance(value, _Function):
-            return dumper.represent_dict({
-                f"Fn::{tag}": value
-            })
+            return dumper.represent_dict({f"Fn::{tag}": value})
         else:
             # TODO be able to control the scalar output, perhaps
             # TODO use represent_string instead, perhaps
@@ -90,20 +91,26 @@ class GetAtt(_Function):
             if isinstance(component, Ref):
                 self._attribute_name_has_refs = True
             elif not isinstance(component, str):
-                raise ValueError("The attribute name cannot have a {} component".format(component.__class__.__name__))
+                raise ValueError(
+                    "The attribute name cannot have a {} component".format(
+                        component.__class__.__name__
+                    )
+                )
 
         self._resource = resource
         self._attribute_name = list(attribute_name)
 
     def as_yaml_node(self, dumper):
-        name = dumper.cfn_stack.get_logical_name(self._resource, resources_only=True)  # Pass error through
+        name = dumper.cfn_stack.get_logical_name(
+            self._resource, resources_only=True
+        )  # Pass error through
 
         if self._attribute_name_has_refs:
-            return dumper.represent_dict({
-                "Fn::GetAtt": [name] + self._attribute_name
-            })
+            return dumper.represent_dict({"Fn::GetAtt": [name] + self._attribute_name})
         else:
-            return dumper.represent_scalar("!GetAtt", ".".join([name] + self._attribute_name), style="")
+            return dumper.represent_scalar(
+                "!GetAtt", ".".join([name] + self._attribute_name), style=""
+            )
 
 
 class GetAZs(_Function):
@@ -166,7 +173,9 @@ class Join(_Function):
             values = list(values)
 
         if len(values) < 2:
-            raise ValueError("`values` parameter must contain at least 2 values to join together")
+            raise ValueError(
+                "`values` parameter must contain at least 2 values to join together"
+            )
 
         # Save fields for YAML output
         self._delimiter = delimiter
@@ -192,7 +201,9 @@ class Ref(_Function):
         # provide a helpful error message. Beware that PseudoParameters
         # are valid referents, but still look like a string!
         if isinstance(data, str) and not isinstance(data, PseudoParameter):
-            raise TypeError("You can't directly create a Ref to a name. Try Ref._for_name(name).")
+            raise TypeError(
+                "You can't directly create a Ref to a name. Try Ref._for_name(name)."
+            )
 
         self._data = data
 
@@ -243,11 +254,15 @@ class Sub(_Function):
             raise TypeError("The Fn::Sub function can only accept a string.")
         if isinstance(input, PseudoParameter):
             # Beware that a PseudoParameter is actually a string, in Flying Circus
-            raise TypeError("Don't try to use a Pseudo Parameter as the input of Fn::Sub.")
+            raise TypeError(
+                "Don't try to use a Pseudo Parameter as the input of Fn::Sub."
+            )
 
         for name in vars.keys():
             if not isinstance(name, str):
-                raise TypeError(f"Variable names for Fn::Sub function must be a string, not `{name}`.")
+                raise TypeError(
+                    f"Variable names for Fn::Sub function must be a string, not `{name}`."
+                )
 
         self._input = input
         self._variables = vars

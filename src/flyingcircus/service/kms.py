@@ -17,4 +17,6 @@ class Key(_raw.Key):
     @property
     def name(self):
         # TODO #113 create an Alias instead
-        raise NotImplementedError("Key.name cannot be set as a tag. We need to use an Alias.")
+        raise NotImplementedError(
+            "Key.name cannot be set as a tag. We need to use an Alias."
+        )
