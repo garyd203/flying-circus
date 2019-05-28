@@ -1,4 +1,5 @@
 # Python dependencies for development work on the flying-circus library
+--editable .
 attrs==18.2.0
 black==19.3b0
 boto3==1.4.8
