@@ -156,6 +156,7 @@ class ParameterProperties(ResourceProperties):
     AllowedPattern = attrib(default=None)
     Description = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
     Type = attrib(default=None)
     Value = attrib(default=None)
 
@@ -191,6 +192,7 @@ class PatchBaselineProperties(ResourceProperties):
     RejectedPatches = attrib(default=None)
     RejectedPatchesAction = attrib(default=None)
     Sources = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
