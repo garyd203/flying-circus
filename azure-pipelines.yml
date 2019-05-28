@@ -4,6 +4,17 @@ trigger:
 stages:
   - stage: Checks
     jobs:
+      - job: CodeStyle
+        timeoutInMinutes: 5
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              python -m pip install --upgrade pip
+              pip install black
+              black --check src tests tools
+            displayName: 'black'
+
       - job: Test
         timeoutInMinutes: 10
         pool:
