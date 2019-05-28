@@ -2,7 +2,7 @@ trigger:
   - master
 
 stages:
-  - stage: Test
+  - stage: Checks
     jobs:
       - job: Test
         timeoutInMinutes: 10
@@ -14,7 +14,6 @@ stages:
               python.version: '3.6'
             Python37:
               python.version: '3.7'
-
         steps:
           - task: UsePythonVersion@0
             inputs:
