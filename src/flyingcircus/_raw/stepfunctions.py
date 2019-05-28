@@ -21,6 +21,7 @@ __all__ = ["Activity", "ActivityProperties", "StateMachine", "StateMachineProper
 @attrs(**ATTRSCONFIG)
 class ActivityProperties(ResourceProperties):
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -45,6 +46,7 @@ class StateMachineProperties(ResourceProperties):
     DefinitionString = attrib(default=None)
     RoleArn = attrib(default=None)
     StateMachineName = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
