@@ -112,6 +112,7 @@ class NotebookInstanceProperties(ResourceProperties):
     LifecycleConfigName = attrib(default=None)
     NotebookInstanceName = attrib(default=None)
     RoleArn = attrib(default=None)
+    RootAccess = attrib(default=None)
     SecurityGroupIds = attrib(default=None)
     SubnetId = attrib(default=None)
     Tags = attrib(default=None)

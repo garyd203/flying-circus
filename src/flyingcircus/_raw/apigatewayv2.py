@@ -18,10 +18,14 @@ from ..core import create_object_converter
 __all__ = [
     "Api",
     "ApiProperties",
+    "ApiMapping",
+    "ApiMappingProperties",
     "Authorizer",
     "AuthorizerProperties",
     "Deployment",
     "DeploymentProperties",
+    "DomainName",
+    "DomainNameProperties",
     "Integration",
     "IntegrationProperties",
     "IntegrationResponse",
@@ -61,6 +65,31 @@ class Api(Resource):
 
     Properties: ApiProperties = attrib(
         factory=ApiProperties, converter=create_object_converter(ApiProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ApiMappingProperties(ResourceProperties):
+    ApiId = attrib(default=None)
+    ApiMappingKey = attrib(default=None)
+    DomainName = attrib(default=None)
+    Stage = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ApiMapping(Resource):
+    """A Api Mapping for ApiGatewayV2.
+
+    See Also:
+        `AWS Cloud Formation documentation for ApiMapping
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apimapping.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ApiGatewayV2::ApiMapping"
+
+    Properties: ApiMappingProperties = attrib(
+        factory=ApiMappingProperties,
+        converter=create_object_converter(ApiMappingProperties),
     )
 
 
@@ -114,6 +143,29 @@ class Deployment(Resource):
     Properties: DeploymentProperties = attrib(
         factory=DeploymentProperties,
         converter=create_object_converter(DeploymentProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class DomainNameProperties(ResourceProperties):
+    DomainName = attrib(default=None)
+    DomainNameConfigurations = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class DomainName(Resource):
+    """A Domain Name for ApiGatewayV2.
+
+    See Also:
+        `AWS Cloud Formation documentation for DomainName
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ApiGatewayV2::DomainName"
+
+    Properties: DomainNameProperties = attrib(
+        factory=DomainNameProperties,
+        converter=create_object_converter(DomainNameProperties),
     )
 
 

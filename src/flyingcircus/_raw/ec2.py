@@ -87,8 +87,6 @@ __all__ = [
     "TransitGatewayRouteTableAssociationProperties",
     "TransitGatewayRouteTablePropagation",
     "TransitGatewayRouteTablePropagationProperties",
-    "TrunkInterfaceAssociation",
-    "TrunkInterfaceAssociationProperties",
     "Volume",
     "VolumeProperties",
     "VolumeAttachment",
@@ -1018,31 +1016,6 @@ class TransitGatewayRouteTablePropagation(Resource):
         converter=create_object_converter(
             TransitGatewayRouteTablePropagationProperties
         ),
-    )
-
-
-@attrs(**ATTRSCONFIG)
-class TrunkInterfaceAssociationProperties(ResourceProperties):
-    BranchInterfaceId = attrib(default=None)
-    GREKey = attrib(default=None)
-    TrunkInterfaceId = attrib(default=None)
-    VLANId = attrib(default=None)
-
-
-@attrs(**ATTRSCONFIG)
-class TrunkInterfaceAssociation(Resource):
-    """A Trunk Interface Association for EC2.
-
-    See Also:
-        `AWS Cloud Formation documentation for TrunkInterfaceAssociation
-        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trunkinterfaceassociation.html>`_
-    """
-
-    RESOURCE_TYPE = "AWS::EC2::TrunkInterfaceAssociation"
-
-    Properties: TrunkInterfaceAssociationProperties = attrib(
-        factory=TrunkInterfaceAssociationProperties,
-        converter=create_object_converter(TrunkInterfaceAssociationProperties),
     )
 
 

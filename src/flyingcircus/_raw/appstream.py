@@ -71,6 +71,7 @@ class FleetProperties(ResourceProperties):
     InstanceType = attrib(default=None)
     MaxUserDurationInSeconds = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
     VpcConfig = attrib(default=None)
 
 
@@ -101,6 +102,7 @@ class ImageBuilderProperties(ResourceProperties):
     ImageName = attrib(default=None)
     InstanceType = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
     VpcConfig = attrib(default=None)
 
 
@@ -132,6 +134,7 @@ class StackProperties(ResourceProperties):
     Name = attrib(default=None)
     RedirectURL = attrib(default=None)
     StorageConnectors = attrib(default=None)
+    Tags = attrib(default=None)
     UserSettings = attrib(default=None)
 
 

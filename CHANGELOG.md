@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+* Update AWS Resource specification to v3.0.0
 
 ## [v0.6.3] - 2019-03-14
 ### Changed
