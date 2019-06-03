@@ -98,7 +98,7 @@ class GetAtt(_Function):
                 )
 
         self._resource = resource
-        self._attribute_name = list(attribute_name)
+        self._attribute_name = tuple(attribute_name)
 
     def as_yaml_node(self, dumper):
         name = dumper.cfn_stack.get_logical_name(
@@ -106,11 +106,31 @@ class GetAtt(_Function):
         )  # Pass error through
 
         if self._attribute_name_has_refs:
-            return dumper.represent_dict({"Fn::GetAtt": [name] + self._attribute_name})
+            return dumper.represent_dict(
+                {"Fn::GetAtt": [name] + list(self._attribute_name)}
+            )
         else:
             return dumper.represent_scalar(
-                "!GetAtt", ".".join([name] + self._attribute_name), style=""
+                "!GetAtt", ".".join([name] + list(self._attribute_name)), style=""
             )
+
+    def __eq__(self, other):
+        # noinspection PyProtectedMember
+        if not isinstance(other, self.__class__):
+            return False
+
+        # Two GetAtt calculations are equal if they refer to *exactly* the same object...
+        if self._resource is not other._resource:
+            return False
+
+        # ... and the same attribute names, calculated in the same way
+        return self._attribute_name == other._attribute_name
+
+    def __hash__(self):
+        # An immutable class that implements equality should also implement hash.
+        # Equal objects should have the same hash, so we derive our hash from
+        # the class, the resource, and the attribute list
+        return hash((self.__class__, id(self._resource), self._attribute_name))
 
 
 class GetAZs(_Function):

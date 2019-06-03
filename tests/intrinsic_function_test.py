@@ -325,6 +325,92 @@ class TestGetAtt:
 
         assert "GetAZs" in str(excinfo.value)
 
+    # Equality
+    # --------
+    def test_getatt_on_same_resource_is_equal(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        func1 = GetAtt(data, "Attrib")
+        func2 = GetAtt(data, "Attrib")
+
+        # Verify
+        assert func1 == func2
+        assert not (func1 != func2)
+        assert hash(func1) == hash(func2)
+
+    def test_getatt_with_same_ref_as_attribute_is_equal(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        referent = ZeroAttributeObject()
+
+        func1 = GetAtt(data, Ref(referent))
+        func2 = GetAtt(data, Ref(referent))
+
+        # Verify
+        assert func1 == func2
+        assert not (func1 != func2)
+        assert hash(func1) == hash(func2)
+
+    def test_getatt_on_different_resources_is_not_equal(self):
+        # Setup
+        func1 = GetAtt(SingleAttributeObject(one=42), "Attrib")
+        func2 = GetAtt(ZeroAttributeObject(), "Attrib")
+
+        # Verify
+        assert func1 != func2
+        assert not (func1 == func2)
+        assert hash(func1) != hash(func2)
+
+    def test_getatt_on_different_attributes_is_not_equal(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        func1 = GetAtt(data, "Attrib1", "Attrib2")
+        func2 = GetAtt(data, "Attrib2", "Attrib1")
+
+        # Verify
+        assert func1 != func2
+        assert not (func1 == func2)
+        assert hash(func1) != hash(func2)
+
+    def test_getatt_on_similar_resources_is_not_equal(self):
+        # Setup
+        func1 = GetAtt(SingleAttributeObject(one=42), "Attrib")
+        func2 = GetAtt(SingleAttributeObject(one=42), "Attrib")
+
+        # Verify
+        assert func1 != func2
+        assert not (func1 == func2)
+        assert hash(func1) != hash(func2)
+
+    @pytest.mark.parametrize(
+        "constructor",
+        [
+            # An unrelated data type
+            lambda a, b: tuple((a, b))
+        ],
+    )
+    def test_getatt_is_not_equal_to_arbitrary_object(self, constructor):
+        # Setup
+        data = SingleAttributeObject(one=42)
+
+        func = GetAtt(data, "Attrib")
+        other = constructor(data, "Attrib")
+
+        # Verify
+        assert func != other
+        assert other != func
+        assert not (func == other)
+        assert not (other == func)
+        assert hash(func) != hash(other)
+
+    def test_hash_is_different_from_hash_of_resource(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        func = GetAtt(data, "Attrib")
+
+        # Verify
+        assert hash(data) != hash(func)
+
 
 class TestGetAZs:
     """Test behaviour/output of the GetAZs function."""
