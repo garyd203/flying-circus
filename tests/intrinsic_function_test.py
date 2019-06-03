@@ -875,16 +875,14 @@ class TestRef:
         assert not (ref1 == ref2)
         assert hash(ref1) != hash(ref2)
 
-    def test_hash_is_different_from_hash_of_referent(self):
-        # Setup
-        data = SingleAttributeObject(one=42)
-        ref = Ref(data)
-
-        # Verify
-        assert hash(data) != hash(ref)
-
     @pytest.mark.parametrize(
-        "func", [Base64, str]  # A Ref-like object  # An unrelated data type
+        "func",
+        [
+            # A Ref-like object
+            Base64,
+            # An unrelated data type
+            str,
+        ],
     )
     def test_ref_is_not_equal_to_arbitrary_object(self, func):
         # Setup
@@ -899,6 +897,14 @@ class TestRef:
         assert not (ref == other)
         assert not (other == ref)
         assert hash(ref) != hash(other)
+
+    def test_hash_is_different_from_hash_of_referent(self):
+        # Setup
+        data = SingleAttributeObject(one=42)
+        ref = Ref(data)
+
+        # Verify
+        assert hash(data) != hash(ref)
 
 
 class TestSubWithoutExplicitVariables:
