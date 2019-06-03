@@ -20,6 +20,7 @@ __all__ = ["Repository", "RepositoryProperties"]
 
 @attrs(**ATTRSCONFIG)
 class RepositoryProperties(ResourceProperties):
+    Code = attrib(default=None)
     RepositoryDescription = attrib(default=None)
     RepositoryName = attrib(default=None)
     Triggers = attrib(default=None)

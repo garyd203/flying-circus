@@ -24,12 +24,16 @@ __all__ = [
     "CrawlerProperties",
     "Database",
     "DatabaseProperties",
+    "DataCatalogEncryptionSettings",
+    "DataCatalogEncryptionSettingsProperties",
     "DevEndpoint",
     "DevEndpointProperties",
     "Job",
     "JobProperties",
     "Partition",
     "PartitionProperties",
+    "SecurityConfiguration",
+    "SecurityConfigurationProperties",
     "Table",
     "TableProperties",
     "Trigger",
@@ -39,6 +43,7 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class ClassifierProperties(ResourceProperties):
+    CsvClassifier = attrib(default=None)
     GrokClassifier = attrib(default=None)
     JsonClassifier = attrib(default=None)
     XMLClassifier = attrib(default=None)
@@ -88,6 +93,7 @@ class Connection(Resource):
 class CrawlerProperties(ResourceProperties):
     Classifiers = attrib(default=None)
     Configuration = attrib(default=None)
+    CrawlerSecurityConfiguration = attrib(default=None)
     DatabaseName = attrib(default=None)
     Description = attrib(default=None)
     Name = attrib(default=None)
@@ -95,6 +101,7 @@ class CrawlerProperties(ResourceProperties):
     Schedule = attrib(default=None)
     SchemaChangePolicy = attrib(default=None)
     TablePrefix = attrib(default=None)
+    Tags = attrib(default=None)
     Targets = attrib(default=None)
 
 
@@ -111,6 +118,29 @@ class Crawler(Resource):
 
     Properties: CrawlerProperties = attrib(
         factory=CrawlerProperties, converter=create_object_converter(CrawlerProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class DataCatalogEncryptionSettingsProperties(ResourceProperties):
+    CatalogId = attrib(default=None)
+    DataCatalogEncryptionSettings = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class DataCatalogEncryptionSettings(Resource):
+    """A Data Catalog Encryption Settings for Glue.
+
+    See Also:
+        `AWS Cloud Formation documentation for DataCatalogEncryptionSettings
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-datacatalogencryptionsettings.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Glue::DataCatalogEncryptionSettings"
+
+    Properties: DataCatalogEncryptionSettingsProperties = attrib(
+        factory=DataCatalogEncryptionSettingsProperties,
+        converter=create_object_converter(DataCatalogEncryptionSettingsProperties),
     )
 
 
@@ -145,8 +175,10 @@ class DevEndpointProperties(ResourceProperties):
     NumberOfNodes = attrib(default=None)
     PublicKey = attrib(default=None)
     RoleArn = attrib(default=None)
+    SecurityConfiguration = attrib(default=None)
     SecurityGroupIds = attrib(default=None)
     SubnetId = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -178,6 +210,8 @@ class JobProperties(ResourceProperties):
     MaxRetries = attrib(default=None)
     Name = attrib(default=None)
     Role = attrib(default=None)
+    SecurityConfiguration = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -222,6 +256,29 @@ class Partition(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class SecurityConfigurationProperties(ResourceProperties):
+    EncryptionConfiguration = attrib(default=None)
+    Name = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class SecurityConfiguration(Resource):
+    """A Security Configuration for Glue.
+
+    See Also:
+        `AWS Cloud Formation documentation for SecurityConfiguration
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-securityconfiguration.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Glue::SecurityConfiguration"
+
+    Properties: SecurityConfigurationProperties = attrib(
+        factory=SecurityConfigurationProperties,
+        converter=create_object_converter(SecurityConfigurationProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class TableProperties(ResourceProperties):
     CatalogId = attrib(default=None)
     DatabaseName = attrib(default=None)
@@ -251,6 +308,7 @@ class TriggerProperties(ResourceProperties):
     Name = attrib(default=None)
     Predicate = attrib(default=None)
     Schedule = attrib(default=None)
+    Tags = attrib(default=None)
     Type = attrib(default=None)
 
 

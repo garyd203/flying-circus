@@ -117,10 +117,12 @@ class FunctionConfiguration(Resource):
 
 @attrs(**ATTRSCONFIG)
 class GraphQLApiProperties(ResourceProperties):
+    AdditionalAuthenticationProviders = attrib(default=None)
     AuthenticationType = attrib(default=None)
     LogConfig = attrib(default=None)
     Name = attrib(default=None)
     OpenIDConnectConfig = attrib(default=None)
+    Tags = attrib(default=None)
     UserPoolConfig = attrib(default=None)
 
 

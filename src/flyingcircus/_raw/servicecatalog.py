@@ -36,6 +36,8 @@ __all__ = [
     "PortfolioProductAssociationProperties",
     "PortfolioShare",
     "PortfolioShareProperties",
+    "ResourceUpdateConstraint",
+    "ResourceUpdateConstraintProperties",
     "TagOption",
     "TagOptionProperties",
     "TagOptionAssociation",
@@ -303,6 +305,32 @@ class PortfolioShare(Resource):
     Properties: PortfolioShareProperties = attrib(
         factory=PortfolioShareProperties,
         converter=create_object_converter(PortfolioShareProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ResourceUpdateConstraintProperties(ResourceProperties):
+    AcceptLanguage = attrib(default=None)
+    Description = attrib(default=None)
+    PortfolioId = attrib(default=None)
+    ProductId = attrib(default=None)
+    TagUpdateOnProvisionedProduct = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ResourceUpdateConstraint(Resource):
+    """A Resource Update Constraint for ServiceCatalog.
+
+    See Also:
+        `AWS Cloud Formation documentation for ResourceUpdateConstraint
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-servicecatalog-resourceupdateconstraint.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ServiceCatalog::ResourceUpdateConstraint"
+
+    Properties: ResourceUpdateConstraintProperties = attrib(
+        factory=ResourceUpdateConstraintProperties,
+        converter=create_object_converter(ResourceUpdateConstraintProperties),
     )
 
 
