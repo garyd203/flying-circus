@@ -90,6 +90,7 @@ class TaskDefinitionProperties(ResourceProperties):
     Memory = attrib(default=None)
     NetworkMode = attrib(default=None)
     PlacementConstraints = attrib(default=None)
+    ProxyConfiguration = attrib(default=None)
     RequiresCompatibilities = attrib(default=None)
     TaskRoleArn = attrib(default=None)
     Volumes = attrib(default=None)

@@ -19,6 +19,8 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "CapacityReservation",
+    "CapacityReservationProperties",
     "CustomerGateway",
     "CustomerGatewayProperties",
     "DHCPOptions",
@@ -116,6 +118,38 @@ __all__ = [
     "VPNGatewayRoutePropagation",
     "VPNGatewayRoutePropagationProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class CapacityReservationProperties(ResourceProperties):
+    AvailabilityZone = attrib(default=None)
+    EbsOptimized = attrib(default=None)
+    EndDate = attrib(default=None)
+    EndDateType = attrib(default=None)
+    EphemeralStorage = attrib(default=None)
+    InstanceCount = attrib(default=None)
+    InstanceMatchCriteria = attrib(default=None)
+    InstancePlatform = attrib(default=None)
+    InstanceType = attrib(default=None)
+    TagSpecifications = attrib(default=None)
+    Tenancy = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class CapacityReservation(Resource):
+    """A Capacity Reservation for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for CapacityReservation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-capacityreservation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::CapacityReservation"
+
+    Properties: CapacityReservationProperties = attrib(
+        factory=CapacityReservationProperties,
+        converter=create_object_converter(CapacityReservationProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)

@@ -156,7 +156,9 @@ class ParameterProperties(ResourceProperties):
     AllowedPattern = attrib(default=None)
     Description = attrib(default=None)
     Name = attrib(default=None)
+    Policies = attrib(default=None)
     Tags = attrib(default=None)
+    Tier = attrib(default=None)
     Type = attrib(default=None)
     Value = attrib(default=None)
 

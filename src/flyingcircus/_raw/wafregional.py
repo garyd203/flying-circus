@@ -18,8 +18,14 @@ from ..core import create_object_converter
 __all__ = [
     "ByteMatchSet",
     "ByteMatchSetProperties",
+    "GeoMatchSet",
+    "GeoMatchSetProperties",
     "IPSet",
     "IPSetProperties",
+    "RateBasedRule",
+    "RateBasedRuleProperties",
+    "RegexPatternSet",
+    "RegexPatternSetProperties",
     "Rule",
     "RuleProperties",
     "SizeConstraintSet",
@@ -59,6 +65,29 @@ class ByteMatchSet(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class GeoMatchSetProperties(ResourceProperties):
+    GeoMatchConstraints = attrib(default=None)
+    Name = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class GeoMatchSet(Resource):
+    """A Geo Match Set for WAFRegional.
+
+    See Also:
+        `AWS Cloud Formation documentation for GeoMatchSet
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-geomatchset.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::WAFRegional::GeoMatchSet"
+
+    Properties: GeoMatchSetProperties = attrib(
+        factory=GeoMatchSetProperties,
+        converter=create_object_converter(GeoMatchSetProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class IPSetProperties(ResourceProperties):
     IPSetDescriptors = attrib(default=None)
     Name = attrib(default=None)
@@ -77,6 +106,55 @@ class IPSet(Resource):
 
     Properties: IPSetProperties = attrib(
         factory=IPSetProperties, converter=create_object_converter(IPSetProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class RateBasedRuleProperties(ResourceProperties):
+    MatchPredicates = attrib(default=None)
+    MetricName = attrib(default=None)
+    Name = attrib(default=None)
+    RateKey = attrib(default=None)
+    RateLimit = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class RateBasedRule(Resource):
+    """A Rate Based Rule for WAFRegional.
+
+    See Also:
+        `AWS Cloud Formation documentation for RateBasedRule
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ratebasedrule.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::WAFRegional::RateBasedRule"
+
+    Properties: RateBasedRuleProperties = attrib(
+        factory=RateBasedRuleProperties,
+        converter=create_object_converter(RateBasedRuleProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class RegexPatternSetProperties(ResourceProperties):
+    Name = attrib(default=None)
+    RegexPatternStrings = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class RegexPatternSet(Resource):
+    """A Regex Pattern Set for WAFRegional.
+
+    See Also:
+        `AWS Cloud Formation documentation for RegexPatternSet
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-regexpatternset.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::WAFRegional::RegexPatternSet"
+
+    Properties: RegexPatternSetProperties = attrib(
+        factory=RegexPatternSetProperties,
+        converter=create_object_converter(RegexPatternSetProperties),
     )
 
 
