@@ -227,7 +227,7 @@ class Ref(_Function):
 
     def __hash__(self):
         # An immutable class that implements equality should also implement hash.
-        # Equal objects should have the same hash, so we derive our has from
+        # Equal objects should have the same hash, so we derive our hash from
         # the class and the referred object
         return hash((self.__class__, id(self._data)))
 
