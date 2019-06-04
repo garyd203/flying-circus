@@ -1,5 +1,6 @@
 [![PyPI release](https://img.shields.io/pypi/v/flying-circus.svg)](https://pypi.python.org/pypi/flying-circus)
 [![Python versions](https://img.shields.io/pypi/pyversions/flying-circus.svg)](https://pypi.python.org/pypi/flying-circus)
+[![Build Status](https://dev.azure.com/garyd203/flying-circus/_apis/build/status/garyd203.flying-circus?branchName=master)](https://dev.azure.com/garyd203/flying-circus/_build/latest?definitionId=1&branchName=master)
 [![Documentation Status](https://readthedocs.org/projects/flying-circus/badge/?version=latest)](http://flying-circus.readthedocs.io/en/latest/?badge=latest)
 [![Downloads](https://img.shields.io/pypi/dm/flying-circus.svg)](https://pypi.python.org/pypi/flying-circus)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
