@@ -34,6 +34,7 @@ setup(
         # We use the `kw_only` only for attribute classes, which was
         # introduced in v18.2.0
         'attrs>=18.2.0',
+        "inflection>=0.3.1,<0.4",
         # TODO #165 PyYAML v3 has vulnerability that does not affect us, but we should upgrade as soon as a fix is available
         'PyYAML==3.13',
     ],
