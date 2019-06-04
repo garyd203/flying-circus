@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+
+## [v0.6.4] - 2019-06-04
+### Changed
 * Update AWS Resource specification to v3.3.0
 * Utilities to create inline AWS Lambda functions
 * Support equals for GetAtt
