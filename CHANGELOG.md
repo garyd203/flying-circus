@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 * Update AWS Resource specification to v3.3.0
 * Utilities to create inline AWS Lambda functions
+* Support equals for GetAtt
 
 ## [v0.6.3] - 2019-03-14
 ### Changed
