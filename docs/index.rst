@@ -12,5 +12,7 @@ convenient and powerful way to describe AWS infrastructure as code.
     introduction.rst
     getting_started.rst
     licence-notes.rst
+    internal_development/release.rst
+    autodoc/modules.rst
 
 
