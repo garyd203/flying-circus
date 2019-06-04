@@ -23,7 +23,7 @@ setup(
     # Basic Project Description
     name="flying-circus",
     version=get_version_data()['__version__'],
-    description="A tool for describing AWS infrastructure.",
+    description="A tool for describing AWS infrastructure as code",
     long_description=get_readme(),
     long_description_content_type="text/markdown",
 
