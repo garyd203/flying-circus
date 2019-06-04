@@ -22,22 +22,6 @@ for some background and guidance. Or just do the following steps
 
       git checkout master
       git pull
-#. Run black to ensure everything is correctly formatted
-
-   .. code-block:: bash
-
-      black --check src tests
-#. Create a fresh venv and run all tests (including integration tests)
-
-   .. code-block:: bash
-
-      rm -rf venv
-      virtualenv -p python3.6 venv
-      source ./venv/bin/activate
-      pip install -r requirements.txt
-      pip install -e . # Install the local working copy of flying circus in "edit" mode
-      export AWS_PROFILE=your-aws-test-profile
-      pytest tests --run-aws-integration-tests
 #. Do a clean build and upload to PyPI:
 
    .. code-block:: bash
@@ -52,7 +36,7 @@ for some background and guidance. Or just do the following steps
 
    .. code-block:: bash
 
-      git tag -a release-0.4.0 -m "#63: Release version 0.4.0"
+      git tag -a release-0.4.0 -m "Release version 0.4.0"
       git push origin release-0.4.0
 #. Bump version in ``_about.py`` in order to avoid unfortunate mistakes :-)
 #. Close any relevant github issue and milestone
