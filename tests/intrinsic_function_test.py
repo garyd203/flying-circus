@@ -622,6 +622,59 @@ class TestImportValue:
             """
         )
 
+    # Equality
+    # --------
+    def test_imports_of_same_name_are_equal(self):
+        # Setup
+        name = "some-exported-name"
+        import1 = ImportValue(name)
+        import2 = ImportValue(name)
+
+        # Verify
+        assert import1 == import2
+        assert not (import1 != import2)
+        assert hash(import1) == hash(import2)
+
+    def test_imports_of_different_names_are_not_equal(self):
+        # Setup
+        import1 = ImportValue("exported-name-1")
+        import2 = ImportValue("exported-name-2")
+
+        # Verify
+        assert import1 != import2
+        assert not (import1 == import2)
+        assert hash(import1) != hash(import2)
+
+    @pytest.mark.parametrize(
+        "constructor",
+        [
+            # An ImportValue-like object
+            Base64,
+            # An unrelated data type
+            str,
+        ],
+    )
+    def test_import_is_not_equal_to_arbitrary_object(self, constructor):
+        # Setup
+        name = "some-exported-name"
+        func = ImportValue(name)
+        other = constructor(name)
+
+        # Verify
+        assert func != other
+        assert other != func
+        assert not (func == other)
+        assert not (other == func)
+        assert hash(func) != hash(other)
+
+    def test_hash_is_different_from_hash_of_export_name(self):
+        # Setup
+        name = "some-exported-name"
+        func = ImportValue(name)
+
+        # Verify
+        assert hash(name) != hash(func)
+
 
 class TestJoin:
     """Test behaviour/output of the Join function."""
