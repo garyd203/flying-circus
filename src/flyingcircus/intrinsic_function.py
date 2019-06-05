@@ -160,6 +160,23 @@ class ImportValue(_Function):
     def as_yaml_node(self, dumper):
         return self._get_string_node(dumper, self._export_name, "ImportValue")
 
+    def __eq__(self, other):
+        # noinspection PyProtectedMember
+        if not isinstance(other, self.__class__):
+            return False
+
+        # Two references are equal if they refer to the same name (which may
+        # be another intrinsic function). We can't dereference other functions
+        # to evaluate their final string form, so we do a shallow comparison
+        # based on string-or-object.
+        return self._export_name == other._export_name
+
+    def __hash__(self):
+        # An immutable class that implements equality should also implement hash.
+        # Equal objects should have the same hash, so we derive our hash from
+        # the class and the name
+        return hash((self.__class__, self._export_name))
+
 
 class Join(_Function):
     """Models the behaviour of Fn::Join for Python objects.
