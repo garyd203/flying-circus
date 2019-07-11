@@ -31,6 +31,8 @@ class BucketProperties(ResourceProperties):
     LoggingConfiguration = attrib(default=None)
     MetricsConfigurations = attrib(default=None)
     NotificationConfiguration = attrib(default=None)
+    ObjectLockConfiguration = attrib(default=None)
+    ObjectLockEnabled = attrib(default=None)
     PublicAccessBlockConfiguration = attrib(default=None)
     ReplicationConfiguration = attrib(default=None)
     Tags = attrib(default=None)

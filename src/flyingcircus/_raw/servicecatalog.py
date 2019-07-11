@@ -38,6 +38,8 @@ __all__ = [
     "PortfolioShareProperties",
     "ResourceUpdateConstraint",
     "ResourceUpdateConstraintProperties",
+    "StackSetConstraint",
+    "StackSetConstraintProperties",
     "TagOption",
     "TagOptionProperties",
     "TagOptionAssociation",
@@ -110,6 +112,7 @@ class CloudFormationProvisionedProductProperties(ResourceProperties):
     ProvisioningArtifactId = attrib(default=None)
     ProvisioningArtifactName = attrib(default=None)
     ProvisioningParameters = attrib(default=None)
+    ProvisioningPreferences = attrib(default=None)
     Tags = attrib(default=None)
 
 
@@ -331,6 +334,36 @@ class ResourceUpdateConstraint(Resource):
     Properties: ResourceUpdateConstraintProperties = attrib(
         factory=ResourceUpdateConstraintProperties,
         converter=create_object_converter(ResourceUpdateConstraintProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class StackSetConstraintProperties(ResourceProperties):
+    AcceptLanguage = attrib(default=None)
+    AccountList = attrib(default=None)
+    AdminRole = attrib(default=None)
+    Description = attrib(default=None)
+    ExecutionRole = attrib(default=None)
+    PortfolioId = attrib(default=None)
+    ProductId = attrib(default=None)
+    RegionList = attrib(default=None)
+    StackInstanceControl = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class StackSetConstraint(Resource):
+    """A Stack Set Constraint for ServiceCatalog.
+
+    See Also:
+        `AWS Cloud Formation documentation for StackSetConstraint
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-servicecatalog-stacksetconstraint.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ServiceCatalog::StackSetConstraint"
+
+    Properties: StackSetConstraintProperties = attrib(
+        factory=StackSetConstraintProperties,
+        converter=create_object_converter(StackSetConstraintProperties),
     )
 
 

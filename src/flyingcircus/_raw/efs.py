@@ -23,6 +23,7 @@ class FileSystemProperties(ResourceProperties):
     Encrypted = attrib(default=None)
     FileSystemTags = attrib(default=None)
     KmsKeyId = attrib(default=None)
+    LifecyclePolicies = attrib(default=None)
     PerformanceMode = attrib(default=None)
     ProvisionedThroughputInMibps = attrib(default=None)
     ThroughputMode = attrib(default=None)

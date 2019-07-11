@@ -66,6 +66,7 @@ class FleetProperties(ResourceProperties):
     DomainJoinInfo = attrib(default=None)
     EnableDefaultInternetAccess = attrib(default=None)
     FleetType = attrib(default=None)
+    IdleDisconnectTimeoutInSeconds = attrib(default=None)
     ImageArn = attrib(default=None)
     ImageName = attrib(default=None)
     InstanceType = attrib(default=None)

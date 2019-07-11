@@ -21,6 +21,14 @@ from ..core import create_object_converter
 __all__ = [
     "CapacityReservation",
     "CapacityReservationProperties",
+    "ClientVpnAuthorizationRule",
+    "ClientVpnAuthorizationRuleProperties",
+    "ClientVpnEndpoint",
+    "ClientVpnEndpointProperties",
+    "ClientVpnRoute",
+    "ClientVpnRouteProperties",
+    "ClientVpnTargetNetworkAssociation",
+    "ClientVpnTargetNetworkAssociationProperties",
     "CustomerGateway",
     "CustomerGatewayProperties",
     "DHCPOptions",
@@ -149,6 +157,109 @@ class CapacityReservation(Resource):
     Properties: CapacityReservationProperties = attrib(
         factory=CapacityReservationProperties,
         converter=create_object_converter(CapacityReservationProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnAuthorizationRuleProperties(ResourceProperties):
+    AccessGroupId = attrib(default=None)
+    AuthorizeAllGroups = attrib(default=None)
+    ClientVpnEndpointId = attrib(default=None)
+    Description = attrib(default=None)
+    TargetNetworkCidr = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnAuthorizationRule(Resource):
+    """A Client Vpn Authorization Rule for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for ClientVpnAuthorizationRule
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-clientvpnauthorizationrule.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::ClientVpnAuthorizationRule"
+
+    Properties: ClientVpnAuthorizationRuleProperties = attrib(
+        factory=ClientVpnAuthorizationRuleProperties,
+        converter=create_object_converter(ClientVpnAuthorizationRuleProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnEndpointProperties(ResourceProperties):
+    AuthenticationOptions = attrib(default=None)
+    ClientCidrBlock = attrib(default=None)
+    ConnectionLogOptions = attrib(default=None)
+    Description = attrib(default=None)
+    DnsServers = attrib(default=None)
+    ServerCertificateArn = attrib(default=None)
+    TagSpecifications = attrib(default=None)
+    TransportProtocol = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnEndpoint(Resource):
+    """A Client Vpn Endpoint for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for ClientVpnEndpoint
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-clientvpnendpoint.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::ClientVpnEndpoint"
+
+    Properties: ClientVpnEndpointProperties = attrib(
+        factory=ClientVpnEndpointProperties,
+        converter=create_object_converter(ClientVpnEndpointProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnRouteProperties(ResourceProperties):
+    ClientVpnEndpointId = attrib(default=None)
+    Description = attrib(default=None)
+    DestinationCidrBlock = attrib(default=None)
+    TargetVpcSubnetId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnRoute(Resource):
+    """A Client Vpn Route for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for ClientVpnRoute
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-clientvpnroute.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::ClientVpnRoute"
+
+    Properties: ClientVpnRouteProperties = attrib(
+        factory=ClientVpnRouteProperties,
+        converter=create_object_converter(ClientVpnRouteProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnTargetNetworkAssociationProperties(ResourceProperties):
+    ClientVpnEndpointId = attrib(default=None)
+    SubnetId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ClientVpnTargetNetworkAssociation(Resource):
+    """A Client Vpn Target Network Association for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for ClientVpnTargetNetworkAssociation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-clientvpntargetnetworkassociation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::ClientVpnTargetNetworkAssociation"
+
+    Properties: ClientVpnTargetNetworkAssociationProperties = attrib(
+        factory=ClientVpnTargetNetworkAssociationProperties,
+        converter=create_object_converter(ClientVpnTargetNetworkAssociationProperties),
     )
 
 
@@ -338,6 +449,7 @@ class FlowLog(Resource):
 class HostProperties(ResourceProperties):
     AutoPlacement = attrib(default=None)
     AvailabilityZone = attrib(default=None)
+    HostRecovery = attrib(default=None)
     InstanceType = attrib(default=None)
 
 
@@ -651,6 +763,7 @@ class RouteProperties(ResourceProperties):
     NatGatewayId = attrib(default=None)
     NetworkInterfaceId = attrib(default=None)
     RouteTableId = attrib(default=None)
+    TransitGatewayId = attrib(default=None)
     VpcPeeringConnectionId = attrib(default=None)
 
 
@@ -1258,6 +1371,7 @@ class VPNConnectionProperties(ResourceProperties):
     CustomerGatewayId = attrib(default=None)
     StaticRoutesOnly = attrib(default=None)
     Tags = attrib(default=None)
+    TransitGatewayId = attrib(default=None)
     Type = attrib(default=None)
     VpnGatewayId = attrib(default=None)
     VpnTunnelOptionsSpecifications = attrib(default=None)

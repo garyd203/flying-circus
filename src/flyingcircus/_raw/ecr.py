@@ -23,6 +23,7 @@ class RepositoryProperties(ResourceProperties):
     LifecyclePolicy = attrib(default=None)
     RepositoryName = attrib(default=None)
     RepositoryPolicyText = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

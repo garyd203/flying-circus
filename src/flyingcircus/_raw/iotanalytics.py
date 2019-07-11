@@ -30,6 +30,7 @@ __all__ = [
 @attrs(**ATTRSCONFIG)
 class ChannelProperties(ResourceProperties):
     ChannelName = attrib(default=None)
+    ChannelStorage = attrib(default=None)
     RetentionPeriod = attrib(default=None)
     Tags = attrib(default=None)
 
@@ -53,10 +54,12 @@ class Channel(Resource):
 @attrs(**ATTRSCONFIG)
 class DatasetProperties(ResourceProperties):
     Actions = attrib(default=None)
+    ContentDeliveryRules = attrib(default=None)
     DatasetName = attrib(default=None)
     RetentionPeriod = attrib(default=None)
     Tags = attrib(default=None)
     Triggers = attrib(default=None)
+    VersioningConfiguration = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -78,6 +81,7 @@ class Dataset(Resource):
 @attrs(**ATTRSCONFIG)
 class DatastoreProperties(ResourceProperties):
     DatastoreName = attrib(default=None)
+    DatastoreStorage = attrib(default=None)
     RetentionPeriod = attrib(default=None)
     Tags = attrib(default=None)
 
