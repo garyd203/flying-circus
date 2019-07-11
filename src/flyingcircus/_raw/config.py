@@ -26,6 +26,8 @@ __all__ = [
     "ConfigurationRecorderProperties",
     "DeliveryChannel",
     "DeliveryChannelProperties",
+    "RemediationConfiguration",
+    "RemediationConfigurationProperties",
 ]
 
 
@@ -150,4 +152,31 @@ class DeliveryChannel(Resource):
     Properties: DeliveryChannelProperties = attrib(
         factory=DeliveryChannelProperties,
         converter=create_object_converter(DeliveryChannelProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class RemediationConfigurationProperties(ResourceProperties):
+    ConfigRuleName = attrib(default=None)
+    Parameters = attrib(default=None)
+    ResourceType = attrib(default=None)
+    TargetId = attrib(default=None)
+    TargetType = attrib(default=None)
+    TargetVersion = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class RemediationConfiguration(Resource):
+    """A Remediation Configuration for Config.
+
+    See Also:
+        `AWS Cloud Formation documentation for RemediationConfiguration
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-config-remediationconfiguration.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Config::RemediationConfiguration"
+
+    Properties: RemediationConfigurationProperties = attrib(
+        factory=RemediationConfigurationProperties,
+        converter=create_object_converter(RemediationConfigurationProperties),
     )

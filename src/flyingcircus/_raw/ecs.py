@@ -28,6 +28,7 @@ __all__ = [
 @attrs(**ATTRSCONFIG)
 class ClusterProperties(ResourceProperties):
     ClusterName = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -51,6 +52,7 @@ class ServiceProperties(ResourceProperties):
     Cluster = attrib(default=None)
     DeploymentConfiguration = attrib(default=None)
     DesiredCount = attrib(default=None)
+    EnableECSManagedTags = attrib(default=None)
     HealthCheckGracePeriodSeconds = attrib(default=None)
     LaunchType = attrib(default=None)
     LoadBalancers = attrib(default=None)
@@ -58,10 +60,12 @@ class ServiceProperties(ResourceProperties):
     PlacementConstraints = attrib(default=None)
     PlacementStrategies = attrib(default=None)
     PlatformVersion = attrib(default=None)
+    PropagateTags = attrib(default=None)
     Role = attrib(default=None)
     SchedulingStrategy = attrib(default=None)
     ServiceName = attrib(default=None)
     ServiceRegistries = attrib(default=None)
+    Tags = attrib(default=None)
     TaskDefinition = attrib(default=None)
 
 
@@ -92,6 +96,7 @@ class TaskDefinitionProperties(ResourceProperties):
     PlacementConstraints = attrib(default=None)
     ProxyConfiguration = attrib(default=None)
     RequiresCompatibilities = attrib(default=None)
+    Tags = attrib(default=None)
     TaskRoleArn = attrib(default=None)
     Volumes = attrib(default=None)
 

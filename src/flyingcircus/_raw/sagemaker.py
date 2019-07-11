@@ -106,6 +106,9 @@ class Model(Resource):
 
 @attrs(**ATTRSCONFIG)
 class NotebookInstanceProperties(ResourceProperties):
+    AcceleratorTypes = attrib(default=None)
+    AdditionalCodeRepositories = attrib(default=None)
+    DefaultCodeRepository = attrib(default=None)
     DirectInternetAccess = attrib(default=None)
     InstanceType = attrib(default=None)
     KmsKeyId = attrib(default=None)

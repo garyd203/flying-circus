@@ -49,6 +49,7 @@ class ApiProperties(ResourceProperties):
     Name = attrib(default=None)
     ProtocolType = attrib(default=None)
     RouteSelectionExpression = attrib(default=None)
+    Tags = attrib(default=None)
     Version = attrib(default=None)
 
 
@@ -150,6 +151,7 @@ class Deployment(Resource):
 class DomainNameProperties(ResourceProperties):
     DomainName = attrib(default=None)
     DomainNameConfigurations = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -326,6 +328,7 @@ class StageProperties(ResourceProperties):
     RouteSettings = attrib(default=None)
     StageName = attrib(default=None)
     StageVariables = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
