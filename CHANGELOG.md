@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Security
+* Upgrade to PyYAML v5.1 from v3.13. This addresses
+  [CVE-2017-18342](https://security-tracker.debian.org/tracker/CVE-2017-18342),
+  which was documented in [PyYAML bug 207](https://github.com/yaml/pyyaml/issues/207).
+  Note that this bug **did not** affect Flying Circus, because YAML is only
+  dump'ed, and hence there was no unsafe use of `yaml.load` with an untrusted
+  source)
+
 ## [v0.6.6] - 2019-07-11
 ### Changed
 * Update AWS Resource specification to v4.1.0

@@ -35,8 +35,7 @@ setup(
         # introduced in v18.2.0
         "attrs>=18.2.0",
         "inflection>=0.3.1,<0.4",
-        # TODO #165 PyYAML v3 has vulnerability that does not affect us, but we should upgrade as soon as a fix is available
-        "PyYAML==3.13",
+        "PyYAML==5.1.1",
     ],
     # Contact Details
     author="Gary Donovan",
