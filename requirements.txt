@@ -9,7 +9,7 @@ importlib_resources==1.0.2
 inflection==0.3.1
 Jinja2==2.10
 pytest==4.5.0
-PyYAML==3.13
+PyYAML==5.1.1
 semver==2.7.9
 Sphinx==1.8.4
 sphinx-autobuild==0.7.1
