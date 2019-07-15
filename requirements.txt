@@ -7,7 +7,7 @@ click==6.7
 hypothesis==3.33.0
 importlib_resources==1.0.2
 inflection==0.3.1
-Jinja2==2.10
+Jinja2==2.10.1
 pytest==4.5.0
 PyYAML==5.1.1
 semver==2.7.9
