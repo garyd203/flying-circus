@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Note that this bug **did not** affect Flying Circus, because YAML is only
   dump'ed, and hence there was no unsafe use of `yaml.load` with an untrusted
   source)
+* Upgrade to Jinja2 v2.10.1 from v2.10. This addresses
+  [CVE-2019-10906](https://nvd.nist.gov/vuln/detail/CVE-2019-10906). Note that
+  this bug **did not** affect Flying Circus users, because Jinja2 was only
+  used in an internal tool.
 
 ## [v0.6.6] - 2019-07-11
 ### Changed
