@@ -1,10 +1,11 @@
-Licencing
-=========
+Licencing - LGPL
+================
 
 What?
 -----
 
-Flying Circus uses the LGPL (GNU Lesser General Public Licence), version 3.
+Flying Circus and its code is made available under the LGPL (GNU Lesser
+General Public Licence), version 3.
 This is a copy-left open source licence intended for libraries that are used
 by other projects, regardless of the licencing that project uses.
 
@@ -25,11 +26,11 @@ shoulders of giants - our predecessors and peers who have created powerful
 software for us to use. But there will always be selfish people who take
 advantage of everyone else, and don't want to give back to the community.
 
-A GPL-style licence provides a degree of legal protection to force the bad
+A GPL-style licence provides a degree of legal protection to force bad
 actors to do the right thing, whilst not inconveniencing the rest of us. The
-LGPL variant, in particular, allows users to retain IP ownership and confidentiality
-for their internal infrastructure, whilst still gaining the power of Flying
-Circus.
+LGPL variant, in particular, allows users to retain IP ownership and
+confidentiality for their internal infrastructure, whilst still gaining the
+power of Flying Circus.
 
 Thanks for reading. We sincerely hope that Flying Circus helps you, and look
 forward to hearing from you in our community.
