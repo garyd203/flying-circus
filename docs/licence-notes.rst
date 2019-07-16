@@ -34,3 +34,17 @@ power of Flying Circus.
 
 Thanks for reading. We sincerely hope that Flying Circus helps you, and look
 forward to hearing from you in our community.
+
+Third Party
+-----------
+
+Flying Circus functionality is implemented using 3rd party libraries that have
+their own licences. It is your responsibility to check that these licences
+are acceptable to you.
+
+Flying Circus is used in conjunction with Amazon Web Services, as a tool for
+using the AWS CloudFormation API. As such, Flying Circus is partially
+dependent on the `AWS CloudFormation Template Resource specification
+<https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html>`_
+. The current version of the specification referenced by Flying Circus can be
+found in the ``contrib/`` directory in the project's source code.
