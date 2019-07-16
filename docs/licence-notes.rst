@@ -27,7 +27,7 @@ advantage of everyone else, and don't want to give back to the community.
 
 A GPL-style licence provides a degree of legal protection to force the bad
 actors to do the right thing, whilst not inconveniencing the rest of us. The
-LGPL variant, in particular, allows users to retain IP ownership and secrecy
+LGPL variant, in particular, allows users to retain IP ownership and confidentiality
 for their internal infrastructure, whilst still gaining the power of Flying
 Circus.
 
