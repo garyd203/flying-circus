@@ -11,5 +11,5 @@ Jinja2==2.10.1
 pytest==4.5.0
 PyYAML==5.1.1
 semver==2.7.9
-Sphinx==1.8.4
+Sphinx==2.1.2
 sphinx-autobuild==0.7.1
