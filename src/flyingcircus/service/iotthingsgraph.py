@@ -2,7 +2,7 @@
 
 See Also:
     `AWS developer guide for IoTThingsGraph
-    <IoTThingsGraph>`_
+    <https://docs.aws.amazon.com/thingsgraph/latest/ug/index.html>`_
 """
 
 # noinspection PyUnresolvedReferences
