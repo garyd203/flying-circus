@@ -31,6 +31,7 @@ class BrokerProperties(ResourceProperties):
     BrokerName = attrib(default=None)
     Configuration = attrib(default=None)
     DeploymentMode = attrib(default=None)
+    EncryptionOptions = attrib(default=None)
     EngineType = attrib(default=None)
     EngineVersion = attrib(default=None)
     HostInstanceType = attrib(default=None)

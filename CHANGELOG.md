@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+* Update AWS Resource specification to v4.3.0
+
 ### Security
 * Upgrade to PyYAML v5.1 from v3.13. This addresses
   [CVE-2017-18342](https://security-tracker.debian.org/tracker/CVE-2017-18342),

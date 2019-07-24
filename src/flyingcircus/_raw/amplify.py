@@ -28,6 +28,7 @@ __all__ = [
 @attrs(**ATTRSCONFIG)
 class AppProperties(ResourceProperties):
     AccessToken = attrib(default=None)
+    AutoBranchCreationConfig = attrib(default=None)
     BasicAuthConfig = attrib(default=None)
     BuildSpec = attrib(default=None)
     CustomRules = attrib(default=None)
@@ -63,6 +64,7 @@ class BranchProperties(ResourceProperties):
     BranchName = attrib(default=None)
     BuildSpec = attrib(default=None)
     Description = attrib(default=None)
+    EnableAutoBuild = attrib(default=None)
     EnvironmentVariables = attrib(default=None)
     Stage = attrib(default=None)
     Tags = attrib(default=None)
