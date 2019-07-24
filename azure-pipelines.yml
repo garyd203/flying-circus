@@ -67,7 +67,7 @@ stages:
             displayName: 'Install dependencies'
 
           - script: |
-              python setup.py sdist bdist_wheel --disable-progress-bar
+              python setup.py sdist bdist_wheel
             displayName: 'Build wheel'
 
           - task: PublishBuildArtifacts@1
