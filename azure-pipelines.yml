@@ -78,3 +78,32 @@ stages:
               artifactName: Flying_Circus_Wheel
             displayName: 'Publish Artifacts in Azure'
 
+      - job: Validate
+        dependsOn: BuildWheel
+        timeoutInMinutes: 5
+        pool:
+          vmImage: 'ubuntu-latest'
+        # FIXME use a strategy matrix here for multiple OS'es in vm
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.6'
+            displayName: 'Use Python 3.6'
+
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: Flying_Circus_Wheel
+              itemPattern: '**'
+              downloadPath: '$(System.ArtifactsDirectory)'
+            displayName: 'Download Artifact'
+
+          - script: |
+              python -m pip install --upgrade pip
+              ls $(System.ArtifactsDirectory)/Flying_Circus_Wheel/
+              find $(System.ArtifactsDirectory)/Flying_Circus_Wheel/*.whl | xargs pip install
+              python -c "import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())"
+            displayName: 'Validate Wheel'
+        # FIXME
+        # TODO add post-build install in fresh multi-OS, check install works
