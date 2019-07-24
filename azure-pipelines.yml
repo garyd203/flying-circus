@@ -69,6 +69,7 @@ stages:
 
           - script: |
               python setup.py sdist bdist_wheel
+              twine check dist/*
             displayName: 'Build wheel'
 
           - task: PublishBuildArtifacts@1
