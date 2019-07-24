@@ -47,3 +47,31 @@ stages:
           - script: |
               pytest tests
             displayName: 'pytest'
+
+  - stage: Build
+#    condition: eq(Build.SourceBranch, 'refs/heads/master') #FIXME
+    jobs:
+      - job: BuildWheel
+        timeoutInMinutes: 5
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.6'
+            displayName: 'Use Python 3.6'
+
+          - script: |
+              pip install twine
+            displayName: 'Install dependencies'
+
+          - script: |
+              python setup.py sdist bdist_wheel --disable-progress-bar
+            displayName: 'Build wheel'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathtoPublish: dist/
+              artifactName: Flying_Circus_Wheel
+            displayName: 'Publish Artifacts in Azure'
+
