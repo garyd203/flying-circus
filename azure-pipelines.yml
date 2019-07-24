@@ -62,7 +62,8 @@ stages:
             displayName: 'Use Python 3.6'
 
           - script: |
-              pip install twine
+              python -m pip install --upgrade pip
+              pip install -U twine wheel
             displayName: 'Install dependencies'
 
           - script: |
