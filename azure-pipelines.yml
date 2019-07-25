@@ -50,7 +50,7 @@ stages:
             displayName: 'pytest'
 
   - stage: Build
-#    condition: eq(Build.SourceBranch, 'refs/heads/master') #FIXME
+    condition: and(succeeded(), eq(variables.Build.SourceBranch, 'refs/heads/master'))
     jobs:
       - job: BuildWheel
         timeoutInMinutes: 5
@@ -105,5 +105,51 @@ stages:
               find $(System.ArtifactsDirectory)/Flying_Circus_Wheel/*.whl | xargs pip install
               python -c "import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())"
             displayName: 'Validate Wheel'
-        # FIXME
-        # TODO add post-build install in fresh multi-OS, check install works
+
+  - stage: Release
+    # There isn't a way to add a manual approval step to a pipeline (I think
+    # you're supposed to use a separate Release Pipeline, but they aren't
+    # available as IaC yet), so we fudge it by using a special keyword in
+    # the commit message
+    condition: |
+      and(
+        succeeded(),
+        eq(variables.Build.SourceBranch, 'refs/heads/master'),
+        contains(variables.Build.SourceVersionMessage, '[ci release]')
+      )
+    jobs:
+      - deployment: PyPiLive
+        # TODO As of July 2019 you can't set a timeout on a deployment job,
+        # notwithstanding what the documentation says
+        #timeoutInMinutes: 5
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: pypi-live
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: '3.6'
+                  displayName: 'Use Python 3.6'
+
+                - script: |
+                    python -m pip install --upgrade pip
+                    pip install -U twine wheel
+                  displayName: 'Install dependencies'
+
+                - task: TwineAuthenticate@0
+                  inputs:
+                    # This magic string is the name of a "Service Connection"
+                    # in the "Settings" section of our Azure DevOps project,
+                    # of type "Python package upload"
+                    externalFeeds: 'PyPI'
+                  displayName: 'Authenticate For PyPI'
+
+                - script: |
+                    # Note that automatic downloads in a deployment job are
+                    # put into the workspace under the artifact name (and not,
+                    # say, the temporary artifacts directory).
+                    twine upload -r PyPI --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/Flying_Circus_Wheel/
+                  displayName: 'Upload to PyPI'
