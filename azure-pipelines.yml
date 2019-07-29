@@ -4,8 +4,12 @@ variables:
   # Name of the zipped dist files when stored as an artifact in Azure
   dist_artifact: Flying_Circus_Wheel
   # Manually set flag for whether to release this build to PyPI (if other
-  # preconditions are also met)
-  do_release: false
+  # preconditions are also met).
+  #
+  # Note that this is evaluated by the Pipelines condition as a truthy string,
+  # so False is set as the empty string, and almost anything else evaluates
+  # as True.
+  do_release: '' # False
   # Name of the requirements file for test execution. This should include
   # all dependencies needed to run tests.
   requirements_test: requirements.txt
