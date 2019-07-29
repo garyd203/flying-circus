@@ -3,6 +3,9 @@ variables:
   build_python_version: '3.6'
   # Name of the zipped dist files when stored as an artifact in Azure
   dist_artifact: Flying_Circus_Wheel
+  # Name of the requirements file for test execution. This should include
+  # all dependencies needed to run tests.
+  requirements_test: requirements.txt
   # Inline Python command that can be used to validate an install of the library
   validation_script: 'import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())'
 
@@ -49,7 +52,7 @@ stages:
 
           - script: |
               python -m pip install --upgrade pip
-              pip install -r requirements.txt
+              pip install -r $(requirements_test)
               pip install pytest-azurepipelines
             displayName: 'Install dependencies'
 
