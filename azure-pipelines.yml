@@ -80,7 +80,11 @@ stages:
             displayName: 'Just a print statement'
 
   - stage: Build
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: |
+      and(
+        succeeded(),
+        eq(variables['Build.SourceBranch'], 'refs/heads/master')
+      )
     jobs:
       - job: BuildWheel
         timeoutInMinutes: 5
