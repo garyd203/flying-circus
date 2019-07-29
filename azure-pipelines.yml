@@ -53,7 +53,7 @@ stages:
               pytest tests
             displayName: 'pytest'
 
-      - job: WillThisRelease
+      - job: WillThisBeARelease
         dependsOn: Test
         condition: |
           and(
