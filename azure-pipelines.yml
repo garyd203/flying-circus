@@ -1,6 +1,8 @@
 variables:
   # Default version of Python used in build steps
   build_python_version: '3.6'
+  # Name of the zipped dist files when stored as an artifact in Azure
+  dist_artifact: Flying_Circus_Wheel
 
 trigger:
   - master
@@ -95,7 +97,7 @@ stages:
           - task: PublishBuildArtifacts@1
             inputs:
               pathtoPublish: dist/
-              artifactName: Flying_Circus_Wheel
+              artifactName: $(dist_artifact)
             displayName: 'Publish Artifacts in Azure'
 
       - job: Validate
@@ -114,15 +116,15 @@ stages:
             inputs:
               buildType: 'current'
               downloadType: 'single'
-              artifactName: Flying_Circus_Wheel
+              artifactName: '$(dist_artifact)'
               itemPattern: '**'
               downloadPath: '$(Build.ArtifactStagingDirectory)'
             displayName: 'Download Artifact'
 
           - script: |
               python -m pip install --upgrade pip
-              ls $(Build.ArtifactStagingDirectory)/Flying_Circus_Wheel/
-              find $(Build.ArtifactStagingDirectory)/Flying_Circus_Wheel/*.whl | xargs pip install
+              ls $(Build.ArtifactStagingDirectory)/$(dist_artifact)/
+              find $(Build.ArtifactStagingDirectory)/$(dist_artifact)/*.whl | xargs pip install
               python -c "import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())"
             displayName: 'Validate Wheel'
 
@@ -171,5 +173,5 @@ stages:
                     # Note that automatic downloads in a deployment job are
                     # put into the workspace under the artifact name (and not,
                     # say, the temporary artifacts directory).
-                    twine upload -r PyPI --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/Flying_Circus_Wheel/
+                    twine upload -r PyPI --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/
                   displayName: 'Upload to PyPI'
