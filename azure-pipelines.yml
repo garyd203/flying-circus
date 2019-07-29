@@ -1,3 +1,7 @@
+variables:
+  # Default version of Python used in build steps
+  build_python_version: '3.6'
+
 trigger:
   - master
 
@@ -14,8 +18,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.6'
-            displayName: 'Use Python 3.6'
+              versionSpec: $(build_python_version)
+            displayName: 'Use Python $(build_python_version)'
 
           - script: |
               python -m pip install --upgrade pip
@@ -59,8 +63,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.6'
-            displayName: 'Use Python 3.6'
+              versionSpec: $(build_python_version)
+            displayName: 'Use Python $(build_python_version)'
 
           - script: |
               python -m pip install --upgrade pip
@@ -87,8 +91,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.6'
-            displayName: 'Use Python 3.6'
+              versionSpec: '$(build_python_version)'
+            displayName: 'Use Python $(build_python_version)'
 
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -131,8 +135,8 @@ stages:
               steps:
                 - task: UsePythonVersion@0
                   inputs:
-                    versionSpec: '3.6'
-                  displayName: 'Use Python 3.6'
+                    versionSpec: $(build_python_version)
+                  displayName: 'Use Python $(build_python_version)'
 
                 - script: |
                     python -m pip install --upgrade pip
