@@ -12,11 +12,22 @@ variables:
   # Inline Python command that can be used to validate an install of the library
   validation_script: 'import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())'
 
+# Perform a build every time code is pushed to the master branch
 trigger:
-  - master
+  # Each time we push code to master we get a separate build
+  batch: false
+  branches:
+    include:
+      - master
 
+# Perform a validation build every time a PR is created that will merge into
+# the master branch
 pr:
-  - master
+  # Changes to the branch will cancel existing builds against the PR branch
+  autoCancel: true
+  branches:
+    include:
+      - master
 
 stages:
   - stage: Checks
