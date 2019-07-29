@@ -100,13 +100,13 @@ stages:
               downloadType: 'single'
               artifactName: Flying_Circus_Wheel
               itemPattern: '**'
-              downloadPath: '$(System.ArtifactsDirectory)'
+              downloadPath: '$(Build.ArtifactStagingDirectory)'
             displayName: 'Download Artifact'
 
           - script: |
               python -m pip install --upgrade pip
-              ls $(System.ArtifactsDirectory)/Flying_Circus_Wheel/
-              find $(System.ArtifactsDirectory)/Flying_Circus_Wheel/*.whl | xargs pip install
+              ls $(Build.ArtifactStagingDirectory)/Flying_Circus_Wheel/
+              find $(Build.ArtifactStagingDirectory)/Flying_Circus_Wheel/*.whl | xargs pip install
               python -c "import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())"
             displayName: 'Validate Wheel'
 
