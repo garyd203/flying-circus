@@ -58,8 +58,8 @@ stages:
         condition: |
           and(
             succeeded(),
-            eq(variables.Build.SourceBranch, 'refs/heads/master'),
-            contains(variables.Build.SourceVersionMessage, '[ci release]')
+            eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+            contains(variables['Build.SourceVersionMessage'], '[ci release]')
           )
         timeoutInMinutes: 1
         pool:
@@ -70,7 +70,7 @@ stages:
             displayName: 'Just a print statement'
 
   - stage: Build
-    condition: and(succeeded(), eq(variables.Build.SourceBranch, 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
       - job: BuildWheel
         timeoutInMinutes: 5
@@ -134,8 +134,8 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(variables.Build.SourceBranch, 'refs/heads/master'),
-        contains(variables.Build.SourceVersionMessage, '[ci release]')
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        contains(variables['Build.SourceVersionMessage'], '[ci release]')
       )
     jobs:
       - deployment: PyPiLive
