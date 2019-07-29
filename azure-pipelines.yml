@@ -3,6 +3,9 @@ variables:
   build_python_version: '3.6'
   # Name of the zipped dist files when stored as an artifact in Azure
   dist_artifact: Flying_Circus_Wheel
+  # Manually set flag for whether to release this build to PyPI (if other
+  # preconditions are also met)
+  do_release: false
   # Name of the requirements file for test execution. This should include
   # all dependencies needed to run tests.
   requirements_test: requirements.txt
@@ -66,7 +69,7 @@ stages:
           and(
             succeeded(),
             eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-            contains(variables['Build.SourceVersionMessage'], '[ci release]')
+            variables['do_release']
           )
         timeoutInMinutes: 1
         pool:
@@ -136,13 +139,13 @@ stages:
   - stage: Release
     # There isn't a way to add a manual approval step to a pipeline (I think
     # you're supposed to use a separate Release Pipeline, but they aren't
-    # available as IaC yet), so we fudge it by using a special keyword in
-    # the commit message
+    # available as IaC yet), so we fudge it by using a variable that can be
+    # overridden with a manual build.
     condition: |
       and(
         succeeded(),
         eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        contains(variables['Build.SourceVersionMessage'], '[ci release]')
+        variables['do_release']
       )
     jobs:
       - deployment: PyPiLive
