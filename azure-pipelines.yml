@@ -53,6 +53,22 @@ stages:
               pytest tests
             displayName: 'pytest'
 
+      - job: WillThisRelease
+        dependsOn: Test
+        condition: |
+          and(
+            succeeded(),
+            eq(variables.Build.SourceBranch, 'refs/heads/master'),
+            contains(variables.Build.SourceVersionMessage, '[ci release]')
+          )
+        timeoutInMinutes: 1
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              echo This build will be released to PyPI
+            displayName: 'Just a print statement'
+
   - stage: Build
     condition: and(succeeded(), eq(variables.Build.SourceBranch, 'refs/heads/master'))
     jobs:
