@@ -3,6 +3,8 @@ variables:
   build_python_version: '3.6'
   # Name of the zipped dist files when stored as an artifact in Azure
   dist_artifact: Flying_Circus_Wheel
+  # Inline Python command that can be used to validate an install of the library
+  validation_script: 'import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())'
 
 trigger:
   - master
@@ -125,7 +127,7 @@ stages:
               python -m pip install --upgrade pip
               ls $(Build.ArtifactStagingDirectory)/$(dist_artifact)/
               find $(Build.ArtifactStagingDirectory)/$(dist_artifact)/*.whl | xargs pip install
-              python -c "import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())"
+              python -c "$(validation_script)"
             displayName: 'Validate Wheel'
 
   - stage: Release
