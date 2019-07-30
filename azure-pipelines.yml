@@ -10,6 +10,11 @@ variables:
   # so False is set as the empty string, and almost anything else evaluates
   # as True.
   do_release: '' # False
+  # The name of a "Service Connection" in the "Settings" section of the
+  # Azure DevOps project. This should have the type "Python package upload"
+  # and be configured with PyPI credentials that can access the relevant
+  # PyPI project.
+  pypi_service_connection: 'PyPI'
   # Name of the requirements file for test execution. This should include
   # all dependencies needed to run tests.
   requirements_test: requirements.txt
@@ -237,15 +242,12 @@ stages:
 
                 - task: TwineAuthenticate@0
                   inputs:
-                    # This magic string is the name of a "Service Connection"
-                    # in the "Settings" section of our Azure DevOps project,
-                    # of type "Python package upload"
-                    externalFeeds: 'PyPI'
+                    externalFeeds: '$(pypi_service_connection)'
                   displayName: 'Authenticate For PyPI'
 
                 - script: |
                     # Note that automatic downloads in a deployment job are
                     # put into the workspace under the artifact name (and not,
                     # say, the temporary artifacts directory).
-                    twine upload -r PyPI --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/
+                    twine upload -r $(pypi_service_connection) --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/
                   displayName: 'Upload to PyPI'
