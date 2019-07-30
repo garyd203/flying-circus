@@ -83,8 +83,8 @@ stages:
         condition: |
           and(
             succeeded(),
-            eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-            variables['do_release']
+            variables['do_release'],
+            eq(variables['Build.SourceBranch'], 'refs/heads/master')
           )
         timeoutInMinutes: 1
         pool:
@@ -163,8 +163,8 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        variables['do_release']
+        variables['do_release'],
+        eq(variables['Build.SourceBranch'], 'refs/heads/master')
       )
     jobs:
       - deployment: PyPiLive
