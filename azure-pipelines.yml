@@ -13,6 +13,36 @@ variables:
   # Name of the requirements file for test execution. This should include
   # all dependencies needed to run tests.
   requirements_test: requirements.txt
+  # Set of Python + OS combinations that we test against.
+  # This is expressed as a dictionary in a JSON string, that gets expanded
+  # by the pipeline when required.
+  test_matrix: |
+    {
+      'Linux_Py36': {
+        'vm_image': 'ubuntu-latest',
+        'py_version': '3.6'
+      },
+      'Linux_Py37': {
+        'vm_image': 'ubuntu-latest',
+        'py_version': '3.7'
+      },
+      'Mac_Py36': {
+        'vm_image': 'macOS-latest',
+        'py_version': '3.6'
+      },
+      'Mac_Py37': {
+        'vm_image': 'macOS-latest',
+        'py_version': '3.7'
+      },
+      'Windows_Py36': {
+        'vm_image': 'windows-latest',
+        'py_version': '3.6'
+      },
+      'Windows_Py37': {
+        'vm_image': 'windows-latest',
+        'py_version': '3.7'
+      }
+    }
   # Inline Python command that can be used to validate an install of the library
   validation_script: 'import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())'
 
@@ -130,14 +160,16 @@ stages:
       - job: Validate
         dependsOn: BuildWheel
         timeoutInMinutes: 5
+        strategy:
+          matrix:
+            $[ variables.test_matrix ]
         pool:
-          vmImage: 'ubuntu-latest'
-        # FIXME use a strategy matrix here for multiple OS'es in vm
+          vmImage: '$(vm_image)'
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '$(build_python_version)'
-            displayName: 'Use Python $(build_python_version)'
+              versionSpec: '$(py_version)'
+            displayName: 'Use Python $(py_version)'
 
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -149,9 +181,27 @@ stages:
             displayName: 'Download Artifact'
 
           - script: |
+              echo This script is circumlocutious because it needs to be cross-platform
+
               python -m pip install --upgrade pip
-              ls $(Build.ArtifactStagingDirectory)/$(dist_artifact)/
-              find $(Build.ArtifactStagingDirectory)/$(dist_artifact)/*.whl | xargs pip install
+
+              echo You cant list a directory or change into it directly, because of
+              echo platform-specific directory separators.
+              echo Also, note that the ArtifactStagingDirectory variable contains a
+              echo drive letter, so it cant be used in a Windows bash script.
+              echo Hence we change into the directory one level at a time
+              cd $(Build.ArtifactStagingDirectory)
+              cd $(dist_artifact)
+
+              echo You cant just do `pip install *.whl` because on Windows this looks
+              echo for a file literally called "*.whl".
+              echo Also, you cant pipe the `ls` output into pip, because theres
+              echo no way to use stdin as a requirements file.
+              echo Hence we use 2 commands with an intermediate file
+              ls *.whl > localreq.txt
+              pip install -r localreq.txt
+
+              echo Validate the installed library
               python -c "$(validation_script)"
             displayName: 'Validate Wheel'
 
