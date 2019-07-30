@@ -84,19 +84,16 @@ stages:
 
       - job: Test
         timeoutInMinutes: 10
-        pool:
-          vmImage: 'ubuntu-latest'
         strategy:
           matrix:
-            Python36:
-              python.version: '3.6'
-            Python37:
-              python.version: '3.7'
+            $[ variables.test_matrix ]
+        pool:
+          vmImage: '$(vm_image)'
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '$(python.version)'
-            displayName: 'Use Python $(python.version)'
+              versionSpec: '$(py_version)'
+            displayName: 'Use Python $(py_version)'
 
           - script: |
               python -m pip install --upgrade pip
