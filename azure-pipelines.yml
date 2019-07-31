@@ -1,3 +1,13 @@
+# Test, build and release a Python library from Github using Azure DevOps Pipelines.
+#
+# To use, customise the `variables` at the top of the file to suit your project.
+# Everything else should just work :-)
+#
+# Be aware that this pipeline does not necessarily demonstrate best-practices
+# for Python package management, although it's good enough. What it does
+# demonstrate is to how to implement a complete Azure Pipeline template
+# for Python, examples for which are hard to find.
+
 variables:
   # Default version of Python used in build steps
   build_python_version: '3.6'
