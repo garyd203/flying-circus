@@ -58,8 +58,12 @@ variables:
         'py_version': '3.7'
       }
     }
-  # Inline Python command that can be used to validate an install of the library
-  validation_script: 'import flyingcircus; s = flyingcircus.core.Stack(); print(s.export())'
+  # Simple Python script that can be used to validate an install of the library.
+  # The script should exit cleanly iff the library has been installed correctly.
+  validation_python_code: |
+    import flyingcircus
+    s = flyingcircus.core.Stack()
+    print(s.export())
 
 # Perform a build every time code is pushed to the master branch
 trigger:
@@ -212,10 +216,16 @@ stages:
               echo Hence we use 2 commands with an intermediate file
               ls *.whl > localreq.txt
               pip install -r localreq.txt
+            displayName: 'Install RC Wheel'
 
-              echo Validate the installed library
-              python -c "$(validation_script)"
-            displayName: 'Validate Wheel'
+          - task: PythonScript@0
+            condition: and(succeeded(),variables['validation_python_code'])
+            inputs:
+              scriptSource: inline
+              script: |
+                $(validation_python_code)
+            displayName: 'Validate Python'
+
 
   - stage: Release
     # There isn't a way to add a manual approval step to a pipeline (I think
