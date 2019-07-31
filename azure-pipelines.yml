@@ -20,6 +20,8 @@ variables:
   # so False is set as the empty string, and almost anything else evaluates
   # as True.
   do_release: '' # False
+  # The name of the library as a pip requirement
+  library_name: 'flying-circus'
   # The name of a "Service Connection" in the "Settings" section of the
   # Azure DevOps project. This should have the type "Python package upload"
   # and be configured with PyPI credentials that can access the relevant
@@ -234,7 +236,6 @@ stages:
             condition: and(succeeded(),variables['validation_cli_script'])
             displayName: 'Validate CLI'
 
-
   - stage: Release
     # There isn't a way to add a manual approval step to a pipeline (I think
     # you're supposed to use a separate Release Pipeline, but they aren't
@@ -279,3 +280,35 @@ stages:
                     # say, the temporary artifacts directory).
                     twine upload -r $(pypi_service_connection) --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/
                   displayName: 'Upload to PyPI'
+
+      - job: PostReleaseValidate
+        dependsOn: PyPiLive
+        timeoutInMinutes: 5
+        strategy:
+          matrix:
+            $[ variables.test_matrix ]
+        pool:
+          vmImage: '$(vm_image)'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(py_version)'
+            displayName: 'Use Python $(py_version)'
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install $(library_name)
+            displayName: 'Install Library'
+
+          - task: PythonScript@0
+            condition: and(succeeded(),variables['validation_python_code'])
+            inputs:
+              scriptSource: inline
+              script: |
+                $(validation_python_code)
+            displayName: 'Validate Python'
+
+          - script: |
+              $(validation_cli_script)
+            condition: and(succeeded(),variables['validation_cli_script'])
+            displayName: 'Validate CLI'
