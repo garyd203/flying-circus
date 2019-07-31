@@ -58,7 +58,10 @@ variables:
         'py_version': '3.7'
       }
     }
-  # Simple Python script that can be used to validate an install of the library.
+  # Simple command line script that validates an install of the library.
+  # The script should exit cleanly iff the library has been installed correctly.
+  validation_cli_script: ''
+  # Simple Python script that validates an install of the library.
   # The script should exit cleanly iff the library has been installed correctly.
   validation_python_code: |
     import flyingcircus
@@ -225,6 +228,11 @@ stages:
               script: |
                 $(validation_python_code)
             displayName: 'Validate Python'
+
+          - script: |
+              $(validation_cli_script)
+            condition: and(succeeded(),variables['validation_cli_script'])
+            displayName: 'Validate CLI'
 
 
   - stage: Release
