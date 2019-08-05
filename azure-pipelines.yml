@@ -346,4 +346,9 @@ stages:
           - script: |
               bumpversion patch --commit
               git push
+            condition: |
+              and(
+                succeeded(),
+                eq(variables['Build.SourceBranch'], 'refs/heads/master')
+              )
             displayName: 'Bump Version'
