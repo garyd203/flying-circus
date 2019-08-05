@@ -312,3 +312,32 @@ stages:
               $(validation_cli_script)
             condition: and(succeeded(),variables['validation_cli_script'])
             displayName: 'Validate CLI'
+
+      - job: PostReleaseVersionBump
+        dependsOn: PyPiLive
+        timeoutInMinutes: 5
+        pool:
+          vmImage: '$(ubuntu-latest)'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(build_python_version)'
+            displayName: 'Use Python $(build_python_version)'
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install bump2version==0.5.10
+            displayName: 'Install Tools'
+
+          - script: |
+              # The standard bumpversion-approved bash-ism to get current version
+              VERSION=$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,)
+              TAGNAME=release-${VERSION}
+              git tag -a ${TAGNAME} -m "Release version ${VERSION}"
+              git push origin ${TAGNAME}
+            displayName: 'Tag Code'
+
+          - script: |
+              bumpversion patch --commit
+              git push
+            displayName: 'Bump Version'
