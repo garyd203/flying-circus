@@ -303,7 +303,9 @@ stages:
 
           - script: |
               python -m pip install --upgrade pip
-              pip install $(library_name)
+              pip install bump2version==0.5.10
+              VERSION=$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,)
+              pip install $(library_name)==${VERSION}
             displayName: 'Install Library'
 
           - task: PythonScript@0
