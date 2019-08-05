@@ -141,6 +141,8 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
+          - checkout: none
+
           - script: |
               echo This build will be released to PyPI
             displayName: 'Just a print statement'
@@ -187,6 +189,8 @@ stages:
         pool:
           vmImage: '$(vm_image)'
         steps:
+          - checkout: none
+
           - task: UsePythonVersion@0
             inputs:
               versionSpec: '$(py_version)'
@@ -259,6 +263,8 @@ stages:
           runOnce:
             deploy:
               steps:
+                - checkout: none
+
                 - task: UsePythonVersion@0
                   inputs:
                     versionSpec: $(build_python_version)
