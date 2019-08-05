@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.7.0] - 2019-08-06
 ### Changed
 * Update AWS Resource specification to v4.3.0
+* Build and release with [Azure Pipelines](https://dev.azure.com/garyd203/flying-circus/_build/)
 
 ### Security
 * Upgrade to PyYAML v5.1 from v3.13. This addresses
