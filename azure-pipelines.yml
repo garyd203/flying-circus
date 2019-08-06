@@ -293,6 +293,19 @@ stages:
                     twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/*
                   displayName: 'Upload to PyPI'
 
+                - script: |
+                    # pin to a tested version of bump2version
+                    pip install bump2version==0.5.10
+
+                    # The standard bumpversion-approved bash-ism to get the current version
+                    PYPI_VERSION=$(ls -l $(Pipeline.Workspace)/$(dist_artifact)/*.tar.gz | tail -n 1 | sed -r s,"^.*-(.+)\.tar\.gz$","\1",)
+                    PRERELEASE=$(echo ${PYPI_VERSION} | sed -r s,"^[0-9.]+",,)
+
+                    echo "##vso[task.setvariable variable=prerelease;isOutput=true]${PRERELEASE}"
+                    echo "##vso[task.setvariable variable=pypiversion;isOutput=true]${PYPI_VERSION}"
+                  name: exportVars
+                  displayName: 'Export Build Variables'
+
       - job: PostReleaseValidate
         dependsOn: PyPiLive
         timeoutInMinutes: 5
@@ -301,6 +314,8 @@ stages:
             $[ variables.test_matrix ]
         pool:
           vmImage: '$(vm_image)'
+        variables:
+          releasedPyPIVersion: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -309,9 +324,7 @@ stages:
 
           - script: |
               python -m pip install --upgrade pip
-              pip install bump2version==0.5.10
-              VERSION=$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,)
-              pip install $(library_name)==${VERSION}
+              pip install $(library_name)==$(releasedPyPIVersion)
             displayName: 'Install Library'
 
           - task: PythonScript@0
@@ -331,7 +344,9 @@ stages:
         dependsOn: PyPiLive
         timeoutInMinutes: 5
         pool:
-          vmImage: '$(ubuntu-latest)'
+          vmImage: 'ubuntu-latest'
+        variables:
+          releasedPyPIVersion: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -344,10 +359,8 @@ stages:
             displayName: 'Install Tools'
 
           - script: |
-              # The standard bumpversion-approved bash-ism to get current version
-              VERSION=$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,)
-              TAGNAME=release-${VERSION}
-              git tag -a ${TAGNAME} -m "Release version ${VERSION}"
+              TAGNAME=release-$(releasedPyPIVersion)
+              git tag -a ${TAGNAME} -m "Release version $(releasedPyPIVersion)"
               git push origin ${TAGNAME}
             displayName: 'Tag Code'
 
