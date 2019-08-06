@@ -94,169 +94,169 @@ pr:
       - master
 
 stages:
-  - stage: Checks
-    jobs:
-      - job: CodeStyle
-        timeoutInMinutes: 5
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: $(build_python_version)
-            displayName: 'Use Python $(build_python_version)'
-
-          - script: |
-              python -m pip install --upgrade pip
-              pip install black
-              black --check src setup.py tests tools
-            displayName: 'black'
-
-      - job: Test
-        timeoutInMinutes: 10
-        strategy:
-          matrix:
-            $[ variables.test_matrix ]
-        pool:
-          vmImage: '$(vm_image)'
-        steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '$(py_version)'
-            displayName: 'Use Python $(py_version)'
-
-          - script: |
-              python -m pip install --upgrade pip
-              pip install -r $(requirements_test)
-              pip install pytest-azurepipelines
-            displayName: 'Install dependencies'
-
-          - script: |
-              pytest tests
-            displayName: 'pytest'
-
-      - job: WillThisBeARelease
-        dependsOn: Test
-        condition: |
-          and(
-            succeeded(),
-            variables['do_release'],
-            eq(variables['Build.SourceBranch'], 'refs/heads/master')
-          )
-        timeoutInMinutes: 1
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - checkout: none
-
-          - script: |
-              echo "This build will be released to PyPI"
-            displayName: 'Just a print statement'
-
-  - stage: Build
-    condition: |
-      and(
-        succeeded(),
-        eq(variables['Build.SourceBranch'], 'refs/heads/master')
-      )
-    jobs:
-      - job: BuildWheel
-        timeoutInMinutes: 5
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: $(build_python_version)
-            displayName: 'Use Python $(build_python_version)'
-
-          - script: |
-              python -m pip install --upgrade pip
-              pip install -U twine wheel
-            displayName: 'Install dependencies'
-
-          - script: |
-              python setup.py sdist bdist_wheel
-              twine check dist/*
-            displayName: 'Build wheel'
-
-          - task: PublishBuildArtifacts@1
-            inputs:
-              pathtoPublish: dist/
-              artifactName: $(dist_artifact)
-            displayName: 'Publish Artifacts in Azure'
-
-      - job: Validate
-        dependsOn: BuildWheel
-        timeoutInMinutes: 5
-        strategy:
-          matrix:
-            $[ variables.test_matrix ]
-        pool:
-          vmImage: '$(vm_image)'
-        steps:
-          - checkout: none
-
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '$(py_version)'
-            displayName: 'Use Python $(py_version)'
-
-          - task: DownloadBuildArtifacts@0
-            inputs:
-              buildType: 'current'
-              downloadType: 'single'
-              artifactName: '$(dist_artifact)'
-              itemPattern: '**'
-              downloadPath: '$(Build.ArtifactStagingDirectory)'
-            displayName: 'Download Artifact'
-
-          - script: |
-              echo This script is circumlocutious because it needs to be cross-platform
-
-              python -m pip install --upgrade pip
-
-              echo You cant list a directory or change into it directly, because of
-              echo platform-specific directory separators.
-              echo Also, note that the ArtifactStagingDirectory variable contains a
-              echo drive letter, so it cant be used in a Windows bash script.
-              echo Hence we change into the directory one level at a time
-              cd $(Build.ArtifactStagingDirectory)
-              cd $(dist_artifact)
-
-              echo You cant just do `pip install *.whl` because on Windows this looks
-              echo for a file literally called "*.whl".
-              echo Also, you cant pipe the `ls` output into pip, because theres
-              echo no way to use stdin as a requirements file.
-              echo Hence we use 2 commands with an intermediate file
-              ls *.whl > localreq.txt
-              pip install -r localreq.txt
-            displayName: 'Install RC Wheel'
-
-          - task: PythonScript@0
-            condition: and(succeeded(),variables['validation_python_code'])
-            inputs:
-              scriptSource: inline
-              script: |
-                $(validation_python_code)
-            displayName: 'Validate Python'
-
-          - script: |
-              $(validation_cli_script)
-            condition: and(succeeded(),variables['validation_cli_script'])
-            displayName: 'Validate CLI'
+#  - stage: Checks
+#    jobs:
+#      - job: CodeStyle
+#        timeoutInMinutes: 5
+#        pool:
+#          vmImage: 'ubuntu-latest'
+#        steps:
+#          - task: UsePythonVersion@0
+#            inputs:
+#              versionSpec: $(build_python_version)
+#            displayName: 'Use Python $(build_python_version)'
+#
+#          - script: |
+#              python -m pip install --upgrade pip
+#              pip install black
+#              black --check src setup.py tests tools
+#            displayName: 'black'
+#
+#      - job: Test
+#        timeoutInMinutes: 10
+#        strategy:
+#          matrix:
+#            $[ variables.test_matrix ]
+#        pool:
+#          vmImage: '$(vm_image)'
+#        steps:
+#          - task: UsePythonVersion@0
+#            inputs:
+#              versionSpec: '$(py_version)'
+#            displayName: 'Use Python $(py_version)'
+#
+#          - script: |
+#              python -m pip install --upgrade pip
+#              pip install -r $(requirements_test)
+#              pip install pytest-azurepipelines
+#            displayName: 'Install dependencies'
+#
+#          - script: |
+#              pytest tests
+#            displayName: 'pytest'
+#
+#      - job: WillThisBeARelease
+#        dependsOn: Test
+#        condition: |
+#          and(
+#            succeeded(),
+#            variables['do_release'],
+#            eq(variables['Build.SourceBranch'], 'refs/heads/master')
+#          )
+#        timeoutInMinutes: 1
+#        pool:
+#          vmImage: 'ubuntu-latest'
+#        steps:
+#          - checkout: none
+#
+#          - script: |
+#              echo "This build will be released to PyPI"
+#            displayName: 'Just a print statement'
+#
+#  - stage: Build
+#    condition: |
+#      and(
+#        succeeded(),
+#        eq(variables['Build.SourceBranch'], 'refs/heads/master')
+#      )
+#    jobs:
+#      - job: BuildWheel
+#        timeoutInMinutes: 5
+#        pool:
+#          vmImage: 'ubuntu-latest'
+#        steps:
+#          - task: UsePythonVersion@0
+#            inputs:
+#              versionSpec: $(build_python_version)
+#            displayName: 'Use Python $(build_python_version)'
+#
+#          - script: |
+#              python -m pip install --upgrade pip
+#              pip install -U twine wheel
+#            displayName: 'Install dependencies'
+#
+#          - script: |
+#              python setup.py sdist bdist_wheel
+#              twine check dist/*
+#            displayName: 'Build wheel'
+#
+#          - task: PublishBuildArtifacts@1
+#            inputs:
+#              pathtoPublish: dist/
+#              artifactName: $(dist_artifact)
+#            displayName: 'Publish Artifacts in Azure'
+#
+#      - job: Validate
+#        dependsOn: BuildWheel
+#        timeoutInMinutes: 5
+#        strategy:
+#          matrix:
+#            $[ variables.test_matrix ]
+#        pool:
+#          vmImage: '$(vm_image)'
+#        steps:
+#          - checkout: none
+#
+#          - task: UsePythonVersion@0
+#            inputs:
+#              versionSpec: '$(py_version)'
+#            displayName: 'Use Python $(py_version)'
+#
+#          - task: DownloadBuildArtifacts@0
+#            inputs:
+#              buildType: 'current'
+#              downloadType: 'single'
+#              artifactName: '$(dist_artifact)'
+#              itemPattern: '**'
+#              downloadPath: '$(Build.ArtifactStagingDirectory)'
+#            displayName: 'Download Artifact'
+#
+#          - script: |
+#              echo This script is circumlocutious because it needs to be cross-platform
+#
+#              python -m pip install --upgrade pip
+#
+#              echo You cant list a directory or change into it directly, because of
+#              echo platform-specific directory separators.
+#              echo Also, note that the ArtifactStagingDirectory variable contains a
+#              echo drive letter, so it cant be used in a Windows bash script.
+#              echo Hence we change into the directory one level at a time
+#              cd $(Build.ArtifactStagingDirectory)
+#              cd $(dist_artifact)
+#
+#              echo You cant just do `pip install *.whl` because on Windows this looks
+#              echo for a file literally called "*.whl".
+#              echo Also, you cant pipe the `ls` output into pip, because theres
+#              echo no way to use stdin as a requirements file.
+#              echo Hence we use 2 commands with an intermediate file
+#              ls *.whl > localreq.txt
+#              pip install -r localreq.txt
+#            displayName: 'Install RC Wheel'
+#
+#          - task: PythonScript@0
+#            condition: and(succeeded(),variables['validation_python_code'])
+#            inputs:
+#              scriptSource: inline
+#              script: |
+#                $(validation_python_code)
+#            displayName: 'Validate Python'
+#
+#          - script: |
+#              $(validation_cli_script)
+#            condition: and(succeeded(),variables['validation_cli_script'])
+#            displayName: 'Validate CLI'
 
   - stage: Release
     # There isn't a way to add a manual approval step to a pipeline (I think
     # you're supposed to use a separate Release Pipeline, but they aren't
     # available as IaC yet), so we fudge it by using a variable that can be
     # overridden with a manual build.
-    condition: |
-      and(
-        succeeded(),
-        variables['do_release'],
-        eq(variables['Build.SourceBranch'], 'refs/heads/master')
-      )
+#    condition: |
+#      and(
+#        succeeded(),
+#        variables['do_release'],
+#        eq(variables['Build.SourceBranch'], 'refs/heads/master')
+#      )
     jobs:
       - deployment: PyPiLive
         # TODO As of July 2019 you can't set a timeout on a deployment job,
@@ -276,22 +276,22 @@ stages:
                     versionSpec: $(build_python_version)
                   displayName: 'Use Python $(build_python_version)'
 
-                - script: |
-                    python -m pip install --upgrade pip
-                    pip install -U twine wheel
-                  displayName: 'Install dependencies'
-
-                - task: TwineAuthenticate@0
-                  inputs:
-                    externalFeeds: '$(pypi_service_connection)'
-                  displayName: 'Authenticate For PyPI'
-
-                - script: |
-                    # Note that automatic downloads in a deployment job are
-                    # put into the workspace under the artifact name (and not,
-                    # say, the temporary artifacts directory).
-                    twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) --disable-progress-bar $(Pipeline.Workspace)/$(dist_artifact)/*
-                  displayName: 'Upload to PyPI'
+#                - script: |
+#                    python -m pip install --upgrade pip
+#                    pip install -U twine wheel
+#                  displayName: 'Install dependencies'
+#
+#                - task: TwineAuthenticate@0
+#                  inputs:
+#                    externalFeeds: '$(pypi_service_connection)'
+#                  displayName: 'Authenticate For PyPI'
+#
+#                - script: |
+#                    # Note that automatic downloads in a deployment job are
+#                    # put into the workspace under the artifact name (and not,
+#                    # say, the temporary artifacts directory).
+#                    twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) --disable-progress-bar $(Pipeline.Workspace)/$(dist_artifact)/*
+#                  displayName: 'Upload to PyPI'
 
                 - script: |
                     # pin to a tested version of bump2version
@@ -340,38 +340,38 @@ stages:
             condition: and(succeeded(),variables['validation_cli_script'])
             displayName: 'Validate CLI'
 
-      - job: PostReleaseVersionBump
-        dependsOn: PyPiLive
-        timeoutInMinutes: 5
-        pool:
-          vmImage: 'ubuntu-latest'
-        variables:
-          releasedPyPIVersion: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
-        steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '$(build_python_version)'
-            displayName: 'Use Python $(build_python_version)'
-
-          - script: |
-              python -m pip install --upgrade pip
-              pip install bump2version==0.5.10
-            displayName: 'Install Tools'
-
-          - script: |
-              TAGNAME=release-$(releasedPyPIVersion)
-              git tag -a ${TAGNAME} -m "Release version $(releasedPyPIVersion)"
-              git push origin ${TAGNAME}
-            displayName: 'Tag Code'
-
-          - script: |
-              BRANCHNAME=bump-from-$(releasedPyPIVersion)
-              git checkout -b ${BRANCHNAME}
-              bumpversion patch --commit
-              git push --set-upstream origin ${BRANCHNAME}
-            condition: |
-              and(
-                succeeded(),
-                eq(variables['Build.SourceBranch'], 'refs/heads/master')
-              )
-            displayName: 'Bump Version'
+#      - job: PostReleaseVersionBump
+#        dependsOn: PyPiLive
+#        timeoutInMinutes: 5
+#        pool:
+#          vmImage: 'ubuntu-latest'
+#        variables:
+#          releasedPyPIVersion: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
+#        steps:
+#          - task: UsePythonVersion@0
+#            inputs:
+#              versionSpec: '$(build_python_version)'
+#            displayName: 'Use Python $(build_python_version)'
+#
+#          - script: |
+#              python -m pip install --upgrade pip
+#              pip install bump2version==0.5.10
+#            displayName: 'Install Tools'
+#
+#          - script: |
+#              TAGNAME=release-$(releasedPyPIVersion)
+#              git tag -a ${TAGNAME} -m "Release version $(releasedPyPIVersion)"
+#              git push origin ${TAGNAME}
+#            displayName: 'Tag Code'
+#
+#          - script: |
+#              BRANCHNAME=bump-from-$(releasedPyPIVersion)
+#              git checkout -b ${BRANCHNAME}
+#              bumpversion patch --commit
+#              git push --set-upstream origin ${BRANCHNAME}
+#            condition: |
+#              and(
+#                succeeded(),
+#                eq(variables['Build.SourceBranch'], 'refs/heads/master')
+#              )
+#            displayName: 'Bump Version'
