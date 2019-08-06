@@ -287,8 +287,34 @@ stages:
                     echo $(pypiversion)
                   displayName: 'example echo'
 
+      - job: A
+        timeoutInMinutes: 5
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: none
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(build_python_version)'
+            displayName: 'Use Python $(build_python_version)'
+
+          - script: |
+              PYPI_VERSION=0.7.0b0
+              PRERELEASE=$(echo ${PYPI_VERSION} | sed -r s,"^[0-9.]+",,)
+
+              echo "##vso[task.setvariable variable=prerelease;isOutput=true]${PRERELEASE}"
+              echo "##vso[task.setvariable variable=pypiversion;isOutput=true]${PYPI_VERSION}"
+            name: exportVars
+
+          - script: |
+              echo $(pypiversion)
+            displayName: 'example echo'
+
       - job: PostReleaseValidate
-        dependsOn: PyPiLive
+        dependsOn:
+          - PyPiLive
+          - A
         timeoutInMinutes: 5
         strategy:
           matrix:
@@ -301,6 +327,9 @@ stages:
           releasedPyPIVersion3: $[ dependencies.PyPiLive.outputs['ExportBuildVariables.pypiversion'] ]
           releasedPyPIVersion4: $[ dependencies.PyPiLive.outputs['ExportBuildVariables']['pypiversion'] ]
           releasedPyPIVersion5: $[ dependencies.PyPiLive.outputs['pypiversion'] ]
+          jobAPyPIVersion1: $[ dependencies.A.outputs['exportVars.pypiversion'] ]
+          jobAPyPIVersion2: $[ dependencies.A.outputs['exportVars']['pypiversion'] ]
+          jobAPyPIVersion5: $[ dependencies.A.outputs['pypiversion'] ]
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -313,6 +342,9 @@ stages:
               echo $(releasedPyPIVersion3)
               echo $(releasedPyPIVersion4)
               echo $(releasedPyPIVersion5)
+              echo $(jobAPyPIVersion1)
+              echo $(jobAPyPIVersion2)
+              echo $(jobAPyPIVersion5)
               python -m pip install --upgrade pip
               pip install $(library_name)==$(releasedPyPIVersion)
             displayName: 'Install Library'
