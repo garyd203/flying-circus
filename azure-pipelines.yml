@@ -290,7 +290,7 @@ stages:
                     # Note that automatic downloads in a deployment job are
                     # put into the workspace under the artifact name (and not,
                     # say, the temporary artifacts directory).
-                    twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/
+                    twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/*
                   displayName: 'Upload to PyPI'
 
       - job: PostReleaseValidate
