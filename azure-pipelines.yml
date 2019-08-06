@@ -31,6 +31,8 @@ variables:
   # and be configured with PyPI credentials that can access the relevant
   # PyPI project.
   pypi_service_connection: 'PyPI'
+  # The EndpointName for the Service Connection
+  pypi_endpoint_name: 'pypi'
   # Name of the requirements file for test execution. This should include
   # all dependencies needed to run tests.
   requirements_test: requirements.txt
@@ -288,7 +290,7 @@ stages:
                     # Note that automatic downloads in a deployment job are
                     # put into the workspace under the artifact name (and not,
                     # say, the temporary artifacts directory).
-                    twine upload -r $(pypi_service_connection) --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/
+                    twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/$(dist_artifact)/
                   displayName: 'Upload to PyPI'
 
       - job: PostReleaseValidate
