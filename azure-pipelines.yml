@@ -281,7 +281,6 @@ stages:
                     echo "##vso[task.setvariable variable=prerelease;isOutput=true]${PRERELEASE}"
                     echo "##vso[task.setvariable variable=pypiversion;isOutput=true]${PYPI_VERSION}"
                   name: exportVars
-                  displayName: 'ExportBuildVariables'
 
                 - script: |
                     echo $(pypiversion)
@@ -308,6 +307,7 @@ stages:
             name: exportVars
 
           - script: |
+              echo $(exportVars.pypiversion)
               echo $(pypiversion)
             displayName: 'example echo'
 
@@ -342,7 +342,7 @@ stages:
               echo $(releasedPyPIVersion3)
               echo $(releasedPyPIVersion4)
               echo $(releasedPyPIVersion5)
-              echo $(jobAPyPIVersion1)
+              echo $(jobAPyPIVersion1) # This one works!!!
               echo $(jobAPyPIVersion2)
               echo $(jobAPyPIVersion5)
               python -m pip install --upgrade pip
