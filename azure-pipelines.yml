@@ -365,8 +365,10 @@ stages:
             displayName: 'Tag Code'
 
           - script: |
+              BRANCHNAME=bump-from-$(releasedPyPIVersion)
+              git checkout -b ${BRANCHNAME}
               bumpversion patch --commit
-              git push
+              git push --set-upstream origin ${BRANCHNAME}
             condition: |
               and(
                 succeeded(),
