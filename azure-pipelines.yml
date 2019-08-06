@@ -294,17 +294,18 @@ stages:
 #                  displayName: 'Upload to PyPI'
 
                 - script: |
-                    # pin to a tested version of bump2version
-                    pip install bump2version==0.5.10
-
                     # The standard bumpversion-approved bash-ism to get the current version
-                    PYPI_VERSION=$(ls -l $(Pipeline.Workspace)/$(dist_artifact)/*.tar.gz | tail -n 1 | sed -r s,"^.*-(.+)\.tar\.gz$","\1",)
+                    PYPI_VERSION=0.7.0b0
                     PRERELEASE=$(echo ${PYPI_VERSION} | sed -r s,"^[0-9.]+",,)
 
                     echo "##vso[task.setvariable variable=prerelease;isOutput=true]${PRERELEASE}"
                     echo "##vso[task.setvariable variable=pypiversion;isOutput=true]${PYPI_VERSION}"
                   name: exportVars
-                  displayName: 'Export Build Variables'
+                  displayName: 'ExportBuildVariables'
+
+                - script: |
+                    echo $(pypiversion)
+                  displayName: 'example echo'
 
       - job: PostReleaseValidate
         dependsOn: PyPiLive
@@ -315,7 +316,11 @@ stages:
         pool:
           vmImage: '$(vm_image)'
         variables:
-          releasedPyPIVersion: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
+          releasedPyPIVersion1: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
+          releasedPyPIVersion2: $[ dependencies.PyPiLive.outputs['exportVars']['pypiversion'] ]
+          releasedPyPIVersion3: $[ dependencies.PyPiLive.outputs['ExportBuildVariables.pypiversion'] ]
+          releasedPyPIVersion4: $[ dependencies.PyPiLive.outputs['ExportBuildVariables']['pypiversion'] ]
+          releasedPyPIVersion5: $[ dependencies.PyPiLive.outputs['pypiversion'] ]
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -323,6 +328,11 @@ stages:
             displayName: 'Use Python $(py_version)'
 
           - script: |
+              echo $(releasedPyPIVersion1)
+              echo $(releasedPyPIVersion2)
+              echo $(releasedPyPIVersion3)
+              echo $(releasedPyPIVersion4)
+              echo $(releasedPyPIVersion5)
               python -m pip install --upgrade pip
               pip install $(library_name)==$(releasedPyPIVersion)
             displayName: 'Install Library'
