@@ -15,7 +15,14 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Alarm", "AlarmProperties", "Dashboard", "DashboardProperties"]
+__all__ = [
+    "Alarm",
+    "AlarmProperties",
+    "AnomalyDetector",
+    "AnomalyDetectorProperties",
+    "Dashboard",
+    "DashboardProperties",
+]
 
 
 @attrs(**ATTRSCONFIG)
@@ -55,6 +62,32 @@ class Alarm(Resource):
 
     Properties: AlarmProperties = attrib(
         factory=AlarmProperties, converter=create_object_converter(AlarmProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class AnomalyDetectorProperties(ResourceProperties):
+    Configuration = attrib(default=None)
+    Dimensions = attrib(default=None)
+    MetricName = attrib(default=None)
+    Namespace = attrib(default=None)
+    Stat = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class AnomalyDetector(Resource):
+    """A Anomaly Detector for CloudWatch.
+
+    See Also:
+        `AWS Cloud Formation documentation for AnomalyDetector
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-anomalydetector.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudWatch::AnomalyDetector"
+
+    Properties: AnomalyDetectorProperties = attrib(
+        factory=AnomalyDetectorProperties,
+        converter=create_object_converter(AnomalyDetectorProperties),
     )
 
 
