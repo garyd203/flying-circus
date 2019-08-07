@@ -258,53 +258,49 @@ stages:
         eq(variables['Build.SourceBranch'], 'refs/heads/master')
       )
     jobs:
-      - deployment: PyPiLive
-        # TODO As of July 2019 you can't set a timeout on a deployment job,
-        # notwithstanding what the documentation says
-        #timeoutInMinutes: 5
+      - job: PyPiLive
+        timeoutInMinutes: 5
         pool:
           vmImage: 'ubuntu-latest'
-        environment: pypi-live
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - checkout: none
+        steps:
+          - checkout: none
 
-                - task: UsePythonVersion@0
-                  inputs:
-                    versionSpec: $(build_python_version)
-                  displayName: 'Use Python $(build_python_version)'
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: '$(dist_artifact)'
+              itemPattern: '**'
+              downloadPath: '$(Build.ArtifactStagingDirectory)'
+            displayName: 'Download Artifact'
 
-                - script: |
-                    python -m pip install --upgrade pip
-                    pip install -U twine wheel
-                  displayName: 'Install dependencies'
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(build_python_version)
+            displayName: 'Use Python $(build_python_version)'
 
-                - task: TwineAuthenticate@0
-                  inputs:
-                    externalFeeds: '$(pypi_service_connection)'
-                  displayName: 'Authenticate For PyPI'
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -U twine wheel
+            displayName: 'Install dependencies'
 
-                - script: |
-                    # Note that automatic downloads in a deployment job are
-                    # put into the workspace under the artifact name (and not,
-                    # say, the temporary artifacts directory).
-                    twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) --disable-progress-bar $(Pipeline.Workspace)/$(dist_artifact)/*
-                  displayName: 'Upload to PyPI'
+          - task: TwineAuthenticate@0
+            inputs:
+              externalFeeds: '$(pypi_service_connection)'
+            displayName: 'Authenticate For PyPI'
 
-                - script: |
-                    # pin to a tested version of bump2version
-                    pip install bump2version==0.5.10
+          - script: |
+              twine upload -r $(pypi_endpoint_name) --config-file $(PYPIRC_PATH) --disable-progress-bar $(Build.ArtifactStagingDirectory)/$(dist_artifact)/*
+            displayName: 'Upload to PyPI'
 
-                    # The standard bumpversion-approved bash-ism to get the current version
-                    PYPI_VERSION=$(ls -l $(Pipeline.Workspace)/$(dist_artifact)/*.tar.gz | tail -n 1 | sed -r s,"^.*-(.+)\.tar\.gz$","\1",)
-                    PRERELEASE=$(echo ${PYPI_VERSION} | sed -r s,"^[0-9.]+",,)
+          - script: |
+              PYPI_VERSION=$(ls -l $(Build.ArtifactStagingDirectory)/$(dist_artifact)/*.tar.gz | tail -n 1 | sed -r s,"^.*-(.+)\.tar\.gz$","\1",)
+              PRERELEASE=$(echo ${PYPI_VERSION} | sed -r s,"^[0-9.]+",,)
 
-                    echo "##vso[task.setvariable variable=prerelease;isOutput=true]${PRERELEASE}"
-                    echo "##vso[task.setvariable variable=pypiversion;isOutput=true]${PYPI_VERSION}"
-                  name: exportVars
-                  displayName: 'Export Build Variables'
+              echo "##vso[task.setvariable variable=prerelease;isOutput=true]${PRERELEASE}"
+              echo "##vso[task.setvariable variable=pypiversion;isOutput=true]${PYPI_VERSION}"
+            name: exportVars
+            displayName: 'Export Build Variables'
 
       - job: PostReleaseValidate
         dependsOn: PyPiLive
