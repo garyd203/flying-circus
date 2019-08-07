@@ -32,7 +32,7 @@ from .yaml import CustomYamlObject
 #: class. These type checkers break when we wrap attrs() in our own extensions,
 #: so we instead provide our standard configuration as a set of arguments
 ATTRSCONFIG = dict(
-    # TODO Consider whether we should have comparison. It's not normally needed, but it wouldnt hurt either
+    # TODO Consider whether we should have comparison. It's not normally needed, but it wouldn't hurt either
     cmp=False,
     # Only allow known attributes. This requires all parent classes to also
     # have __slots__ defined.
