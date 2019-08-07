@@ -344,6 +344,9 @@ stages:
         variables:
           releasedPyPIVersion: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
         steps:
+          - checkout: self
+            persistCredentials: true
+
           - task: UsePythonVersion@0
             inputs:
               versionSpec: '$(build_python_version)'
