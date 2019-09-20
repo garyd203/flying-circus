@@ -194,6 +194,7 @@ class ClientVpnEndpointProperties(ResourceProperties):
     Description = attrib(default=None)
     DnsServers = attrib(default=None)
     ServerCertificateArn = attrib(default=None)
+    SplitTunnel = attrib(default=None)
     TagSpecifications = attrib(default=None)
     TransportProtocol = attrib(default=None)
 
@@ -475,6 +476,7 @@ class InstanceProperties(ResourceProperties):
     Affinity = attrib(default=None)
     AvailabilityZone = attrib(default=None)
     BlockDeviceMappings = attrib(default=None)
+    CpuOptions = attrib(default=None)
     CreditSpecification = attrib(default=None)
     DisableApiTermination = attrib(default=None)
     EbsOptimized = attrib(default=None)

@@ -71,6 +71,7 @@ class EventSourceMappingProperties(ResourceProperties):
     Enabled = attrib(default=None)
     EventSourceArn = attrib(default=None)
     FunctionName = attrib(default=None)
+    MaximumBatchingWindowInSeconds = attrib(default=None)
     StartingPosition = attrib(default=None)
 
 

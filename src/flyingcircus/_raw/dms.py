@@ -184,7 +184,9 @@ class ReplicationSubnetGroup(Resource):
 
 @attrs(**ATTRSCONFIG)
 class ReplicationTaskProperties(ResourceProperties):
+    CdcStartPosition = attrib(default=None)
     CdcStartTime = attrib(default=None)
+    CdcStopPosition = attrib(default=None)
     MigrationType = attrib(default=None)
     ReplicationInstanceArn = attrib(default=None)
     ReplicationTaskIdentifier = attrib(default=None)

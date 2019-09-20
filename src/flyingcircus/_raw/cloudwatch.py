@@ -45,6 +45,7 @@ class AlarmProperties(ResourceProperties):
     Period = attrib(default=None)
     Statistic = attrib(default=None)
     Threshold = attrib(default=None)
+    ThresholdMetricId = attrib(default=None)
     TreatMissingData = attrib(default=None)
     Unit = attrib(default=None)
 

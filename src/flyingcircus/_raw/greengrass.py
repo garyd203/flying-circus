@@ -55,6 +55,7 @@ __all__ = [
 class ConnectorDefinitionProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -101,6 +102,7 @@ class ConnectorDefinitionVersion(Resource):
 class CoreDefinitionProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -147,6 +149,7 @@ class CoreDefinitionVersion(Resource):
 class DeviceDefinitionProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -193,6 +196,7 @@ class DeviceDefinitionVersion(Resource):
 class FunctionDefinitionProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -241,6 +245,7 @@ class GroupProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
     RoleArn = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -292,6 +297,7 @@ class GroupVersion(Resource):
 class LoggerDefinitionProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -338,6 +344,7 @@ class LoggerDefinitionVersion(Resource):
 class ResourceDefinitionProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -384,6 +391,7 @@ class ResourceDefinitionVersion(Resource):
 class SubscriptionDefinitionProperties(ResourceProperties):
     InitialVersion = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
