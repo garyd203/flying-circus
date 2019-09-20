@@ -112,6 +112,7 @@ class ReplicationGroupProperties(ResourceProperties):
     CacheSubnetGroupName = attrib(default=None)
     Engine = attrib(default=None)
     EngineVersion = attrib(default=None)
+    KmsKeyId = attrib(default=None)
     NodeGroupConfiguration = attrib(default=None)
     NotificationTopicArn = attrib(default=None)
     NumCacheClusters = attrib(default=None)

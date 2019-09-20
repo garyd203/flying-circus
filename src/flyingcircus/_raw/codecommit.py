@@ -23,6 +23,7 @@ class RepositoryProperties(ResourceProperties):
     Code = attrib(default=None)
     RepositoryDescription = attrib(default=None)
     RepositoryName = attrib(default=None)
+    Tags = attrib(default=None)
     Triggers = attrib(default=None)
 
 

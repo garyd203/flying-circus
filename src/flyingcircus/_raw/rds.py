@@ -39,6 +39,7 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class DBClusterProperties(ResourceProperties):
+    AssociatedRoles = attrib(default=None)
     AvailabilityZones = attrib(default=None)
     BacktrackWindow = attrib(default=None)
     BackupRetentionPeriod = attrib(default=None)
@@ -59,11 +60,14 @@ class DBClusterProperties(ResourceProperties):
     PreferredBackupWindow = attrib(default=None)
     PreferredMaintenanceWindow = attrib(default=None)
     ReplicationSourceIdentifier = attrib(default=None)
+    RestoreType = attrib(default=None)
     ScalingConfiguration = attrib(default=None)
     SnapshotIdentifier = attrib(default=None)
+    SourceDBClusterIdentifier = attrib(default=None)
     SourceRegion = attrib(default=None)
     StorageEncrypted = attrib(default=None)
     Tags = attrib(default=None)
+    UseLatestRestorableTime = attrib(default=None)
     VpcSecurityGroupIds = attrib(default=None)
 
 
@@ -113,6 +117,7 @@ class DBClusterParameterGroup(Resource):
 class DBInstanceProperties(ResourceProperties):
     AllocatedStorage = attrib(default=None)
     AllowMajorVersionUpgrade = attrib(default=None)
+    AssociatedRoles = attrib(default=None)
     AutoMinorVersionUpgrade = attrib(default=None)
     AvailabilityZone = attrib(default=None)
     BackupRetentionPeriod = attrib(default=None)

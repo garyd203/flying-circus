@@ -15,7 +15,12 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Project", "ProjectProperties"]
+__all__ = [
+    "Project",
+    "ProjectProperties",
+    "SourceCredential",
+    "SourceCredentialProperties",
+]
 
 
 @attrs(**ATTRSCONFIG)
@@ -54,4 +59,29 @@ class Project(Resource):
 
     Properties: ProjectProperties = attrib(
         factory=ProjectProperties, converter=create_object_converter(ProjectProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class SourceCredentialProperties(ResourceProperties):
+    AuthType = attrib(default=None)
+    ServerType = attrib(default=None)
+    Token = attrib(default=None)
+    Username = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class SourceCredential(Resource):
+    """A Source Credential for CodeBuild.
+
+    See Also:
+        `AWS Cloud Formation documentation for SourceCredential
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-sourcecredential.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CodeBuild::SourceCredential"
+
+    Properties: SourceCredentialProperties = attrib(
+        factory=SourceCredentialProperties,
+        converter=create_object_converter(SourceCredentialProperties),
     )

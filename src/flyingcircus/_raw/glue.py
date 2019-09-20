@@ -30,6 +30,8 @@ __all__ = [
     "DevEndpointProperties",
     "Job",
     "JobProperties",
+    "MLTransform",
+    "MLTransformProperties",
     "Partition",
     "PartitionProperties",
     "SecurityConfiguration",
@@ -206,12 +208,16 @@ class JobProperties(ResourceProperties):
     DefaultArguments = attrib(default=None)
     Description = attrib(default=None)
     ExecutionProperty = attrib(default=None)
+    GlueVersion = attrib(default=None)
     LogUri = attrib(default=None)
+    MaxCapacity = attrib(default=None)
     MaxRetries = attrib(default=None)
     Name = attrib(default=None)
+    NumberOfWorkers = attrib(default=None)
     Role = attrib(default=None)
     SecurityConfiguration = attrib(default=None)
     Tags = attrib(default=None)
+    WorkerType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -227,6 +233,37 @@ class Job(Resource):
 
     Properties: JobProperties = attrib(
         factory=JobProperties, converter=create_object_converter(JobProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class MLTransformProperties(ResourceProperties):
+    Description = attrib(default=None)
+    InputRecordTables = attrib(default=None)
+    MaxCapacity = attrib(default=None)
+    MaxRetries = attrib(default=None)
+    Name = attrib(default=None)
+    NumberOfWorkers = attrib(default=None)
+    Role = attrib(default=None)
+    Timeout = attrib(default=None)
+    TransformParameters = attrib(default=None)
+    WorkerType = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class MLTransform(Resource):
+    """A Ml Transform for Glue.
+
+    See Also:
+        `AWS Cloud Formation documentation for MLTransform
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-mltransform.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Glue::MLTransform"
+
+    Properties: MLTransformProperties = attrib(
+        factory=MLTransformProperties,
+        converter=create_object_converter(MLTransformProperties),
     )
 
 

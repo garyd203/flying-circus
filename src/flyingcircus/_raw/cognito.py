@@ -105,8 +105,10 @@ class UserPoolProperties(ResourceProperties):
     SmsConfiguration = attrib(default=None)
     SmsVerificationMessage = attrib(default=None)
     UsernameAttributes = attrib(default=None)
+    UserPoolAddOns = attrib(default=None)
     UserPoolName = attrib(default=None)
     UserPoolTags = attrib(default=None)
+    VerificationMessageTemplate = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -128,11 +130,19 @@ class UserPool(Resource):
 
 @attrs(**ATTRSCONFIG)
 class UserPoolClientProperties(ResourceProperties):
+    AllowedOAuthFlows = attrib(default=None)
+    AllowedOAuthFlowsUserPoolClient = attrib(default=None)
+    AllowedOAuthScopes = attrib(default=None)
+    AnalyticsConfiguration = attrib(default=None)
+    CallbackURLs = attrib(default=None)
     ClientName = attrib(default=None)
+    DefaultRedirectURI = attrib(default=None)
     ExplicitAuthFlows = attrib(default=None)
     GenerateSecret = attrib(default=None)
+    LogoutURLs = attrib(default=None)
     ReadAttributes = attrib(default=None)
     RefreshTokenValidity = attrib(default=None)
+    SupportedIdentityProviders = attrib(default=None)
     UserPoolId = attrib(default=None)
     WriteAttributes = attrib(default=None)
 

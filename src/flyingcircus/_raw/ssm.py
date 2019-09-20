@@ -22,6 +22,8 @@ __all__ = [
     "DocumentProperties",
     "MaintenanceWindow",
     "MaintenanceWindowProperties",
+    "MaintenanceWindowTarget",
+    "MaintenanceWindowTargetProperties",
     "MaintenanceWindowTask",
     "MaintenanceWindowTaskProperties",
     "Parameter",
@@ -114,6 +116,33 @@ class MaintenanceWindow(Resource):
     Properties: MaintenanceWindowProperties = attrib(
         factory=MaintenanceWindowProperties,
         converter=create_object_converter(MaintenanceWindowProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class MaintenanceWindowTargetProperties(ResourceProperties):
+    Description = attrib(default=None)
+    Name = attrib(default=None)
+    OwnerInformation = attrib(default=None)
+    ResourceType = attrib(default=None)
+    Targets = attrib(default=None)
+    WindowId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class MaintenanceWindowTarget(Resource):
+    """A Maintenance Window Target for SSM.
+
+    See Also:
+        `AWS Cloud Formation documentation for MaintenanceWindowTarget
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-maintenancewindowtarget.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::SSM::MaintenanceWindowTarget"
+
+    Properties: MaintenanceWindowTargetProperties = attrib(
+        factory=MaintenanceWindowTargetProperties,
+        converter=create_object_converter(MaintenanceWindowTargetProperties),
     )
 
 
