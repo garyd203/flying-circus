@@ -16,6 +16,8 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "CodeRepository",
+    "CodeRepositoryProperties",
     "Endpoint",
     "EndpointProperties",
     "EndpointConfig",
@@ -29,6 +31,29 @@ __all__ = [
     "Workteam",
     "WorkteamProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class CodeRepositoryProperties(ResourceProperties):
+    CodeRepositoryName = attrib(default=None)
+    GitConfig = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class CodeRepository(Resource):
+    """A Code Repository for SageMaker.
+
+    See Also:
+        `AWS Cloud Formation documentation for CodeRepository
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-coderepository.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::SageMaker::CodeRepository"
+
+    Properties: CodeRepositoryProperties = attrib(
+        factory=CodeRepositoryProperties,
+        converter=create_object_converter(CodeRepositoryProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)

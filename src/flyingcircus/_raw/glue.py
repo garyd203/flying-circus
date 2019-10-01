@@ -40,6 +40,8 @@ __all__ = [
     "TableProperties",
     "Trigger",
     "TriggerProperties",
+    "Workflow",
+    "WorkflowProperties",
 ]
 
 
@@ -171,16 +173,20 @@ class Database(Resource):
 
 @attrs(**ATTRSCONFIG)
 class DevEndpointProperties(ResourceProperties):
+    Arguments = attrib(default=None)
     EndpointName = attrib(default=None)
     ExtraJarsS3Path = attrib(default=None)
     ExtraPythonLibsS3Path = attrib(default=None)
+    GlueVersion = attrib(default=None)
     NumberOfNodes = attrib(default=None)
+    NumberOfWorkers = attrib(default=None)
     PublicKey = attrib(default=None)
     RoleArn = attrib(default=None)
     SecurityConfiguration = attrib(default=None)
     SecurityGroupIds = attrib(default=None)
     SubnetId = attrib(default=None)
     Tags = attrib(default=None)
+    WorkerType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -213,10 +219,12 @@ class JobProperties(ResourceProperties):
     MaxCapacity = attrib(default=None)
     MaxRetries = attrib(default=None)
     Name = attrib(default=None)
+    NotificationProperty = attrib(default=None)
     NumberOfWorkers = attrib(default=None)
     Role = attrib(default=None)
     SecurityConfiguration = attrib(default=None)
     Tags = attrib(default=None)
+    Timeout = attrib(default=None)
     WorkerType = attrib(default=None)
 
 
@@ -345,8 +353,10 @@ class TriggerProperties(ResourceProperties):
     Name = attrib(default=None)
     Predicate = attrib(default=None)
     Schedule = attrib(default=None)
+    StartOnCreation = attrib(default=None)
     Tags = attrib(default=None)
     Type = attrib(default=None)
+    WorkflowName = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -362,4 +372,29 @@ class Trigger(Resource):
 
     Properties: TriggerProperties = attrib(
         factory=TriggerProperties, converter=create_object_converter(TriggerProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class WorkflowProperties(ResourceProperties):
+    DefaultRunProperties = attrib(default=None)
+    Description = attrib(default=None)
+    Name = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class Workflow(Resource):
+    """A Workflow for Glue.
+
+    See Also:
+        `AWS Cloud Formation documentation for Workflow
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-workflow.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Glue::Workflow"
+
+    Properties: WorkflowProperties = attrib(
+        factory=WorkflowProperties,
+        converter=create_object_converter(WorkflowProperties),
     )
