@@ -24,6 +24,9 @@ variables:
   # as True.
   #do_release: '' # False
 
+  # Email address for author of git commits
+  # TODO get this from CI context?
+  git_user_email: 'garyd203@outlook.com'
   # The name of the library as a pip requirement
   library_name: 'flying-circus'
   # The name of a "Service Connection" in the "Settings" section of the
@@ -378,6 +381,13 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+
+          - script: |
+              echo 'build queued by $(Build.QueuedById)'
+              echo 'build requested for $(Build.RequestedForEmail)'
+              git config user.email '$(git_user_email)'
+              git config user.name "Azure Pipelines"
+            displayName: 'Configure Git'
 
           - task: UsePythonVersion@0
             inputs:
