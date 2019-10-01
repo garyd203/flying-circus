@@ -111,6 +111,8 @@ __all__ = [
     "VPCEndpointProperties",
     "VPCEndpointConnectionNotification",
     "VPCEndpointConnectionNotificationProperties",
+    "VPCEndpointService",
+    "VPCEndpointServiceProperties",
     "VPCEndpointServicePermissions",
     "VPCEndpointServicePermissionsProperties",
     "VPCGatewayAttachment",
@@ -1291,6 +1293,29 @@ class VPCEndpointConnectionNotification(Resource):
     Properties: VPCEndpointConnectionNotificationProperties = attrib(
         factory=VPCEndpointConnectionNotificationProperties,
         converter=create_object_converter(VPCEndpointConnectionNotificationProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class VPCEndpointServiceProperties(ResourceProperties):
+    AcceptanceRequired = attrib(default=None)
+    NetworkLoadBalancerArns = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class VPCEndpointService(Resource):
+    """A Vpc Endpoint Service for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for VPCEndpointService
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpointservice.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::VPCEndpointService"
+
+    Properties: VPCEndpointServiceProperties = attrib(
+        factory=VPCEndpointServiceProperties,
+        converter=create_object_converter(VPCEndpointServiceProperties),
     )
 
 
