@@ -378,6 +378,7 @@ stages:
           vmImage: 'ubuntu-latest'
         variables:
           releasedPyPIVersion: $[ dependencies.PyPiLive.outputs['exportVars.pypiversion'] ]
+          isPrerelease: $[ dependencies.PyPiLive.outputs['exportVars.prerelease'] ]
         steps:
           - checkout: self
             persistCredentials: true
@@ -413,6 +414,7 @@ stages:
             condition: |
               and(
                 succeeded(),
+                not(variables['isPrerelease']),
                 eq(variables['Build.SourceBranch'], 'refs/heads/master')
               )
             displayName: 'Bump Version'
