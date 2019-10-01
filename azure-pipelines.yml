@@ -404,7 +404,7 @@ stages:
               TAGNAME=release-$(releasedPyPIVersion)
               git tag -a ${TAGNAME} -m "Release version $(releasedPyPIVersion)"
               git push origin ${TAGNAME}
-            displayName: 'Tag Code'
+            displayName: 'Tag Source Code'
 
           - script: |
               BRANCHNAME=bump-from-$(releasedPyPIVersion)
