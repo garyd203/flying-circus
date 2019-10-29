@@ -197,6 +197,7 @@ class APNSVoipSandboxChannel(Resource):
 @attrs(**ATTRSCONFIG)
 class AppProperties(ResourceProperties):
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -280,6 +281,7 @@ class CampaignProperties(ResourceProperties):
     Schedule = attrib(default=None)
     SegmentId = attrib(default=None)
     SegmentVersion = attrib(default=None)
+    Tags = attrib(default=None)
     TreatmentDescription = attrib(default=None)
     TreatmentName = attrib(default=None)
 
@@ -407,6 +409,7 @@ class SegmentProperties(ResourceProperties):
     Dimensions = attrib(default=None)
     Name = attrib(default=None)
     SegmentGroups = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
