@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED]
 ### Changed
 * Update AWS Resource specification to v7.1.0
+* Use [poetry](https://poetry.eustace.io/) for package management
 
 ## [v0.7.1] - 2019-10-01
 ### Changed

@@ -1,3 +1,48 @@
 [tool.black]
 line-length = 88
 target_version = ['py36', 'py37']
+
+[tool.poetry]
+name = "flying-circus"
+version = "0.7.2-beta"
+description = "A tool for describing AWS infrastructure as code"
+readme = "README.md"
+authors = ["Gary Donovan <gazza@gazza.id.au>"]
+license = "LGPL-3.0"
+homepage = "https://github.com/garyd203/flying-circus"
+repository = "https://github.com/garyd203/flying-circus"
+documentation = "https://flying-circus.readthedocs.io/en/latest/"
+keywords=["AWS", "cloudformation", "infrastructure-as-code"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Pre-processors",
+    "Topic :: System :: Systems Administration",
+]
+packages = [
+    { include="flyingcircus", from="src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+attrs = "^18.2.0"
+inflection = "^0.3.1"
+PyYAML = "~5.1.1"
+
+[tool.poetry.dev-dependencies]
+black = "==19.3b0"
+boto3 = "^1.4.8"
+# bump2version is dodgy, so we pin to the exact version that works with our config.
+bump2version = "==0.5.10"
+click = "^6.7"
+hypothesis = "^3.33.0"
+importlib_resources = "^1.0.2"
+Jinja2 = "^2.10.1"
+pytest = "^4.5"
+semver = "^2.7.9"
+Sphinx = "^2.1.2"
+sphinx-autobuild = "^0.7.1"
