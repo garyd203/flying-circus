@@ -85,6 +85,14 @@ __all__ = [
     "SubnetNetworkAclAssociationProperties",
     "SubnetRouteTableAssociation",
     "SubnetRouteTableAssociationProperties",
+    "TrafficMirrorFilter",
+    "TrafficMirrorFilterProperties",
+    "TrafficMirrorFilterRule",
+    "TrafficMirrorFilterRuleProperties",
+    "TrafficMirrorSession",
+    "TrafficMirrorSessionProperties",
+    "TrafficMirrorTarget",
+    "TrafficMirrorTargetProperties",
     "TransitGateway",
     "TransitGatewayProperties",
     "TransitGatewayAttachment",
@@ -1015,6 +1023,115 @@ class SubnetRouteTableAssociation(Resource):
     Properties: SubnetRouteTableAssociationProperties = attrib(
         factory=SubnetRouteTableAssociationProperties,
         converter=create_object_converter(SubnetRouteTableAssociationProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorFilterProperties(ResourceProperties):
+    Description = attrib(default=None)
+    NetworkServices = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorFilter(Resource):
+    """A Traffic Mirror Filter for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TrafficMirrorFilter
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrorfilter.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TrafficMirrorFilter"
+
+    Properties: TrafficMirrorFilterProperties = attrib(
+        factory=TrafficMirrorFilterProperties,
+        converter=create_object_converter(TrafficMirrorFilterProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorFilterRuleProperties(ResourceProperties):
+    Description = attrib(default=None)
+    DestinationCidrBlock = attrib(default=None)
+    DestinationPortRange = attrib(default=None)
+    Protocol = attrib(default=None)
+    RuleAction = attrib(default=None)
+    RuleNumber = attrib(default=None)
+    SourceCidrBlock = attrib(default=None)
+    SourcePortRange = attrib(default=None)
+    TrafficDirection = attrib(default=None)
+    TrafficMirrorFilterId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorFilterRule(Resource):
+    """A Traffic Mirror Filter Rule for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TrafficMirrorFilterRule
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrorfilterrule.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TrafficMirrorFilterRule"
+
+    Properties: TrafficMirrorFilterRuleProperties = attrib(
+        factory=TrafficMirrorFilterRuleProperties,
+        converter=create_object_converter(TrafficMirrorFilterRuleProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorSessionProperties(ResourceProperties):
+    Description = attrib(default=None)
+    NetworkInterfaceId = attrib(default=None)
+    PacketLength = attrib(default=None)
+    SessionNumber = attrib(default=None)
+    Tags = attrib(default=None)
+    TrafficMirrorFilterId = attrib(default=None)
+    TrafficMirrorTargetId = attrib(default=None)
+    VirtualNetworkId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorSession(Resource):
+    """A Traffic Mirror Session for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TrafficMirrorSession
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrorsession.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TrafficMirrorSession"
+
+    Properties: TrafficMirrorSessionProperties = attrib(
+        factory=TrafficMirrorSessionProperties,
+        converter=create_object_converter(TrafficMirrorSessionProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorTargetProperties(ResourceProperties):
+    Description = attrib(default=None)
+    NetworkInterfaceId = attrib(default=None)
+    NetworkLoadBalancerArn = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TrafficMirrorTarget(Resource):
+    """A Traffic Mirror Target for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for TrafficMirrorTarget
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrortarget.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::TrafficMirrorTarget"
+
+    Properties: TrafficMirrorTargetProperties = attrib(
+        factory=TrafficMirrorTargetProperties,
+        converter=create_object_converter(TrafficMirrorTargetProperties),
     )
 
 
