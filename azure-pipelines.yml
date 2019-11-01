@@ -33,9 +33,6 @@ variables:
   pypi_service_connection: 'PyPI'
   # The EndpointName for the Service Connection
   pypi_endpoint_name: 'pypi'
-  # Name of the requirements file for test execution. This should include
-  # all dependencies needed to run tests.
-  requirements_test: requirements.txt
   # Set of Python + OS combinations that we test against.
   # This is expressed as a dictionary in a JSON string, that gets expanded
   # by the pipeline when required.
@@ -109,7 +106,7 @@ stages:
           - script: |
               python -m pip install --upgrade pip
               pip install black==19.3b0
-              black --check src setup.py tests tools
+              black --check src tests tools
             displayName: 'black'
 
       - job: Test
@@ -127,11 +124,22 @@ stages:
 
           - script: |
               python -m pip install --upgrade pip
-              pip install -r $(requirements_test)
+              pip install poetry
+
+              echo Install a venv in the working dir as "venv".
+              echo Allow for the script to be run in Windows CMD or bash.
+              python -m venv venv
+              call venv\Scripts\activate.bat || source venv/bin/activate
+
+              python -m pip install --upgrade pip
+              poetry install
+
               pip install pytest-azurepipelines
+              pip list
             displayName: 'Install dependencies'
 
           - script: |
+              call venv\Scripts\activate.bat || source venv/bin/activate
               pytest tests
             displayName: 'pytest'
 
@@ -172,12 +180,8 @@ stages:
 
           - script: |
               python -m pip install --upgrade pip
-              pip install -U twine wheel
-            displayName: 'Install dependencies'
-
-          - script: |
-              python setup.py sdist bdist_wheel
-              twine check dist/*
+              pip install poetry
+              poetry build
             displayName: 'Build wheel'
 
           - task: PublishBuildArtifacts@1
