@@ -77,6 +77,7 @@ class EventBusPolicy(Resource):
 @attrs(**ATTRSCONFIG)
 class RuleProperties(ResourceProperties):
     Description = attrib(default=None)
+    EventBusName = attrib(default=None)
     EventPattern = attrib(default=None)
     Name = attrib(default=None)
     RoleArn = attrib(default=None)

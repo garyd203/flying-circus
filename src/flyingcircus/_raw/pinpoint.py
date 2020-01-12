@@ -36,14 +36,20 @@ __all__ = [
     "CampaignProperties",
     "EmailChannel",
     "EmailChannelProperties",
+    "EmailTemplate",
+    "EmailTemplateProperties",
     "EventStream",
     "EventStreamProperties",
     "GCMChannel",
     "GCMChannelProperties",
+    "PushTemplate",
+    "PushTemplateProperties",
     "Segment",
     "SegmentProperties",
     "SMSChannel",
     "SMSChannelProperties",
+    "SmsTemplate",
+    "SmsTemplateProperties",
     "VoiceChannel",
     "VoiceChannelProperties",
 ]
@@ -331,6 +337,34 @@ class EmailChannel(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class EmailTemplateProperties(ResourceProperties):
+    DefaultSubstitutions = attrib(default=None)
+    HtmlPart = attrib(default=None)
+    Subject = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateDescription = attrib(default=None)
+    TemplateName = attrib(default=None)
+    TextPart = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class EmailTemplate(Resource):
+    """A Email Template for Pinpoint.
+
+    See Also:
+        `AWS Cloud Formation documentation for EmailTemplate
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpoint-emailtemplate.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Pinpoint::EmailTemplate"
+
+    Properties: EmailTemplateProperties = attrib(
+        factory=EmailTemplateProperties,
+        converter=create_object_converter(EmailTemplateProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class EventStreamProperties(ResourceProperties):
     ApplicationId = attrib(default=None)
     DestinationStreamArn = attrib(default=None)
@@ -375,6 +409,36 @@ class GCMChannel(Resource):
     Properties: GCMChannelProperties = attrib(
         factory=GCMChannelProperties,
         converter=create_object_converter(GCMChannelProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class PushTemplateProperties(ResourceProperties):
+    ADM = attrib(default=None)
+    APNS = attrib(default=None)
+    Baidu = attrib(default=None)
+    Default = attrib(default=None)
+    DefaultSubstitutions = attrib(default=None)
+    GCM = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateDescription = attrib(default=None)
+    TemplateName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class PushTemplate(Resource):
+    """A Push Template for Pinpoint.
+
+    See Also:
+        `AWS Cloud Formation documentation for PushTemplate
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpoint-pushtemplate.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Pinpoint::PushTemplate"
+
+    Properties: PushTemplateProperties = attrib(
+        factory=PushTemplateProperties,
+        converter=create_object_converter(PushTemplateProperties),
     )
 
 
@@ -425,6 +489,32 @@ class Segment(Resource):
 
     Properties: SegmentProperties = attrib(
         factory=SegmentProperties, converter=create_object_converter(SegmentProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class SmsTemplateProperties(ResourceProperties):
+    Body = attrib(default=None)
+    DefaultSubstitutions = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateDescription = attrib(default=None)
+    TemplateName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class SmsTemplate(Resource):
+    """A Sms Template for Pinpoint.
+
+    See Also:
+        `AWS Cloud Formation documentation for SmsTemplate
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpoint-smstemplate.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Pinpoint::SmsTemplate"
+
+    Properties: SmsTemplateProperties = attrib(
+        factory=SmsTemplateProperties,
+        converter=create_object_converter(SmsTemplateProperties),
     )
 
 

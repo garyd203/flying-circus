@@ -25,6 +25,7 @@ BLACK_SETTINGS = black.FileMode(
 #: Lookup table of documentation URL's for AWS services. This information does
 #: not appear to be in the specification, and does not have a deterministic URL.
 AWS_SERVICE_DOCUMENTATION_URLS = {
+    "AccessAnalyzer": "https://aws.amazon.com/iam/features/analyze-access/",
     "AmazonMQ": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html",
     "Amplify": "https://docs.aws.amazon.com/amplify/latest/userguide/getting-started.html",
     "ApiGateway": "https://docs.aws.amazon.com/apigateway/latest/developerguide/index.html",
@@ -50,6 +51,7 @@ AWS_SERVICE_DOCUMENTATION_URLS = {
     "CodeDeploy": "https://docs.aws.amazon.com/codedeploy/latest/userguide/index.html",
     "CodePipeline": "https://docs.aws.amazon.com/codepipeline/latest/userguide/index.html",
     "CodeStar": "https://docs.aws.amazon.com/codestar/latest/userguide/welcome.html",
+    "CodeStarNotifications": "https://docs.aws.amazon.com/codestar-notifications/latest/userguide/",
     "Cognito": "https://docs.aws.amazon.com/cognito/latest/developerguide/index.html",
     "Config": "https://docs.aws.amazon.com/config/latest/developerguide/index.html",
     "DataPipeline": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
@@ -71,6 +73,7 @@ AWS_SERVICE_DOCUMENTATION_URLS = {
     "Elasticsearch": "https://docs.aws.amazon.com/workspaces/latest/adminguide/index.html",
     "EMR": "https://docs.aws.amazon.com/dms/latest/userguide/index.html",
     "Events": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html",
+    "EventSchemas": "https://docs.aws.amazon.com/eventbridge/latest/userguide/index.html",
     "FSx": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/index.html",
     "GameLift": "https://docs.aws.amazon.com/gamelift/latest/developerguide/index.html",
     "Glue": "https://docs.aws.amazon.com/glue/latest/dg/index.html",
@@ -92,6 +95,7 @@ AWS_SERVICE_DOCUMENTATION_URLS = {
     "Lambda": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
     "Logs": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/index.html",
     "ManagedBlockchain": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide",
+    "MediaConvert": "http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html",
     "MediaLive": "https://docs.aws.amazon.com/pinpoint/latest/userguide/welcome.html",
     "MediaStore": "https://docs.aws.amazon.com/mediastore/latest/ug/what-is.html",
     "MSK": "https://docs.aws.amazon.com/pinpoint/latest/userguide/welcome.html",
@@ -120,8 +124,9 @@ AWS_SERVICE_DOCUMENTATION_URLS = {
     "SSM": "https://docs.aws.amazon.com/systems-manager/latest/APIReference/Welcome.html",
     "StepFunctions": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
     "Transfer": "https://docs.aws.amazon.com/transfer/latest/userguide/index.html",
-    "WAF": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html",
-    "WAFRegional": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html",
+    "WAF": "https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter",
+    "WAFRegional": "https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter",
+    "WAFv2": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html",
     "WorkSpaces": "https://docs.aws.amazon.com/workspaces/latest/adminguide/index.html",
 }
 

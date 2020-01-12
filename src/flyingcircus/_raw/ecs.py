@@ -18,16 +18,21 @@ from ..core import create_object_converter
 __all__ = [
     "Cluster",
     "ClusterProperties",
+    "PrimaryTaskSet",
+    "PrimaryTaskSetProperties",
     "Service",
     "ServiceProperties",
     "TaskDefinition",
     "TaskDefinitionProperties",
+    "TaskSet",
+    "TaskSetProperties",
 ]
 
 
 @attrs(**ATTRSCONFIG)
 class ClusterProperties(ResourceProperties):
     ClusterName = attrib(default=None)
+    ClusterSettings = attrib(default=None)
     Tags = attrib(default=None)
 
 
@@ -48,9 +53,34 @@ class Cluster(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class PrimaryTaskSetProperties(ResourceProperties):
+    Cluster = attrib(default=None)
+    Service = attrib(default=None)
+    TaskSetId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class PrimaryTaskSet(Resource):
+    """A Primary Task Set for ECS.
+
+    See Also:
+        `AWS Cloud Formation documentation for PrimaryTaskSet
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-primarytaskset.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ECS::PrimaryTaskSet"
+
+    Properties: PrimaryTaskSetProperties = attrib(
+        factory=PrimaryTaskSetProperties,
+        converter=create_object_converter(PrimaryTaskSetProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class ServiceProperties(ResourceProperties):
     Cluster = attrib(default=None)
     DeploymentConfiguration = attrib(default=None)
+    DeploymentController = attrib(default=None)
     DesiredCount = attrib(default=None)
     EnableECSManagedTags = attrib(default=None)
     HealthCheckGracePeriodSeconds = attrib(default=None)
@@ -91,6 +121,7 @@ class TaskDefinitionProperties(ResourceProperties):
     Cpu = attrib(default=None)
     ExecutionRoleArn = attrib(default=None)
     Family = attrib(default=None)
+    InferenceAccelerators = attrib(default=None)
     IpcMode = attrib(default=None)
     Memory = attrib(default=None)
     NetworkMode = attrib(default=None)
@@ -117,4 +148,34 @@ class TaskDefinition(Resource):
     Properties: TaskDefinitionProperties = attrib(
         factory=TaskDefinitionProperties,
         converter=create_object_converter(TaskDefinitionProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class TaskSetProperties(ResourceProperties):
+    Cluster = attrib(default=None)
+    ExternalId = attrib(default=None)
+    LaunchType = attrib(default=None)
+    LoadBalancers = attrib(default=None)
+    NetworkConfiguration = attrib(default=None)
+    PlatformVersion = attrib(default=None)
+    Scale = attrib(default=None)
+    Service = attrib(default=None)
+    ServiceRegistries = attrib(default=None)
+    TaskDefinition = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class TaskSet(Resource):
+    """A Task Set for ECS.
+
+    See Also:
+        `AWS Cloud Formation documentation for TaskSet
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskset.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ECS::TaskSet"
+
+    Properties: TaskSetProperties = attrib(
+        factory=TaskSetProperties, converter=create_object_converter(TaskSetProperties)
     )

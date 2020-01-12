@@ -45,6 +45,7 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class IdentityPoolProperties(ResourceProperties):
+    AllowClassicFlow = attrib(default=None)
     AllowUnauthenticatedIdentities = attrib(default=None)
     CognitoEvents = attrib(default=None)
     CognitoIdentityProviders = attrib(default=None)
@@ -151,6 +152,7 @@ class UserPoolClientProperties(ResourceProperties):
     ExplicitAuthFlows = attrib(default=None)
     GenerateSecret = attrib(default=None)
     LogoutURLs = attrib(default=None)
+    PreventUserExistenceErrors = attrib(default=None)
     ReadAttributes = attrib(default=None)
     RefreshTokenValidity = attrib(default=None)
     SupportedIdentityProviders = attrib(default=None)
@@ -331,6 +333,7 @@ class UserPoolUICustomizationAttachment(Resource):
 
 @attrs(**ATTRSCONFIG)
 class UserPoolUserProperties(ResourceProperties):
+    ClientMetadata = attrib(default=None)
     DesiredDeliveryMediums = attrib(default=None)
     ForceAliasCreation = attrib(default=None)
     MessageAction = attrib(default=None)

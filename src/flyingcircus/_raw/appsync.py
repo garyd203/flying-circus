@@ -16,6 +16,8 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "ApiCache",
+    "ApiCacheProperties",
     "ApiKey",
     "ApiKeyProperties",
     "DataSource",
@@ -29,6 +31,33 @@ __all__ = [
     "Resolver",
     "ResolverProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class ApiCacheProperties(ResourceProperties):
+    ApiCachingBehavior = attrib(default=None)
+    ApiId = attrib(default=None)
+    AtRestEncryptionEnabled = attrib(default=None)
+    TransitEncryptionEnabled = attrib(default=None)
+    Ttl = attrib(default=None)
+    Type = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ApiCache(Resource):
+    """A Api Cache for AppSync.
+
+    See Also:
+        `AWS Cloud Formation documentation for ApiCache
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-apicache.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::AppSync::ApiCache"
+
+    Properties: ApiCacheProperties = attrib(
+        factory=ApiCacheProperties,
+        converter=create_object_converter(ApiCacheProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)
@@ -170,6 +199,7 @@ class GraphQLSchema(Resource):
 @attrs(**ATTRSCONFIG)
 class ResolverProperties(ResourceProperties):
     ApiId = attrib(default=None)
+    CachingConfig = attrib(default=None)
     DataSourceName = attrib(default=None)
     FieldName = attrib(default=None)
     Kind = attrib(default=None)
@@ -178,6 +208,7 @@ class ResolverProperties(ResourceProperties):
     RequestMappingTemplateS3Location = attrib(default=None)
     ResponseMappingTemplate = attrib(default=None)
     ResponseMappingTemplateS3Location = attrib(default=None)
+    SyncConfig = attrib(default=None)
     TypeName = attrib(default=None)
 
 

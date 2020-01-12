@@ -68,6 +68,7 @@ class Association(Resource):
 class DocumentProperties(ResourceProperties):
     Content = attrib(default=None)
     DocumentType = attrib(default=None)
+    Name = attrib(default=None)
     Tags = attrib(default=None)
 
 

@@ -22,11 +22,13 @@ __all__ = ["Domain", "DomainProperties"]
 class DomainProperties(ResourceProperties):
     AccessPolicies = attrib(default=None)
     AdvancedOptions = attrib(default=None)
+    CognitoOptions = attrib(default=None)
     DomainName = attrib(default=None)
     EBSOptions = attrib(default=None)
     ElasticsearchClusterConfig = attrib(default=None)
     ElasticsearchVersion = attrib(default=None)
     EncryptionAtRestOptions = attrib(default=None)
+    LogPublishingOptions = attrib(default=None)
     NodeToNodeEncryptionOptions = attrib(default=None)
     SnapshotOptions = attrib(default=None)
     Tags = attrib(default=None)

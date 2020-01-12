@@ -22,6 +22,8 @@ __all__ = [
     "AnomalyDetectorProperties",
     "Dashboard",
     "DashboardProperties",
+    "InsightRule",
+    "InsightRuleProperties",
 ]
 
 
@@ -112,4 +114,28 @@ class Dashboard(Resource):
     Properties: DashboardProperties = attrib(
         factory=DashboardProperties,
         converter=create_object_converter(DashboardProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class InsightRuleProperties(ResourceProperties):
+    RuleBody = attrib(default=None)
+    RuleName = attrib(default=None)
+    RuleState = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class InsightRule(Resource):
+    """A Insight Rule for CloudWatch.
+
+    See Also:
+        `AWS Cloud Formation documentation for InsightRule
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-insightrule.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudWatch::InsightRule"
+
+    Properties: InsightRuleProperties = attrib(
+        factory=InsightRuleProperties,
+        converter=create_object_converter(InsightRuleProperties),
     )

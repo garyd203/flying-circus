@@ -94,6 +94,7 @@ class Fleet(Resource):
 
 @attrs(**ATTRSCONFIG)
 class ImageBuilderProperties(ResourceProperties):
+    AccessEndpoints = attrib(default=None)
     AppstreamAgentVersion = attrib(default=None)
     Description = attrib(default=None)
     DisplayName = attrib(default=None)
@@ -126,11 +127,13 @@ class ImageBuilder(Resource):
 
 @attrs(**ATTRSCONFIG)
 class StackProperties(ResourceProperties):
+    AccessEndpoints = attrib(default=None)
     ApplicationSettings = attrib(default=None)
     AttributesToDelete = attrib(default=None)
     DeleteStorageConnectors = attrib(default=None)
     Description = attrib(default=None)
     DisplayName = attrib(default=None)
+    EmbedHostDomains = attrib(default=None)
     FeedbackURL = attrib(default=None)
     Name = attrib(default=None)
     RedirectURL = attrib(default=None)
