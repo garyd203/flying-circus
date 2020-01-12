@@ -15,7 +15,43 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Bucket", "BucketProperties", "BucketPolicy", "BucketPolicyProperties"]
+__all__ = [
+    "AccessPoint",
+    "AccessPointProperties",
+    "Bucket",
+    "BucketProperties",
+    "BucketPolicy",
+    "BucketPolicyProperties",
+]
+
+
+@attrs(**ATTRSCONFIG)
+class AccessPointProperties(ResourceProperties):
+    Bucket = attrib(default=None)
+    CreationDate = attrib(default=None)
+    Name = attrib(default=None)
+    NetworkOrigin = attrib(default=None)
+    Policy = attrib(default=None)
+    PolicyStatus = attrib(default=None)
+    PublicAccessBlockConfiguration = attrib(default=None)
+    VpcConfiguration = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class AccessPoint(Resource):
+    """A Access Point for S3.
+
+    See Also:
+        `AWS Cloud Formation documentation for AccessPoint
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-accesspoint.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::S3::AccessPoint"
+
+    Properties: AccessPointProperties = attrib(
+        factory=AccessPointProperties,
+        converter=create_object_converter(AccessPointProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)

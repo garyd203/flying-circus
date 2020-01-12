@@ -223,6 +223,7 @@ class UserProperties(ResourceProperties):
     Path = attrib(default=None)
     PermissionsBoundary = attrib(default=None)
     Policies = attrib(default=None)
+    Tags = attrib(default=None)
     UserName = attrib(default=None)
 
 

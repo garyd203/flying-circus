@@ -44,8 +44,10 @@ class Activity(Resource):
 @attrs(**ATTRSCONFIG)
 class StateMachineProperties(ResourceProperties):
     DefinitionString = attrib(default=None)
+    LoggingConfiguration = attrib(default=None)
     RoleArn = attrib(default=None)
     StateMachineName = attrib(default=None)
+    StateMachineType = attrib(default=None)
     Tags = attrib(default=None)
 
 

@@ -43,6 +43,8 @@ __all__ = [
     "EIPAssociationProperties",
     "FlowLog",
     "FlowLogProperties",
+    "GatewayRouteTableAssociation",
+    "GatewayRouteTableAssociationProperties",
     "Host",
     "HostProperties",
     "Instance",
@@ -363,6 +365,7 @@ class EIPProperties(ResourceProperties):
     Domain = attrib(default=None)
     InstanceId = attrib(default=None)
     PublicIpv4Pool = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -453,6 +456,29 @@ class FlowLog(Resource):
 
     Properties: FlowLogProperties = attrib(
         factory=FlowLogProperties, converter=create_object_converter(FlowLogProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class GatewayRouteTableAssociationProperties(ResourceProperties):
+    GatewayId = attrib(default=None)
+    RouteTableId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class GatewayRouteTableAssociation(Resource):
+    """A Gateway Route Table Association for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for GatewayRouteTableAssociation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-gatewayroutetableassociation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::GatewayRouteTableAssociation"
+
+    Properties: GatewayRouteTableAssociationProperties = attrib(
+        factory=GatewayRouteTableAssociationProperties,
+        converter=create_object_converter(GatewayRouteTableAssociationProperties),
     )
 
 

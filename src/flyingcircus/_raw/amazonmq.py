@@ -39,6 +39,7 @@ class BrokerProperties(ResourceProperties):
     MaintenanceWindowStartTime = attrib(default=None)
     PubliclyAccessible = attrib(default=None)
     SecurityGroups = attrib(default=None)
+    StorageType = attrib(default=None)
     SubnetIds = attrib(default=None)
     Tags = attrib(default=None)
     Users = attrib(default=None)

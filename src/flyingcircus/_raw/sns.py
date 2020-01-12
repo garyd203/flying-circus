@@ -32,6 +32,7 @@ class SubscriptionProperties(ResourceProperties):
     FilterPolicy = attrib(default=None)
     Protocol = attrib(default=None)
     RawMessageDelivery = attrib(default=None)
+    RedrivePolicy = attrib(default=None)
     Region = attrib(default=None)
     TopicArn = attrib(default=None)
 
@@ -58,6 +59,7 @@ class TopicProperties(ResourceProperties):
     DisplayName = attrib(default=None)
     KmsMasterKeyId = attrib(default=None)
     Subscription = attrib(default=None)
+    Tags = attrib(default=None)
     TopicName = attrib(default=None)
 
 

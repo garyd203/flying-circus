@@ -15,7 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Cluster", "ClusterProperties"]
+__all__ = ["Cluster", "ClusterProperties", "Nodegroup", "NodegroupProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -39,4 +39,39 @@ class Cluster(Resource):
 
     Properties: ClusterProperties = attrib(
         factory=ClusterProperties, converter=create_object_converter(ClusterProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class NodegroupProperties(ResourceProperties):
+    AmiType = attrib(default=None)
+    ClusterName = attrib(default=None)
+    DiskSize = attrib(default=None)
+    ForceUpdateEnabled = attrib(default=None)
+    InstanceTypes = attrib(default=None)
+    Labels = attrib(default=None)
+    NodegroupName = attrib(default=None)
+    NodeRole = attrib(default=None)
+    ReleaseVersion = attrib(default=None)
+    RemoteAccess = attrib(default=None)
+    ScalingConfig = attrib(default=None)
+    Subnets = attrib(default=None)
+    Tags = attrib(default=None)
+    Version = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class Nodegroup(Resource):
+    """A Nodegroup for EKS.
+
+    See Also:
+        `AWS Cloud Formation documentation for Nodegroup
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EKS::Nodegroup"
+
+    Properties: NodegroupProperties = attrib(
+        factory=NodegroupProperties,
+        converter=create_object_converter(NodegroupProperties),
     )

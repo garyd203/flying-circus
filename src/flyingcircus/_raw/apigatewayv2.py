@@ -44,12 +44,20 @@ __all__ = [
 @attrs(**ATTRSCONFIG)
 class ApiProperties(ResourceProperties):
     ApiKeySelectionExpression = attrib(default=None)
+    BasePath = attrib(default=None)
+    Body = attrib(default=None)
+    BodyS3Location = attrib(default=None)
+    CorsConfiguration = attrib(default=None)
+    CredentialsArn = attrib(default=None)
     Description = attrib(default=None)
     DisableSchemaValidation = attrib(default=None)
+    FailOnWarnings = attrib(default=None)
     Name = attrib(default=None)
     ProtocolType = attrib(default=None)
+    RouteKey = attrib(default=None)
     RouteSelectionExpression = attrib(default=None)
     Tags = attrib(default=None)
+    Target = attrib(default=None)
     Version = attrib(default=None)
 
 
@@ -103,6 +111,7 @@ class AuthorizerProperties(ResourceProperties):
     AuthorizerUri = attrib(default=None)
     IdentitySource = attrib(default=None)
     IdentityValidationExpression = attrib(default=None)
+    JwtConfiguration = attrib(default=None)
     Name = attrib(default=None)
 
 
@@ -182,6 +191,7 @@ class IntegrationProperties(ResourceProperties):
     IntegrationType = attrib(default=None)
     IntegrationUri = attrib(default=None)
     PassthroughBehavior = attrib(default=None)
+    PayloadFormatVersion = attrib(default=None)
     RequestParameters = attrib(default=None)
     RequestTemplates = attrib(default=None)
     TemplateSelectionExpression = attrib(default=None)
@@ -321,6 +331,7 @@ class RouteResponse(Resource):
 class StageProperties(ResourceProperties):
     AccessLogSettings = attrib(default=None)
     ApiId = attrib(default=None)
+    AutoDeploy = attrib(default=None)
     ClientCertificateId = attrib(default=None)
     DefaultRouteSettings = attrib(default=None)
     DeploymentId = attrib(default=None)

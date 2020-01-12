@@ -86,6 +86,7 @@ class ApiKeyProperties(ResourceProperties):
     GenerateDistinctId = attrib(default=None)
     Name = attrib(default=None)
     StageKeys = attrib(default=None)
+    Tags = attrib(default=None)
     Value = attrib(default=None)
 
 
@@ -164,6 +165,7 @@ class BasePathMapping(Resource):
 @attrs(**ATTRSCONFIG)
 class ClientCertificateProperties(ResourceProperties):
     Description = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -263,6 +265,8 @@ class DomainNameProperties(ResourceProperties):
     DomainName = attrib(default=None)
     EndpointConfiguration = attrib(default=None)
     RegionalCertificateArn = attrib(default=None)
+    SecurityPolicy = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -429,6 +433,7 @@ class RestApiProperties(ResourceProperties):
     Name = attrib(default=None)
     Parameters = attrib(default=None)
     Policy = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -486,6 +491,7 @@ class UsagePlanProperties(ResourceProperties):
     ApiStages = attrib(default=None)
     Description = attrib(default=None)
     Quota = attrib(default=None)
+    Tags = attrib(default=None)
     Throttle = attrib(default=None)
     UsagePlanName = attrib(default=None)
 

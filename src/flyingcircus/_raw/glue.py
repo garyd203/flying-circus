@@ -247,6 +247,7 @@ class Job(Resource):
 @attrs(**ATTRSCONFIG)
 class MLTransformProperties(ResourceProperties):
     Description = attrib(default=None)
+    GlueVersion = attrib(default=None)
     InputRecordTables = attrib(default=None)
     MaxCapacity = attrib(default=None)
     MaxRetries = attrib(default=None)

@@ -21,6 +21,8 @@ from ..core import create_object_converter
 __all__ = [
     "Alias",
     "AliasProperties",
+    "EventInvokeConfig",
+    "EventInvokeConfigProperties",
     "EventSourceMapping",
     "EventSourceMappingProperties",
     "Function",
@@ -42,6 +44,7 @@ class AliasProperties(ResourceProperties):
     FunctionName = attrib(default=None)
     FunctionVersion = attrib(default=None)
     Name = attrib(default=None)
+    ProvisionedConcurrencyConfig = attrib(default=None)
     RoutingConfig = attrib(default=None)
 
 
@@ -66,12 +69,43 @@ class Alias(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class EventInvokeConfigProperties(ResourceProperties):
+    DestinationConfig = attrib(default=None)
+    FunctionName = attrib(default=None)
+    MaximumEventAgeInSeconds = attrib(default=None)
+    MaximumRetryAttempts = attrib(default=None)
+    Qualifier = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class EventInvokeConfig(Resource):
+    """A Event Invoke Config for Lambda.
+
+    See Also:
+        `AWS Cloud Formation documentation for EventInvokeConfig
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventinvokeconfig.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Lambda::EventInvokeConfig"
+
+    Properties: EventInvokeConfigProperties = attrib(
+        factory=EventInvokeConfigProperties,
+        converter=create_object_converter(EventInvokeConfigProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class EventSourceMappingProperties(ResourceProperties):
     BatchSize = attrib(default=None)
+    BisectBatchOnFunctionError = attrib(default=None)
+    DestinationConfig = attrib(default=None)
     Enabled = attrib(default=None)
     EventSourceArn = attrib(default=None)
     FunctionName = attrib(default=None)
     MaximumBatchingWindowInSeconds = attrib(default=None)
+    MaximumRecordAgeInSeconds = attrib(default=None)
+    MaximumRetryAttempts = attrib(default=None)
+    ParallelizationFactor = attrib(default=None)
     StartingPosition = attrib(default=None)
 
 
@@ -212,6 +246,7 @@ class VersionProperties(ResourceProperties):
     CodeSha256 = attrib(default=None)
     Description = attrib(default=None)
     FunctionName = attrib(default=None)
+    ProvisionedConcurrencyConfig = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

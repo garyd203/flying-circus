@@ -60,6 +60,8 @@ class CodeRepository(Resource):
 class EndpointProperties(ResourceProperties):
     EndpointConfigName = attrib(default=None)
     EndpointName = attrib(default=None)
+    ExcludeRetainedVariantProperties = attrib(default=None)
+    RetainAllVariantProperties = attrib(default=None)
     Tags = attrib(default=None)
 
 
