@@ -46,6 +46,10 @@ variables:
         'vm_image': 'ubuntu-latest',
         'py_version': '3.7'
       },
+      'Linux_Py38': {
+        'vm_image': 'ubuntu-latest',
+        'py_version': '3.8'
+      },
       'Mac_Py36': {
         'vm_image': 'macOS-latest',
         'py_version': '3.6'
@@ -54,6 +58,10 @@ variables:
         'vm_image': 'macOS-latest',
         'py_version': '3.7'
       },
+      'Mac_Py38': {
+        'vm_image': 'macOS-latest',
+        'py_version': '3.8'
+      },
       'Windows_Py36': {
         'vm_image': 'windows-latest',
         'py_version': '3.6'
@@ -61,6 +69,10 @@ variables:
       'Windows_Py37': {
         'vm_image': 'windows-latest',
         'py_version': '3.7'
+      },
+      'Windows_Py38': {
+        'vm_image': 'windows-latest',
+        'py_version': '3.8'
       }
     }
   # Simple command line script that validates an install of the library.
