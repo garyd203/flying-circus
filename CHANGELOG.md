@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 * Officially support Python 3.8
+* Update libraries: [attrs](https://pypi.org/project/attrs/19.3.0/)
 
 ## [v0.7.3] - 2020-01-13
 ### Changed
