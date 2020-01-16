@@ -270,7 +270,7 @@ class Ref(_Function):
 
 
 class Sub(_Function):
-    """Models the behaviour of Ref for Python objects.
+    """Models the behaviour of Sub for Python objects.
 
     See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-sub.html
     """
