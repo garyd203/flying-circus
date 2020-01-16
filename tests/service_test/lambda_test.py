@@ -174,7 +174,7 @@ class TestGetLambdaRuntime:
             version = get_lambda_runtime_for_this_process()
         assert version == "python3.6"
 
-    @pytest.mark.parametrize(("major", "minor"), [(3, 8)])
+    @pytest.mark.parametrize(("major", "minor"), [(3, 9)])
     def test_newer_version3_systems_should_raise_error(self, major, minor):
         with self._mock_python_version(major, minor):
             with pytest.raises(ValueError, match="version '3"):
