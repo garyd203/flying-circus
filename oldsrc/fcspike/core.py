@@ -33,7 +33,7 @@ class AWSObject(object):
         for key, value in kwargs.items():
             self.add(key, value)
 
-    # TODO Name. distinguish betwen logical name (for the stack) and physical name (for the created resource). store logical name on the object.
+    # TODO Name. distinguish between logical name (for the stack) and physical name (for the created resource). store logical name on the object.
     # TODO add?
     # TODO canonicalise
     # TODO dict-like interface to set/get fields
