@@ -12,6 +12,6 @@ from .._raw.ssm import *
 
 # Also provide an alias for the SSM Parameter resource, to reduce conflicts
 # with the top-level template Parameter object
-# FIXME do these as imports instead, so that pycharm type chekcing picks them up more reliably
+# FIXME do these as imports instead, so that pycharm type checking picks them up more reliably
 SSMParameter = _raw.Parameter
 SSMParameterProperties = _raw.ParameterProperties
