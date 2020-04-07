@@ -83,7 +83,7 @@ def simple_scaling_policy(alarm, asg_name, downscale=False):
 
     alarm.Properties.AlarmActions.append(Fn.Ref(scaling_policy))
     alarm.Properties.Dimensions.append(
-        # TODO logical class that wraps this up instead, and allows you to express in a mroe convenient way
+        # TODO logical class that wraps this up instead, and allows you to express in a more convenient way
         dict(Name="AutoScalingGroupName", Value=asg_name)
     )
     stack.Resources["ScalingAlarm"] = alarm
