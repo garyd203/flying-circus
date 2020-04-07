@@ -26,6 +26,8 @@ __all__ = [
     "ConfigurationRecorderProperties",
     "DeliveryChannel",
     "DeliveryChannelProperties",
+    "OrganizationConfigRule",
+    "OrganizationConfigRuleProperties",
     "RemediationConfiguration",
     "RemediationConfigurationProperties",
 ]
@@ -156,10 +158,39 @@ class DeliveryChannel(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class OrganizationConfigRuleProperties(ResourceProperties):
+    ExcludedAccounts = attrib(default=None)
+    OrganizationConfigRuleName = attrib(default=None)
+    OrganizationCustomRuleMetadata = attrib(default=None)
+    OrganizationManagedRuleMetadata = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class OrganizationConfigRule(Resource):
+    """A Organization Config Rule for Config.
+
+    See Also:
+        `AWS Cloud Formation documentation for OrganizationConfigRule
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-config-organizationconfigrule.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Config::OrganizationConfigRule"
+
+    Properties: OrganizationConfigRuleProperties = attrib(
+        factory=OrganizationConfigRuleProperties,
+        converter=create_object_converter(OrganizationConfigRuleProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class RemediationConfigurationProperties(ResourceProperties):
+    Automatic = attrib(default=None)
     ConfigRuleName = attrib(default=None)
+    ExecutionControls = attrib(default=None)
+    MaximumAutomaticAttempts = attrib(default=None)
     Parameters = attrib(default=None)
     ResourceType = attrib(default=None)
+    RetryAttemptSeconds = attrib(default=None)
     TargetId = attrib(default=None)
     TargetType = attrib(default=None)
     TargetVersion = attrib(default=None)

@@ -16,6 +16,8 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "CodeRepository",
+    "CodeRepositoryProperties",
     "Endpoint",
     "EndpointProperties",
     "EndpointConfig",
@@ -26,13 +28,40 @@ __all__ = [
     "NotebookInstanceProperties",
     "NotebookInstanceLifecycleConfig",
     "NotebookInstanceLifecycleConfigProperties",
+    "Workteam",
+    "WorkteamProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class CodeRepositoryProperties(ResourceProperties):
+    CodeRepositoryName = attrib(default=None)
+    GitConfig = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class CodeRepository(Resource):
+    """A Code Repository for SageMaker.
+
+    See Also:
+        `AWS Cloud Formation documentation for CodeRepository
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-coderepository.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::SageMaker::CodeRepository"
+
+    Properties: CodeRepositoryProperties = attrib(
+        factory=CodeRepositoryProperties,
+        converter=create_object_converter(CodeRepositoryProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)
 class EndpointProperties(ResourceProperties):
     EndpointConfigName = attrib(default=None)
     EndpointName = attrib(default=None)
+    ExcludeRetainedVariantProperties = attrib(default=None)
+    RetainAllVariantProperties = attrib(default=None)
     Tags = attrib(default=None)
 
 
@@ -160,4 +189,30 @@ class NotebookInstanceLifecycleConfig(Resource):
     Properties: NotebookInstanceLifecycleConfigProperties = attrib(
         factory=NotebookInstanceLifecycleConfigProperties,
         converter=create_object_converter(NotebookInstanceLifecycleConfigProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class WorkteamProperties(ResourceProperties):
+    Description = attrib(default=None)
+    MemberDefinitions = attrib(default=None)
+    NotificationConfiguration = attrib(default=None)
+    Tags = attrib(default=None)
+    WorkteamName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class Workteam(Resource):
+    """A Workteam for SageMaker.
+
+    See Also:
+        `AWS Cloud Formation documentation for Workteam
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-workteam.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::SageMaker::Workteam"
+
+    Properties: WorkteamProperties = attrib(
+        factory=WorkteamProperties,
+        converter=create_object_converter(WorkteamProperties),
     )

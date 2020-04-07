@@ -15,13 +15,44 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["EventBusPolicy", "EventBusPolicyProperties", "Rule", "RuleProperties"]
+__all__ = [
+    "EventBus",
+    "EventBusProperties",
+    "EventBusPolicy",
+    "EventBusPolicyProperties",
+    "Rule",
+    "RuleProperties",
+]
+
+
+@attrs(**ATTRSCONFIG)
+class EventBusProperties(ResourceProperties):
+    EventSourceName = attrib(default=None)
+    Name = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class EventBus(Resource):
+    """A Event Bus for Events.
+
+    See Also:
+        `AWS Cloud Formation documentation for EventBus
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Events::EventBus"
+
+    Properties: EventBusProperties = attrib(
+        factory=EventBusProperties,
+        converter=create_object_converter(EventBusProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)
 class EventBusPolicyProperties(ResourceProperties):
     Action = attrib(default=None)
     Condition = attrib(default=None)
+    EventBusName = attrib(default=None)
     Principal = attrib(default=None)
     StatementId = attrib(default=None)
 
@@ -46,6 +77,7 @@ class EventBusPolicy(Resource):
 @attrs(**ATTRSCONFIG)
 class RuleProperties(ResourceProperties):
     Description = attrib(default=None)
+    EventBusName = attrib(default=None)
     EventPattern = attrib(default=None)
     Name = attrib(default=None)
     RoleArn = attrib(default=None)

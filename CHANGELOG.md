@@ -5,6 +5,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+* Officially support Python 3.8
+* Update libraries: [attrs](https://pypi.org/project/attrs/19.3.0/)
+
+## [v0.7.3] - 2020-01-13
+### Changed
+* Update AWS Resource specification to v10.2.0
+
+## [v0.7.2] - 2019-11-05
+### Changed
+* Update AWS Resource specification to v7.1.0
+* Use [poetry](https://poetry.eustace.io/) for package management
+
+## [v0.7.1] - 2019-10-01
+### Changed
+* Update AWS Resource specification to v6.2.0
+
+## [v0.7.0] - 2019-08-06
+### Changed
+* Update AWS Resource specification to v4.3.0
+* Build and release with [Azure Pipelines](https://dev.azure.com/garyd203/flying-circus/_build/)
+
 ### Security
 * Upgrade to PyYAML v5.1 from v3.13. This addresses
   [CVE-2017-18342](https://security-tracker.debian.org/tracker/CVE-2017-18342),

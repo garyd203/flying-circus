@@ -33,7 +33,7 @@ from .yaml import CustomYamlObject
 #: so we instead provide our standard configuration as a set of arguments
 ATTRSCONFIG = dict(
     # TODO Consider whether we should have comparison. It's not normally needed, but it wouldn't hurt either
-    cmp=False,
+    eq=False,
     # Only allow known attributes. This requires all parent classes to also
     # have __slots__ defined.
     slots=True,

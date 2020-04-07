@@ -30,6 +30,8 @@ __all__ = [
     "DevEndpointProperties",
     "Job",
     "JobProperties",
+    "MLTransform",
+    "MLTransformProperties",
     "Partition",
     "PartitionProperties",
     "SecurityConfiguration",
@@ -38,6 +40,8 @@ __all__ = [
     "TableProperties",
     "Trigger",
     "TriggerProperties",
+    "Workflow",
+    "WorkflowProperties",
 ]
 
 
@@ -169,16 +173,20 @@ class Database(Resource):
 
 @attrs(**ATTRSCONFIG)
 class DevEndpointProperties(ResourceProperties):
+    Arguments = attrib(default=None)
     EndpointName = attrib(default=None)
     ExtraJarsS3Path = attrib(default=None)
     ExtraPythonLibsS3Path = attrib(default=None)
+    GlueVersion = attrib(default=None)
     NumberOfNodes = attrib(default=None)
+    NumberOfWorkers = attrib(default=None)
     PublicKey = attrib(default=None)
     RoleArn = attrib(default=None)
     SecurityConfiguration = attrib(default=None)
     SecurityGroupIds = attrib(default=None)
     SubnetId = attrib(default=None)
     Tags = attrib(default=None)
+    WorkerType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -206,12 +214,18 @@ class JobProperties(ResourceProperties):
     DefaultArguments = attrib(default=None)
     Description = attrib(default=None)
     ExecutionProperty = attrib(default=None)
+    GlueVersion = attrib(default=None)
     LogUri = attrib(default=None)
+    MaxCapacity = attrib(default=None)
     MaxRetries = attrib(default=None)
     Name = attrib(default=None)
+    NotificationProperty = attrib(default=None)
+    NumberOfWorkers = attrib(default=None)
     Role = attrib(default=None)
     SecurityConfiguration = attrib(default=None)
     Tags = attrib(default=None)
+    Timeout = attrib(default=None)
+    WorkerType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -227,6 +241,38 @@ class Job(Resource):
 
     Properties: JobProperties = attrib(
         factory=JobProperties, converter=create_object_converter(JobProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class MLTransformProperties(ResourceProperties):
+    Description = attrib(default=None)
+    GlueVersion = attrib(default=None)
+    InputRecordTables = attrib(default=None)
+    MaxCapacity = attrib(default=None)
+    MaxRetries = attrib(default=None)
+    Name = attrib(default=None)
+    NumberOfWorkers = attrib(default=None)
+    Role = attrib(default=None)
+    Timeout = attrib(default=None)
+    TransformParameters = attrib(default=None)
+    WorkerType = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class MLTransform(Resource):
+    """A Ml Transform for Glue.
+
+    See Also:
+        `AWS Cloud Formation documentation for MLTransform
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-mltransform.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Glue::MLTransform"
+
+    Properties: MLTransformProperties = attrib(
+        factory=MLTransformProperties,
+        converter=create_object_converter(MLTransformProperties),
     )
 
 
@@ -308,8 +354,10 @@ class TriggerProperties(ResourceProperties):
     Name = attrib(default=None)
     Predicate = attrib(default=None)
     Schedule = attrib(default=None)
+    StartOnCreation = attrib(default=None)
     Tags = attrib(default=None)
     Type = attrib(default=None)
+    WorkflowName = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -325,4 +373,29 @@ class Trigger(Resource):
 
     Properties: TriggerProperties = attrib(
         factory=TriggerProperties, converter=create_object_converter(TriggerProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class WorkflowProperties(ResourceProperties):
+    DefaultRunProperties = attrib(default=None)
+    Description = attrib(default=None)
+    Name = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class Workflow(Resource):
+    """A Workflow for Glue.
+
+    See Also:
+        `AWS Cloud Formation documentation for Workflow
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-workflow.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Glue::Workflow"
+
+    Properties: WorkflowProperties = attrib(
+        factory=WorkflowProperties,
+        converter=create_object_converter(WorkflowProperties),
     )

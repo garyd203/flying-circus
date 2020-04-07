@@ -22,6 +22,14 @@ __all__ = [
     "BuildProperties",
     "Fleet",
     "FleetProperties",
+    "GameSessionQueue",
+    "GameSessionQueueProperties",
+    "MatchmakingConfiguration",
+    "MatchmakingConfigurationProperties",
+    "MatchmakingRuleSet",
+    "MatchmakingRuleSetProperties",
+    "Script",
+    "ScriptProperties",
 ]
 
 
@@ -51,6 +59,7 @@ class Alias(Resource):
 @attrs(**ATTRSCONFIG)
 class BuildProperties(ResourceProperties):
     Name = attrib(default=None)
+    OperatingSystem = attrib(default=None)
     StorageLocation = attrib(default=None)
     Version = attrib(default=None)
 
@@ -74,14 +83,24 @@ class Build(Resource):
 @attrs(**ATTRSCONFIG)
 class FleetProperties(ResourceProperties):
     BuildId = attrib(default=None)
+    CertificateConfiguration = attrib(default=None)
     Description = attrib(default=None)
     DesiredEC2Instances = attrib(default=None)
     EC2InboundPermissions = attrib(default=None)
     EC2InstanceType = attrib(default=None)
+    FleetType = attrib(default=None)
+    InstanceRoleARN = attrib(default=None)
     LogPaths = attrib(default=None)
     MaxSize = attrib(default=None)
+    MetricGroups = attrib(default=None)
     MinSize = attrib(default=None)
     Name = attrib(default=None)
+    NewGameSessionProtectionPolicy = attrib(default=None)
+    PeerVpcAwsAccountId = attrib(default=None)
+    PeerVpcId = attrib(default=None)
+    ResourceCreationLimitPolicy = attrib(default=None)
+    RuntimeConfiguration = attrib(default=None)
+    ScriptId = attrib(default=None)
     ServerLaunchParameters = attrib(default=None)
     ServerLaunchPath = attrib(default=None)
 
@@ -99,4 +118,109 @@ class Fleet(Resource):
 
     Properties: FleetProperties = attrib(
         factory=FleetProperties, converter=create_object_converter(FleetProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class GameSessionQueueProperties(ResourceProperties):
+    Destinations = attrib(default=None)
+    Name = attrib(default=None)
+    PlayerLatencyPolicies = attrib(default=None)
+    TimeoutInSeconds = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class GameSessionQueue(Resource):
+    """A Game Session Queue for GameLift.
+
+    See Also:
+        `AWS Cloud Formation documentation for GameSessionQueue
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-gamelift-gamesessionqueue.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::GameLift::GameSessionQueue"
+
+    Properties: GameSessionQueueProperties = attrib(
+        factory=GameSessionQueueProperties,
+        converter=create_object_converter(GameSessionQueueProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class MatchmakingConfigurationProperties(ResourceProperties):
+    AcceptanceRequired = attrib(default=None)
+    AcceptanceTimeoutSeconds = attrib(default=None)
+    AdditionalPlayerCount = attrib(default=None)
+    BackfillMode = attrib(default=None)
+    CustomEventData = attrib(default=None)
+    Description = attrib(default=None)
+    GameProperties = attrib(default=None)
+    GameSessionData = attrib(default=None)
+    GameSessionQueueArns = attrib(default=None)
+    Name = attrib(default=None)
+    NotificationTarget = attrib(default=None)
+    RequestTimeoutSeconds = attrib(default=None)
+    RuleSetName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class MatchmakingConfiguration(Resource):
+    """A Matchmaking Configuration for GameLift.
+
+    See Also:
+        `AWS Cloud Formation documentation for MatchmakingConfiguration
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-gamelift-matchmakingconfiguration.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::GameLift::MatchmakingConfiguration"
+
+    Properties: MatchmakingConfigurationProperties = attrib(
+        factory=MatchmakingConfigurationProperties,
+        converter=create_object_converter(MatchmakingConfigurationProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class MatchmakingRuleSetProperties(ResourceProperties):
+    Name = attrib(default=None)
+    RuleSetBody = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class MatchmakingRuleSet(Resource):
+    """A Matchmaking Rule Set for GameLift.
+
+    See Also:
+        `AWS Cloud Formation documentation for MatchmakingRuleSet
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-gamelift-matchmakingruleset.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::GameLift::MatchmakingRuleSet"
+
+    Properties: MatchmakingRuleSetProperties = attrib(
+        factory=MatchmakingRuleSetProperties,
+        converter=create_object_converter(MatchmakingRuleSetProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ScriptProperties(ResourceProperties):
+    Name = attrib(default=None)
+    StorageLocation = attrib(default=None)
+    Version = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class Script(Resource):
+    """A Script for GameLift.
+
+    See Also:
+        `AWS Cloud Formation documentation for Script
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-gamelift-script.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::GameLift::Script"
+
+    Properties: ScriptProperties = attrib(
+        factory=ScriptProperties, converter=create_object_converter(ScriptProperties)
     )

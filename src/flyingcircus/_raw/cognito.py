@@ -24,8 +24,18 @@ __all__ = [
     "UserPoolProperties",
     "UserPoolClient",
     "UserPoolClientProperties",
+    "UserPoolDomain",
+    "UserPoolDomainProperties",
     "UserPoolGroup",
     "UserPoolGroupProperties",
+    "UserPoolIdentityProvider",
+    "UserPoolIdentityProviderProperties",
+    "UserPoolResourceServer",
+    "UserPoolResourceServerProperties",
+    "UserPoolRiskConfigurationAttachment",
+    "UserPoolRiskConfigurationAttachmentProperties",
+    "UserPoolUICustomizationAttachment",
+    "UserPoolUICustomizationAttachmentProperties",
     "UserPoolUser",
     "UserPoolUserProperties",
     "UserPoolUserToGroupAttachment",
@@ -35,6 +45,7 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class IdentityPoolProperties(ResourceProperties):
+    AllowClassicFlow = attrib(default=None)
     AllowUnauthenticatedIdentities = attrib(default=None)
     CognitoEvents = attrib(default=None)
     CognitoIdentityProviders = attrib(default=None)
@@ -97,6 +108,7 @@ class UserPoolProperties(ResourceProperties):
     EmailConfiguration = attrib(default=None)
     EmailVerificationMessage = attrib(default=None)
     EmailVerificationSubject = attrib(default=None)
+    EnabledMfas = attrib(default=None)
     LambdaConfig = attrib(default=None)
     MfaConfiguration = attrib(default=None)
     Policies = attrib(default=None)
@@ -105,8 +117,10 @@ class UserPoolProperties(ResourceProperties):
     SmsConfiguration = attrib(default=None)
     SmsVerificationMessage = attrib(default=None)
     UsernameAttributes = attrib(default=None)
+    UserPoolAddOns = attrib(default=None)
     UserPoolName = attrib(default=None)
     UserPoolTags = attrib(default=None)
+    VerificationMessageTemplate = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -128,11 +142,20 @@ class UserPool(Resource):
 
 @attrs(**ATTRSCONFIG)
 class UserPoolClientProperties(ResourceProperties):
+    AllowedOAuthFlows = attrib(default=None)
+    AllowedOAuthFlowsUserPoolClient = attrib(default=None)
+    AllowedOAuthScopes = attrib(default=None)
+    AnalyticsConfiguration = attrib(default=None)
+    CallbackURLs = attrib(default=None)
     ClientName = attrib(default=None)
+    DefaultRedirectURI = attrib(default=None)
     ExplicitAuthFlows = attrib(default=None)
     GenerateSecret = attrib(default=None)
+    LogoutURLs = attrib(default=None)
+    PreventUserExistenceErrors = attrib(default=None)
     ReadAttributes = attrib(default=None)
     RefreshTokenValidity = attrib(default=None)
+    SupportedIdentityProviders = attrib(default=None)
     UserPoolId = attrib(default=None)
     WriteAttributes = attrib(default=None)
 
@@ -151,6 +174,30 @@ class UserPoolClient(Resource):
     Properties: UserPoolClientProperties = attrib(
         factory=UserPoolClientProperties,
         converter=create_object_converter(UserPoolClientProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolDomainProperties(ResourceProperties):
+    CustomDomainConfig = attrib(default=None)
+    Domain = attrib(default=None)
+    UserPoolId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolDomain(Resource):
+    """A User Pool Domain for Cognito.
+
+    See Also:
+        `AWS Cloud Formation documentation for UserPoolDomain
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpooldomain.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Cognito::UserPoolDomain"
+
+    Properties: UserPoolDomainProperties = attrib(
+        factory=UserPoolDomainProperties,
+        converter=create_object_converter(UserPoolDomainProperties),
     )
 
 
@@ -181,7 +228,112 @@ class UserPoolGroup(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class UserPoolIdentityProviderProperties(ResourceProperties):
+    AttributeMapping = attrib(default=None)
+    IdpIdentifiers = attrib(default=None)
+    ProviderDetails = attrib(default=None)
+    ProviderName = attrib(default=None)
+    ProviderType = attrib(default=None)
+    UserPoolId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolIdentityProvider(Resource):
+    """A User Pool Identity Provider for Cognito.
+
+    See Also:
+        `AWS Cloud Formation documentation for UserPoolIdentityProvider
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolidentityprovider.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Cognito::UserPoolIdentityProvider"
+
+    Properties: UserPoolIdentityProviderProperties = attrib(
+        factory=UserPoolIdentityProviderProperties,
+        converter=create_object_converter(UserPoolIdentityProviderProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolResourceServerProperties(ResourceProperties):
+    Identifier = attrib(default=None)
+    Name = attrib(default=None)
+    Scopes = attrib(default=None)
+    UserPoolId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolResourceServer(Resource):
+    """A User Pool Resource Server for Cognito.
+
+    See Also:
+        `AWS Cloud Formation documentation for UserPoolResourceServer
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolresourceserver.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Cognito::UserPoolResourceServer"
+
+    Properties: UserPoolResourceServerProperties = attrib(
+        factory=UserPoolResourceServerProperties,
+        converter=create_object_converter(UserPoolResourceServerProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolRiskConfigurationAttachmentProperties(ResourceProperties):
+    AccountTakeoverRiskConfiguration = attrib(default=None)
+    ClientId = attrib(default=None)
+    CompromisedCredentialsRiskConfiguration = attrib(default=None)
+    RiskExceptionConfiguration = attrib(default=None)
+    UserPoolId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolRiskConfigurationAttachment(Resource):
+    """A User Pool Risk Configuration Attachment for Cognito.
+
+    See Also:
+        `AWS Cloud Formation documentation for UserPoolRiskConfigurationAttachment
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolriskconfigurationattachment.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Cognito::UserPoolRiskConfigurationAttachment"
+
+    Properties: UserPoolRiskConfigurationAttachmentProperties = attrib(
+        factory=UserPoolRiskConfigurationAttachmentProperties,
+        converter=create_object_converter(
+            UserPoolRiskConfigurationAttachmentProperties
+        ),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolUICustomizationAttachmentProperties(ResourceProperties):
+    ClientId = attrib(default=None)
+    CSS = attrib(default=None)
+    UserPoolId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class UserPoolUICustomizationAttachment(Resource):
+    """A User Pool Ui Customization Attachment for Cognito.
+
+    See Also:
+        `AWS Cloud Formation documentation for UserPoolUICustomizationAttachment
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpooluicustomizationattachment.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Cognito::UserPoolUICustomizationAttachment"
+
+    Properties: UserPoolUICustomizationAttachmentProperties = attrib(
+        factory=UserPoolUICustomizationAttachmentProperties,
+        converter=create_object_converter(UserPoolUICustomizationAttachmentProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class UserPoolUserProperties(ResourceProperties):
+    ClientMetadata = attrib(default=None)
     DesiredDeliveryMediums = attrib(default=None)
     ForceAliasCreation = attrib(default=None)
     MessageAction = attrib(default=None)

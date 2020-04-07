@@ -36,14 +36,20 @@ __all__ = [
     "CampaignProperties",
     "EmailChannel",
     "EmailChannelProperties",
+    "EmailTemplate",
+    "EmailTemplateProperties",
     "EventStream",
     "EventStreamProperties",
     "GCMChannel",
     "GCMChannelProperties",
+    "PushTemplate",
+    "PushTemplateProperties",
     "Segment",
     "SegmentProperties",
     "SMSChannel",
     "SMSChannelProperties",
+    "SmsTemplate",
+    "SmsTemplateProperties",
     "VoiceChannel",
     "VoiceChannelProperties",
 ]
@@ -197,6 +203,7 @@ class APNSVoipSandboxChannel(Resource):
 @attrs(**ATTRSCONFIG)
 class AppProperties(ResourceProperties):
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -280,6 +287,7 @@ class CampaignProperties(ResourceProperties):
     Schedule = attrib(default=None)
     SegmentId = attrib(default=None)
     SegmentVersion = attrib(default=None)
+    Tags = attrib(default=None)
     TreatmentDescription = attrib(default=None)
     TreatmentName = attrib(default=None)
 
@@ -325,6 +333,34 @@ class EmailChannel(Resource):
     Properties: EmailChannelProperties = attrib(
         factory=EmailChannelProperties,
         converter=create_object_converter(EmailChannelProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class EmailTemplateProperties(ResourceProperties):
+    DefaultSubstitutions = attrib(default=None)
+    HtmlPart = attrib(default=None)
+    Subject = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateDescription = attrib(default=None)
+    TemplateName = attrib(default=None)
+    TextPart = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class EmailTemplate(Resource):
+    """A Email Template for Pinpoint.
+
+    See Also:
+        `AWS Cloud Formation documentation for EmailTemplate
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpoint-emailtemplate.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Pinpoint::EmailTemplate"
+
+    Properties: EmailTemplateProperties = attrib(
+        factory=EmailTemplateProperties,
+        converter=create_object_converter(EmailTemplateProperties),
     )
 
 
@@ -377,6 +413,36 @@ class GCMChannel(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class PushTemplateProperties(ResourceProperties):
+    ADM = attrib(default=None)
+    APNS = attrib(default=None)
+    Baidu = attrib(default=None)
+    Default = attrib(default=None)
+    DefaultSubstitutions = attrib(default=None)
+    GCM = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateDescription = attrib(default=None)
+    TemplateName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class PushTemplate(Resource):
+    """A Push Template for Pinpoint.
+
+    See Also:
+        `AWS Cloud Formation documentation for PushTemplate
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpoint-pushtemplate.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Pinpoint::PushTemplate"
+
+    Properties: PushTemplateProperties = attrib(
+        factory=PushTemplateProperties,
+        converter=create_object_converter(PushTemplateProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class SMSChannelProperties(ResourceProperties):
     ApplicationId = attrib(default=None)
     Enabled = attrib(default=None)
@@ -407,6 +473,7 @@ class SegmentProperties(ResourceProperties):
     Dimensions = attrib(default=None)
     Name = attrib(default=None)
     SegmentGroups = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -422,6 +489,32 @@ class Segment(Resource):
 
     Properties: SegmentProperties = attrib(
         factory=SegmentProperties, converter=create_object_converter(SegmentProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class SmsTemplateProperties(ResourceProperties):
+    Body = attrib(default=None)
+    DefaultSubstitutions = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateDescription = attrib(default=None)
+    TemplateName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class SmsTemplate(Resource):
+    """A Sms Template for Pinpoint.
+
+    See Also:
+        `AWS Cloud Formation documentation for SmsTemplate
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpoint-smstemplate.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Pinpoint::SmsTemplate"
+
+    Properties: SmsTemplateProperties = attrib(
+        factory=SmsTemplateProperties,
+        converter=create_object_converter(SmsTemplateProperties),
     )
 
 

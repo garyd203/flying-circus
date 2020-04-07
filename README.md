@@ -146,10 +146,9 @@ help you. This is presented in the simple "Is/Is Not" format.
 
 Sure, of course you can. The [documentation will get you started](https://flying-circus.readthedocs.io/en/latest/getting_started.html).
 
-Flying Circus is currently in **Beta**. This means it is expected
-to work for the supported AWS services, and is in use by real customers.
-However, the details of the interface and implementation are still being
-validated and may change drastically.
+Flying Circus is currently in **Beta**. This means it is expected to work,
+and is in use by real customers. However, there is a possibility that the
+details of the interface may change in an incompatible way.
 
 # How Do I Help?
 
