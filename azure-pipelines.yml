@@ -121,6 +121,22 @@ stages:
               black --check src tests tools
             displayName: 'black'
 
+      - job: Spelling
+        timeoutInMinutes: 5
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(build_python_version)
+            displayName: 'Use Python $(build_python_version)'
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install spelling==0.9.0
+              python -m spelling
+            displayName: 'spelling'
+
       - job: Test
         timeoutInMinutes: 10
         strategy:
