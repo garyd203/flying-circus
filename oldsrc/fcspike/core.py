@@ -83,7 +83,7 @@ class AWSObject(object):
     def __getattr__(self, item):
         if item in self.AWS_ATTRIBUTES:
             return function.GetAtt(getattr(self, "logical_name", self.__class__.__name__),
-                                   item)  # TODO THis is obviously wrong for the logical name
+                                   item)  # TODO This is obviously wrong for the logical name
         if item in self._data:
             return self._data[item]
         raise AttributeError(item)
