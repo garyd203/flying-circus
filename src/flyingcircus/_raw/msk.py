@@ -28,6 +28,7 @@ class ClusterProperties(ResourceProperties):
     EnhancedMonitoring = attrib(default=None)
     KafkaVersion = attrib(default=None)
     NumberOfBrokerNodes = attrib(default=None)
+    OpenMonitoring = attrib(default=None)
     Tags = attrib(default=None)
 
 

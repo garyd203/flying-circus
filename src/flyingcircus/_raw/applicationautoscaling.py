@@ -32,6 +32,7 @@ class ScalableTargetProperties(ResourceProperties):
     ScalableDimension = attrib(default=None)
     ScheduledActions = attrib(default=None)
     ServiceNamespace = attrib(default=None)
+    SuspendedState = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

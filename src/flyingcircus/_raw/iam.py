@@ -165,12 +165,14 @@ class Policy(Resource):
 @attrs(**ATTRSCONFIG)
 class RoleProperties(ResourceProperties):
     AssumeRolePolicyDocument = attrib(default=None)
+    Description = attrib(default=None)
     ManagedPolicyArns = attrib(default=None)
     MaxSessionDuration = attrib(default=None)
     Path = attrib(default=None)
     PermissionsBoundary = attrib(default=None)
     Policies = attrib(default=None)
     RoleName = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -221,6 +223,7 @@ class UserProperties(ResourceProperties):
     Path = attrib(default=None)
     PermissionsBoundary = attrib(default=None)
     Policies = attrib(default=None)
+    Tags = attrib(default=None)
     UserName = attrib(default=None)
 
 

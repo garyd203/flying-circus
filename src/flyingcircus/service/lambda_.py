@@ -65,7 +65,7 @@ class Function(_raw.Function):
                     # everything after the first paragraph
                     if not line:
                         if not docstring_lines:
-                            # ...but just ignoire leading empty lines
+                            # ...but just ignore leading empty lines
                             continue
                         break
 
@@ -89,7 +89,12 @@ class Function(_raw.Function):
 #: Lambda Runtimes for Python that we know about.
 #: See `the definitive list in the AWS documentation
 #: <https://docs.aws.amazon.com/lambda/latest/dg/python-programming-model.html>`_
-_KNOWN_LAMBDA_RUNTIMES = {(2, 7): "python2.7", (3, 6): "python3.6", (3, 7): "python3.7"}
+_KNOWN_LAMBDA_RUNTIMES = {
+    (2, 7): "python2.7",
+    (3, 6): "python3.6",
+    (3, 7): "python3.7",
+    (3, 8): "python3.8",
+}
 
 
 def get_lambda_runtime_for_this_process() -> str:

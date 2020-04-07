@@ -15,7 +15,16 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Alarm", "AlarmProperties", "Dashboard", "DashboardProperties"]
+__all__ = [
+    "Alarm",
+    "AlarmProperties",
+    "AnomalyDetector",
+    "AnomalyDetectorProperties",
+    "Dashboard",
+    "DashboardProperties",
+    "InsightRule",
+    "InsightRuleProperties",
+]
 
 
 @attrs(**ATTRSCONFIG)
@@ -38,6 +47,7 @@ class AlarmProperties(ResourceProperties):
     Period = attrib(default=None)
     Statistic = attrib(default=None)
     Threshold = attrib(default=None)
+    ThresholdMetricId = attrib(default=None)
     TreatMissingData = attrib(default=None)
     Unit = attrib(default=None)
 
@@ -55,6 +65,32 @@ class Alarm(Resource):
 
     Properties: AlarmProperties = attrib(
         factory=AlarmProperties, converter=create_object_converter(AlarmProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class AnomalyDetectorProperties(ResourceProperties):
+    Configuration = attrib(default=None)
+    Dimensions = attrib(default=None)
+    MetricName = attrib(default=None)
+    Namespace = attrib(default=None)
+    Stat = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class AnomalyDetector(Resource):
+    """A Anomaly Detector for CloudWatch.
+
+    See Also:
+        `AWS Cloud Formation documentation for AnomalyDetector
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-anomalydetector.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudWatch::AnomalyDetector"
+
+    Properties: AnomalyDetectorProperties = attrib(
+        factory=AnomalyDetectorProperties,
+        converter=create_object_converter(AnomalyDetectorProperties),
     )
 
 
@@ -78,4 +114,28 @@ class Dashboard(Resource):
     Properties: DashboardProperties = attrib(
         factory=DashboardProperties,
         converter=create_object_converter(DashboardProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class InsightRuleProperties(ResourceProperties):
+    RuleBody = attrib(default=None)
+    RuleName = attrib(default=None)
+    RuleState = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class InsightRule(Resource):
+    """A Insight Rule for CloudWatch.
+
+    See Also:
+        `AWS Cloud Formation documentation for InsightRule
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-insightrule.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudWatch::InsightRule"
+
+    Properties: InsightRuleProperties = attrib(
+        factory=InsightRuleProperties,
+        converter=create_object_converter(InsightRuleProperties),
     )

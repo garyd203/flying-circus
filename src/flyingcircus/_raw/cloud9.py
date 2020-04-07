@@ -27,6 +27,7 @@ class EnvironmentEC2Properties(ResourceProperties):
     OwnerArn = attrib(default=None)
     Repositories = attrib(default=None)
     SubnetId = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

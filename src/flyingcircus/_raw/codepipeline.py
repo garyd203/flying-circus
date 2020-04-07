@@ -33,6 +33,7 @@ class CustomActionTypeProperties(ResourceProperties):
     OutputArtifactDetails = attrib(default=None)
     Provider = attrib(default=None)
     Settings = attrib(default=None)
+    Tags = attrib(default=None)
     Version = attrib(default=None)
 
 
@@ -62,6 +63,7 @@ class PipelineProperties(ResourceProperties):
     RestartExecutionOnUpdate = attrib(default=None)
     RoleArn = attrib(default=None)
     Stages = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
