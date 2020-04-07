@@ -65,7 +65,7 @@ class Function(_raw.Function):
                     # everything after the first paragraph
                     if not line:
                         if not docstring_lines:
-                            # ...but just ignoire leading empty lines
+                            # ...but just ignore leading empty lines
                             continue
                         break
 

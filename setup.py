@@ -27,7 +27,7 @@ setup(
     long_description=get_readme(),
     long_description_content_type="text/markdown",
     # Project Packaging
-    # FIXME I think we are still packaging fcspike???
+    # FIXME I think we are still packaging `fcspike`???
     package_dir={"": "src"},
     packages=find_packages(where="src"),  # FIXME do we need this?
     install_requires=[

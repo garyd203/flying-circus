@@ -262,7 +262,7 @@ class TestYamlBasicFormatting:
 
         output = data.export("yaml")
 
-        # TODO I don't really like this sort order - vcapitalized items before lowercase items is a bit deceptive
+        # TODO I don't really like this sort order - capitalized items before lowercase items is a bit deceptive
         assert output == dedent(
             """
             ---
