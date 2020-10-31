@@ -53,8 +53,7 @@ target/
 
 # virtualenv
 .venv
-venv/
-venv3/
+venv*/
 ENV/
 
 # mkdocs documentation
