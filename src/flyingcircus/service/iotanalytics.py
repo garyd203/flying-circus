@@ -2,7 +2,7 @@
 
 See Also:
     `AWS developer guide for IoTAnalytics
-    <https://docs.aws.amazon.com/appsync/latest/devguide/welcome.html>`_
+    <https://aws.amazon.com/documentation/iotanalytics/>`_
 """
 
 # noinspection PyUnresolvedReferences
