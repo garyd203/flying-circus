@@ -24,10 +24,14 @@ __all__ = [
     "ConfigurationAggregatorProperties",
     "ConfigurationRecorder",
     "ConfigurationRecorderProperties",
+    "ConformancePack",
+    "ConformancePackProperties",
     "DeliveryChannel",
     "DeliveryChannelProperties",
     "OrganizationConfigRule",
     "OrganizationConfigRuleProperties",
+    "OrganizationConformancePack",
+    "OrganizationConformancePackProperties",
     "RemediationConfiguration",
     "RemediationConfigurationProperties",
 ]
@@ -37,6 +41,7 @@ __all__ = [
 class AggregationAuthorizationProperties(ResourceProperties):
     AuthorizedAccountId = attrib(default=None)
     AuthorizedAwsRegion = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -88,6 +93,7 @@ class ConfigurationAggregatorProperties(ResourceProperties):
     AccountAggregationSources = attrib(default=None)
     ConfigurationAggregatorName = attrib(default=None)
     OrganizationAggregationSource = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -128,6 +134,33 @@ class ConfigurationRecorder(Resource):
     Properties: ConfigurationRecorderProperties = attrib(
         factory=ConfigurationRecorderProperties,
         converter=create_object_converter(ConfigurationRecorderProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ConformancePackProperties(ResourceProperties):
+    ConformancePackInputParameters = attrib(default=None)
+    ConformancePackName = attrib(default=None)
+    DeliveryS3Bucket = attrib(default=None)
+    DeliveryS3KeyPrefix = attrib(default=None)
+    TemplateBody = attrib(default=None)
+    TemplateS3Uri = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ConformancePack(Resource):
+    """A Conformance Pack for Config.
+
+    See Also:
+        `AWS Cloud Formation documentation for ConformancePack
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-config-conformancepack.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Config::ConformancePack"
+
+    Properties: ConformancePackProperties = attrib(
+        factory=ConformancePackProperties,
+        converter=create_object_converter(ConformancePackProperties),
     )
 
 
@@ -179,6 +212,34 @@ class OrganizationConfigRule(Resource):
     Properties: OrganizationConfigRuleProperties = attrib(
         factory=OrganizationConfigRuleProperties,
         converter=create_object_converter(OrganizationConfigRuleProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class OrganizationConformancePackProperties(ResourceProperties):
+    ConformancePackInputParameters = attrib(default=None)
+    DeliveryS3Bucket = attrib(default=None)
+    DeliveryS3KeyPrefix = attrib(default=None)
+    ExcludedAccounts = attrib(default=None)
+    OrganizationConformancePackName = attrib(default=None)
+    TemplateBody = attrib(default=None)
+    TemplateS3Uri = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class OrganizationConformancePack(Resource):
+    """A Organization Conformance Pack for Config.
+
+    See Also:
+        `AWS Cloud Formation documentation for OrganizationConformancePack
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-config-organizationconformancepack.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Config::OrganizationConformancePack"
+
+    Properties: OrganizationConformancePackProperties = attrib(
+        factory=OrganizationConformancePackProperties,
+        converter=create_object_converter(OrganizationConformancePackProperties),
     )
 
 

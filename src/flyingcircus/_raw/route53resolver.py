@@ -18,6 +18,10 @@ from ..core import create_object_converter
 __all__ = [
     "ResolverEndpoint",
     "ResolverEndpointProperties",
+    "ResolverQueryLoggingConfig",
+    "ResolverQueryLoggingConfigProperties",
+    "ResolverQueryLoggingConfigAssociation",
+    "ResolverQueryLoggingConfigAssociationProperties",
     "ResolverRule",
     "ResolverRuleProperties",
     "ResolverRuleAssociation",
@@ -48,6 +52,54 @@ class ResolverEndpoint(Resource):
     Properties: ResolverEndpointProperties = attrib(
         factory=ResolverEndpointProperties,
         converter=create_object_converter(ResolverEndpointProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ResolverQueryLoggingConfigProperties(ResourceProperties):
+    DestinationArn = attrib(default=None)
+    Name = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ResolverQueryLoggingConfig(Resource):
+    """A Resolver Query Logging Config for Route53Resolver.
+
+    See Also:
+        `AWS Cloud Formation documentation for ResolverQueryLoggingConfig
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53resolver-resolverqueryloggingconfig.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Route53Resolver::ResolverQueryLoggingConfig"
+
+    Properties: ResolverQueryLoggingConfigProperties = attrib(
+        factory=ResolverQueryLoggingConfigProperties,
+        converter=create_object_converter(ResolverQueryLoggingConfigProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ResolverQueryLoggingConfigAssociationProperties(ResourceProperties):
+    ResolverQueryLogConfigId = attrib(default=None)
+    ResourceId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ResolverQueryLoggingConfigAssociation(Resource):
+    """A Resolver Query Logging Config Association for Route53Resolver.
+
+    See Also:
+        `AWS Cloud Formation documentation for ResolverQueryLoggingConfigAssociation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53resolver-resolverqueryloggingconfigassociation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation"
+
+    Properties: ResolverQueryLoggingConfigAssociationProperties = attrib(
+        factory=ResolverQueryLoggingConfigAssociationProperties,
+        converter=create_object_converter(
+            ResolverQueryLoggingConfigAssociationProperties
+        ),
     )
 
 

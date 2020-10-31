@@ -40,6 +40,7 @@ class ServerProperties(ResourceProperties):
     ServerName = attrib(default=None)
     ServiceRoleArn = attrib(default=None)
     SubnetIds = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

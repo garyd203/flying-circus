@@ -264,6 +264,7 @@ class DomainNameProperties(ResourceProperties):
     CertificateArn = attrib(default=None)
     DomainName = attrib(default=None)
     EndpointConfiguration = attrib(default=None)
+    MutualTlsAuthentication = attrib(default=None)
     RegionalCertificateArn = attrib(default=None)
     SecurityPolicy = attrib(default=None)
     Tags = attrib(default=None)

@@ -33,6 +33,7 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class DetectorProperties(ResourceProperties):
+    DataSources = attrib(default=None)
     Enable = attrib(default=None)
     FindingPublishingFrequency = attrib(default=None)
 

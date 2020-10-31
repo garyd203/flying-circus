@@ -15,11 +15,20 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Cluster", "ClusterProperties", "Nodegroup", "NodegroupProperties"]
+__all__ = [
+    "Cluster",
+    "ClusterProperties",
+    "FargateProfile",
+    "FargateProfileProperties",
+    "Nodegroup",
+    "NodegroupProperties",
+]
 
 
 @attrs(**ATTRSCONFIG)
 class ClusterProperties(ResourceProperties):
+    EncryptionConfig = attrib(default=None)
+    KubernetesNetworkConfig = attrib(default=None)
     Name = attrib(default=None)
     ResourcesVpcConfig = attrib(default=None)
     RoleArn = attrib(default=None)
@@ -43,6 +52,33 @@ class Cluster(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class FargateProfileProperties(ResourceProperties):
+    ClusterName = attrib(default=None)
+    FargateProfileName = attrib(default=None)
+    PodExecutionRoleArn = attrib(default=None)
+    Selectors = attrib(default=None)
+    Subnets = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class FargateProfile(Resource):
+    """A Fargate Profile for EKS.
+
+    See Also:
+        `AWS Cloud Formation documentation for FargateProfile
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-fargateprofile.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EKS::FargateProfile"
+
+    Properties: FargateProfileProperties = attrib(
+        factory=FargateProfileProperties,
+        converter=create_object_converter(FargateProfileProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class NodegroupProperties(ResourceProperties):
     AmiType = attrib(default=None)
     ClusterName = attrib(default=None)
@@ -50,6 +86,7 @@ class NodegroupProperties(ResourceProperties):
     ForceUpdateEnabled = attrib(default=None)
     InstanceTypes = attrib(default=None)
     Labels = attrib(default=None)
+    LaunchTemplate = attrib(default=None)
     NodegroupName = attrib(default=None)
     NodeRole = attrib(default=None)
     ReleaseVersion = attrib(default=None)

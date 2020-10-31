@@ -20,14 +20,17 @@ __all__ = ["DeliveryStream", "DeliveryStreamProperties"]
 
 @attrs(**ATTRSCONFIG)
 class DeliveryStreamProperties(ResourceProperties):
+    DeliveryStreamEncryptionConfigurationInput = attrib(default=None)
     DeliveryStreamName = attrib(default=None)
     DeliveryStreamType = attrib(default=None)
     ElasticsearchDestinationConfiguration = attrib(default=None)
     ExtendedS3DestinationConfiguration = attrib(default=None)
+    HttpEndpointDestinationConfiguration = attrib(default=None)
     KinesisStreamSourceConfiguration = attrib(default=None)
     RedshiftDestinationConfiguration = attrib(default=None)
     S3DestinationConfiguration = attrib(default=None)
     SplunkDestinationConfiguration = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

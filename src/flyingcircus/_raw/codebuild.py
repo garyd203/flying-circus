@@ -29,10 +29,12 @@ __all__ = [
 class ProjectProperties(ResourceProperties):
     Artifacts = attrib(default=None)
     BadgeEnabled = attrib(default=None)
+    BuildBatchConfig = attrib(default=None)
     Cache = attrib(default=None)
     Description = attrib(default=None)
     EncryptionKey = attrib(default=None)
     Environment = attrib(default=None)
+    FileSystemLocations = attrib(default=None)
     LogsConfig = attrib(default=None)
     Name = attrib(default=None)
     QueuedTimeoutInMinutes = attrib(default=None)
@@ -66,8 +68,10 @@ class Project(Resource):
 
 @attrs(**ATTRSCONFIG)
 class ReportGroupProperties(ResourceProperties):
+    DeleteReports = attrib(default=None)
     ExportConfig = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
     Type = attrib(default=None)
 
 

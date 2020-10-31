@@ -25,6 +25,8 @@ __all__ = [
     "MacroProperties",
     "Stack",
     "StackProperties",
+    "StackSet",
+    "StackSetProperties",
     "WaitCondition",
     "WaitConditionProperties",
     "WaitConditionHandle",
@@ -101,6 +103,40 @@ class Stack(Resource):
 
     Properties: StackProperties = attrib(
         factory=StackProperties, converter=create_object_converter(StackProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class StackSetProperties(ResourceProperties):
+    AdministrationRoleARN = attrib(default=None)
+    AutoDeployment = attrib(default=None)
+    Capabilities = attrib(default=None)
+    Description = attrib(default=None)
+    ExecutionRoleName = attrib(default=None)
+    OperationPreferences = attrib(default=None)
+    Parameters = attrib(default=None)
+    PermissionModel = attrib(default=None)
+    StackInstancesGroup = attrib(default=None)
+    StackSetName = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateBody = attrib(default=None)
+    TemplateURL = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class StackSet(Resource):
+    """A Stack Set for CloudFormation.
+
+    See Also:
+        `AWS Cloud Formation documentation for StackSet
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-stackset.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudFormation::StackSet"
+
+    Properties: StackSetProperties = attrib(
+        factory=StackSetProperties,
+        converter=create_object_converter(StackSetProperties),
     )
 
 

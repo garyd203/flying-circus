@@ -26,6 +26,7 @@ class FileSystemProperties(ResourceProperties):
     LustreConfiguration = attrib(default=None)
     SecurityGroupIds = attrib(default=None)
     StorageCapacity = attrib(default=None)
+    StorageType = attrib(default=None)
     SubnetIds = attrib(default=None)
     Tags = attrib(default=None)
     WindowsConfiguration = attrib(default=None)

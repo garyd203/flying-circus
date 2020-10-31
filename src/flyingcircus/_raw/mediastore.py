@@ -24,7 +24,9 @@ class ContainerProperties(ResourceProperties):
     ContainerName = attrib(default=None)
     CorsPolicy = attrib(default=None)
     LifecyclePolicy = attrib(default=None)
+    MetricPolicy = attrib(default=None)
     Policy = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

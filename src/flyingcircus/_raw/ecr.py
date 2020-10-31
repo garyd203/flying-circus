@@ -20,6 +20,8 @@ __all__ = ["Repository", "RepositoryProperties"]
 
 @attrs(**ATTRSCONFIG)
 class RepositoryProperties(ResourceProperties):
+    ImageScanningConfiguration = attrib(default=None)
+    ImageTagMutability = attrib(default=None)
     LifecyclePolicy = attrib(default=None)
     RepositoryName = attrib(default=None)
     RepositoryPolicyText = attrib(default=None)

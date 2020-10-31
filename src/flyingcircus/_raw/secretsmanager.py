@@ -52,6 +52,7 @@ class ResourcePolicy(Resource):
 
 @attrs(**ATTRSCONFIG)
 class RotationScheduleProperties(ResourceProperties):
+    HostedRotationLambda = attrib(default=None)
     RotationLambdaARN = attrib(default=None)
     RotationRules = attrib(default=None)
     SecretId = attrib(default=None)

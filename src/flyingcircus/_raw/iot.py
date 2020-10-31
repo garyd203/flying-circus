@@ -16,12 +16,16 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "Authorizer",
+    "AuthorizerProperties",
     "Certificate",
     "CertificateProperties",
     "Policy",
     "PolicyProperties",
     "PolicyPrincipalAttachment",
     "PolicyPrincipalAttachmentProperties",
+    "ProvisioningTemplate",
+    "ProvisioningTemplateProperties",
     "Thing",
     "ThingProperties",
     "ThingPrincipalAttachment",
@@ -32,7 +36,38 @@ __all__ = [
 
 
 @attrs(**ATTRSCONFIG)
+class AuthorizerProperties(ResourceProperties):
+    AuthorizerFunctionArn = attrib(default=None)
+    AuthorizerName = attrib(default=None)
+    SigningDisabled = attrib(default=None)
+    Status = attrib(default=None)
+    Tags = attrib(default=None)
+    TokenKeyName = attrib(default=None)
+    TokenSigningPublicKeys = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class Authorizer(Resource):
+    """A Authorizer for IoT.
+
+    See Also:
+        `AWS Cloud Formation documentation for Authorizer
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot-authorizer.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::IoT::Authorizer"
+
+    Properties: AuthorizerProperties = attrib(
+        factory=AuthorizerProperties,
+        converter=create_object_converter(AuthorizerProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class CertificateProperties(ResourceProperties):
+    CACertificatePem = attrib(default=None)
+    CertificateMode = attrib(default=None)
+    CertificatePem = attrib(default=None)
     CertificateSigningRequest = attrib(default=None)
     Status = attrib(default=None)
 
@@ -96,6 +131,34 @@ class PolicyPrincipalAttachment(Resource):
     Properties: PolicyPrincipalAttachmentProperties = attrib(
         factory=PolicyPrincipalAttachmentProperties,
         converter=create_object_converter(PolicyPrincipalAttachmentProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ProvisioningTemplateProperties(ResourceProperties):
+    Description = attrib(default=None)
+    Enabled = attrib(default=None)
+    PreProvisioningHook = attrib(default=None)
+    ProvisioningRoleArn = attrib(default=None)
+    Tags = attrib(default=None)
+    TemplateBody = attrib(default=None)
+    TemplateName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ProvisioningTemplate(Resource):
+    """A Provisioning Template for IoT.
+
+    See Also:
+        `AWS Cloud Formation documentation for ProvisioningTemplate
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot-provisioningtemplate.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::IoT::ProvisioningTemplate"
+
+    Properties: ProvisioningTemplateProperties = attrib(
+        factory=ProvisioningTemplateProperties,
+        converter=create_object_converter(ProvisioningTemplateProperties),
     )
 
 

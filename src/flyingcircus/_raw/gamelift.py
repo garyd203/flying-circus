@@ -22,6 +22,8 @@ __all__ = [
     "BuildProperties",
     "Fleet",
     "FleetProperties",
+    "GameServerGroup",
+    "GameServerGroupProperties",
     "GameSessionQueue",
     "GameSessionQueueProperties",
     "MatchmakingConfiguration",
@@ -122,6 +124,39 @@ class Fleet(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class GameServerGroupProperties(ResourceProperties):
+    AutoScalingPolicy = attrib(default=None)
+    BalancingStrategy = attrib(default=None)
+    DeleteOption = attrib(default=None)
+    GameServerGroupName = attrib(default=None)
+    GameServerProtectionPolicy = attrib(default=None)
+    InstanceDefinitions = attrib(default=None)
+    LaunchTemplate = attrib(default=None)
+    MaxSize = attrib(default=None)
+    MinSize = attrib(default=None)
+    RoleArn = attrib(default=None)
+    Tags = attrib(default=None)
+    VpcSubnets = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class GameServerGroup(Resource):
+    """A Game Server Group for GameLift.
+
+    See Also:
+        `AWS Cloud Formation documentation for GameServerGroup
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-gamelift-gameservergroup.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::GameLift::GameServerGroup"
+
+    Properties: GameServerGroupProperties = attrib(
+        factory=GameServerGroupProperties,
+        converter=create_object_converter(GameServerGroupProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class GameSessionQueueProperties(ResourceProperties):
     Destinations = attrib(default=None)
     Name = attrib(default=None)
@@ -154,6 +189,7 @@ class MatchmakingConfigurationProperties(ResourceProperties):
     BackfillMode = attrib(default=None)
     CustomEventData = attrib(default=None)
     Description = attrib(default=None)
+    FlexMatchMode = attrib(default=None)
     GameProperties = attrib(default=None)
     GameSessionData = attrib(default=None)
     GameSessionQueueArns = attrib(default=None)

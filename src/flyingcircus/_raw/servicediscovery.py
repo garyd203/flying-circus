@@ -33,6 +33,7 @@ __all__ = [
 class HttpNamespaceProperties(ResourceProperties):
     Description = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -80,6 +81,7 @@ class Instance(Resource):
 class PrivateDnsNamespaceProperties(ResourceProperties):
     Description = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
     Vpc = attrib(default=None)
 
 
@@ -104,6 +106,7 @@ class PrivateDnsNamespace(Resource):
 class PublicDnsNamespaceProperties(ResourceProperties):
     Description = attrib(default=None)
     Name = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -131,6 +134,7 @@ class ServiceProperties(ResourceProperties):
     HealthCheckCustomConfig = attrib(default=None)
     Name = attrib(default=None)
     NamespaceId = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

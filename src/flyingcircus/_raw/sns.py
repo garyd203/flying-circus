@@ -34,6 +34,7 @@ class SubscriptionProperties(ResourceProperties):
     RawMessageDelivery = attrib(default=None)
     RedrivePolicy = attrib(default=None)
     Region = attrib(default=None)
+    SubscriptionRoleArn = attrib(default=None)
     TopicArn = attrib(default=None)
 
 
@@ -56,7 +57,9 @@ class Subscription(Resource):
 
 @attrs(**ATTRSCONFIG)
 class TopicProperties(ResourceProperties):
+    ContentBasedDeduplication = attrib(default=None)
     DisplayName = attrib(default=None)
+    FifoTopic = attrib(default=None)
     KmsMasterKeyId = attrib(default=None)
     Subscription = attrib(default=None)
     Tags = attrib(default=None)

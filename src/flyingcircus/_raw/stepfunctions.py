@@ -43,12 +43,15 @@ class Activity(Resource):
 
 @attrs(**ATTRSCONFIG)
 class StateMachineProperties(ResourceProperties):
+    DefinitionS3Location = attrib(default=None)
     DefinitionString = attrib(default=None)
+    DefinitionSubstitutions = attrib(default=None)
     LoggingConfiguration = attrib(default=None)
     RoleArn = attrib(default=None)
     StateMachineName = attrib(default=None)
     StateMachineType = attrib(default=None)
     Tags = attrib(default=None)
+    TracingConfiguration = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

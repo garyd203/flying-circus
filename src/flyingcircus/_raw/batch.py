@@ -31,6 +31,7 @@ class ComputeEnvironmentProperties(ResourceProperties):
     ComputeResources = attrib(default=None)
     ServiceRole = attrib(default=None)
     State = attrib(default=None)
+    Tags = attrib(default=None)
     Type = attrib(default=None)
 
 
@@ -58,6 +59,7 @@ class JobDefinitionProperties(ResourceProperties):
     NodeProperties = attrib(default=None)
     Parameters = attrib(default=None)
     RetryStrategy = attrib(default=None)
+    Tags = attrib(default=None)
     Timeout = attrib(default=None)
     Type = attrib(default=None)
 
@@ -85,6 +87,7 @@ class JobQueueProperties(ResourceProperties):
     JobQueueName = attrib(default=None)
     Priority = attrib(default=None)
     State = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

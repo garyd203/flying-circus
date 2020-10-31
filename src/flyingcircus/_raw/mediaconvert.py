@@ -30,6 +30,7 @@ class JobTemplateProperties(ResourceProperties):
     AccelerationSettings = attrib(default=None)
     Category = attrib(default=None)
     Description = attrib(default=None)
+    HopDestinations = attrib(default=None)
     Name = attrib(default=None)
     Priority = attrib(default=None)
     Queue = attrib(default=None)

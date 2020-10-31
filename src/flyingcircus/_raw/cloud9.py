@@ -21,6 +21,7 @@ __all__ = ["EnvironmentEC2", "EnvironmentEC2Properties"]
 @attrs(**ATTRSCONFIG)
 class EnvironmentEC2Properties(ResourceProperties):
     AutomaticStopTimeMinutes = attrib(default=None)
+    ConnectionType = attrib(default=None)
     Description = attrib(default=None)
     InstanceType = attrib(default=None)
     Name = attrib(default=None)

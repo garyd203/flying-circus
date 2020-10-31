@@ -16,6 +16,8 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "CapacityProvider",
+    "CapacityProviderProperties",
     "Cluster",
     "ClusterProperties",
     "PrimaryTaskSet",
@@ -30,9 +32,35 @@ __all__ = [
 
 
 @attrs(**ATTRSCONFIG)
+class CapacityProviderProperties(ResourceProperties):
+    AutoScalingGroupProvider = attrib(default=None)
+    Name = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class CapacityProvider(Resource):
+    """A Capacity Provider for ECS.
+
+    See Also:
+        `AWS Cloud Formation documentation for CapacityProvider
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-capacityprovider.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ECS::CapacityProvider"
+
+    Properties: CapacityProviderProperties = attrib(
+        factory=CapacityProviderProperties,
+        converter=create_object_converter(CapacityProviderProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class ClusterProperties(ResourceProperties):
+    CapacityProviders = attrib(default=None)
     ClusterName = attrib(default=None)
     ClusterSettings = attrib(default=None)
+    DefaultCapacityProviderStrategy = attrib(default=None)
     Tags = attrib(default=None)
 
 
@@ -78,6 +106,7 @@ class PrimaryTaskSet(Resource):
 
 @attrs(**ATTRSCONFIG)
 class ServiceProperties(ResourceProperties):
+    CapacityProviderStrategy = attrib(default=None)
     Cluster = attrib(default=None)
     DeploymentConfiguration = attrib(default=None)
     DeploymentController = attrib(default=None)
@@ -93,6 +122,7 @@ class ServiceProperties(ResourceProperties):
     PropagateTags = attrib(default=None)
     Role = attrib(default=None)
     SchedulingStrategy = attrib(default=None)
+    ServiceArn = attrib(default=None)
     ServiceName = attrib(default=None)
     ServiceRegistries = attrib(default=None)
     Tags = attrib(default=None)

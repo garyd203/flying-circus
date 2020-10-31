@@ -24,6 +24,8 @@ __all__ = [
     "EndpointConfigProperties",
     "Model",
     "ModelProperties",
+    "MonitoringSchedule",
+    "MonitoringScheduleProperties",
     "NotebookInstance",
     "NotebookInstanceProperties",
     "NotebookInstanceLifecycleConfig",
@@ -84,6 +86,7 @@ class Endpoint(Resource):
 
 @attrs(**ATTRSCONFIG)
 class EndpointConfigProperties(ResourceProperties):
+    DataCaptureConfig = attrib(default=None)
     EndpointConfigName = attrib(default=None)
     KmsKeyId = attrib(default=None)
     ProductionVariants = attrib(default=None)
@@ -110,6 +113,7 @@ class EndpointConfig(Resource):
 @attrs(**ATTRSCONFIG)
 class ModelProperties(ResourceProperties):
     Containers = attrib(default=None)
+    EnableNetworkIsolation = attrib(default=None)
     ExecutionRoleArn = attrib(default=None)
     ModelName = attrib(default=None)
     PrimaryContainer = attrib(default=None)
@@ -130,6 +134,37 @@ class Model(Resource):
 
     Properties: ModelProperties = attrib(
         factory=ModelProperties, converter=create_object_converter(ModelProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class MonitoringScheduleProperties(ResourceProperties):
+    CreationTime = attrib(default=None)
+    EndpointName = attrib(default=None)
+    FailureReason = attrib(default=None)
+    LastModifiedTime = attrib(default=None)
+    LastMonitoringExecutionSummary = attrib(default=None)
+    MonitoringScheduleArn = attrib(default=None)
+    MonitoringScheduleConfig = attrib(default=None)
+    MonitoringScheduleName = attrib(default=None)
+    MonitoringScheduleStatus = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class MonitoringSchedule(Resource):
+    """A Monitoring Schedule for SageMaker.
+
+    See Also:
+        `AWS Cloud Formation documentation for MonitoringSchedule
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-monitoringschedule.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::SageMaker::MonitoringSchedule"
+
+    Properties: MonitoringScheduleProperties = attrib(
+        factory=MonitoringScheduleProperties,
+        converter=create_object_converter(MonitoringScheduleProperties),
     )
 
 

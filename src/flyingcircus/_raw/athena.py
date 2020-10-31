@@ -15,7 +15,40 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["NamedQuery", "NamedQueryProperties"]
+__all__ = [
+    "DataCatalog",
+    "DataCatalogProperties",
+    "NamedQuery",
+    "NamedQueryProperties",
+    "WorkGroup",
+    "WorkGroupProperties",
+]
+
+
+@attrs(**ATTRSCONFIG)
+class DataCatalogProperties(ResourceProperties):
+    Description = attrib(default=None)
+    Name = attrib(default=None)
+    Parameters = attrib(default=None)
+    Tags = attrib(default=None)
+    Type = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class DataCatalog(Resource):
+    """A Data Catalog for Athena.
+
+    See Also:
+        `AWS Cloud Formation documentation for DataCatalog
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Athena::DataCatalog"
+
+    Properties: DataCatalogProperties = attrib(
+        factory=DataCatalogProperties,
+        converter=create_object_converter(DataCatalogProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)
@@ -24,6 +57,7 @@ class NamedQueryProperties(ResourceProperties):
     Description = attrib(default=None)
     Name = attrib(default=None)
     QueryString = attrib(default=None)
+    WorkGroup = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -40,4 +74,32 @@ class NamedQuery(Resource):
     Properties: NamedQueryProperties = attrib(
         factory=NamedQueryProperties,
         converter=create_object_converter(NamedQueryProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class WorkGroupProperties(ResourceProperties):
+    Description = attrib(default=None)
+    Name = attrib(default=None)
+    RecursiveDeleteOption = attrib(default=None)
+    State = attrib(default=None)
+    Tags = attrib(default=None)
+    WorkGroupConfiguration = attrib(default=None)
+    WorkGroupConfigurationUpdates = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class WorkGroup(Resource):
+    """A Work Group for Athena.
+
+    See Also:
+        `AWS Cloud Formation documentation for WorkGroup
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::Athena::WorkGroup"
+
+    Properties: WorkGroupProperties = attrib(
+        factory=WorkGroupProperties,
+        converter=create_object_converter(WorkGroupProperties),
     )

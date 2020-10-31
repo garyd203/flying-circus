@@ -78,6 +78,7 @@ class CloudFormationProductProperties(ResourceProperties):
     Name = attrib(default=None)
     Owner = attrib(default=None)
     ProvisioningArtifactParameters = attrib(default=None)
+    ReplaceProvisioningArtifacts = attrib(default=None)
     SupportDescription = attrib(default=None)
     SupportEmail = attrib(default=None)
     SupportUrl = attrib(default=None)
@@ -106,6 +107,7 @@ class CloudFormationProvisionedProductProperties(ResourceProperties):
     AcceptLanguage = attrib(default=None)
     NotificationArns = attrib(default=None)
     PathId = attrib(default=None)
+    PathName = attrib(default=None)
     ProductId = attrib(default=None)
     ProductName = attrib(default=None)
     ProvisionedProductName = attrib(default=None)
@@ -163,6 +165,7 @@ class LaunchNotificationConstraint(Resource):
 class LaunchRoleConstraintProperties(ResourceProperties):
     AcceptLanguage = attrib(default=None)
     Description = attrib(default=None)
+    LocalRoleName = attrib(default=None)
     PortfolioId = attrib(default=None)
     ProductId = attrib(default=None)
     RoleArn = attrib(default=None)

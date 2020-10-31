@@ -16,10 +16,14 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "GatewayRoute",
+    "GatewayRouteProperties",
     "Mesh",
     "MeshProperties",
     "Route",
     "RouteProperties",
+    "VirtualGateway",
+    "VirtualGatewayProperties",
     "VirtualNode",
     "VirtualNodeProperties",
     "VirtualRouter",
@@ -27,6 +31,33 @@ __all__ = [
     "VirtualService",
     "VirtualServiceProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class GatewayRouteProperties(ResourceProperties):
+    GatewayRouteName = attrib(default=None)
+    MeshName = attrib(default=None)
+    MeshOwner = attrib(default=None)
+    Spec = attrib(default=None)
+    Tags = attrib(default=None)
+    VirtualGatewayName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class GatewayRoute(Resource):
+    """A Gateway Route for AppMesh.
+
+    See Also:
+        `AWS Cloud Formation documentation for GatewayRoute
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appmesh-gatewayroute.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::AppMesh::GatewayRoute"
+
+    Properties: GatewayRouteProperties = attrib(
+        factory=GatewayRouteProperties,
+        converter=create_object_converter(GatewayRouteProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)
@@ -55,6 +86,7 @@ class Mesh(Resource):
 @attrs(**ATTRSCONFIG)
 class RouteProperties(ResourceProperties):
     MeshName = attrib(default=None)
+    MeshOwner = attrib(default=None)
     RouteName = attrib(default=None)
     Spec = attrib(default=None)
     Tags = attrib(default=None)
@@ -78,8 +110,35 @@ class Route(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class VirtualGatewayProperties(ResourceProperties):
+    MeshName = attrib(default=None)
+    MeshOwner = attrib(default=None)
+    Spec = attrib(default=None)
+    Tags = attrib(default=None)
+    VirtualGatewayName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class VirtualGateway(Resource):
+    """A Virtual Gateway for AppMesh.
+
+    See Also:
+        `AWS Cloud Formation documentation for VirtualGateway
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appmesh-virtualgateway.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::AppMesh::VirtualGateway"
+
+    Properties: VirtualGatewayProperties = attrib(
+        factory=VirtualGatewayProperties,
+        converter=create_object_converter(VirtualGatewayProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class VirtualNodeProperties(ResourceProperties):
     MeshName = attrib(default=None)
+    MeshOwner = attrib(default=None)
     Spec = attrib(default=None)
     Tags = attrib(default=None)
     VirtualNodeName = attrib(default=None)
@@ -105,6 +164,7 @@ class VirtualNode(Resource):
 @attrs(**ATTRSCONFIG)
 class VirtualRouterProperties(ResourceProperties):
     MeshName = attrib(default=None)
+    MeshOwner = attrib(default=None)
     Spec = attrib(default=None)
     Tags = attrib(default=None)
     VirtualRouterName = attrib(default=None)
@@ -130,6 +190,7 @@ class VirtualRouter(Resource):
 @attrs(**ATTRSCONFIG)
 class VirtualServiceProperties(ResourceProperties):
     MeshName = attrib(default=None)
+    MeshOwner = attrib(default=None)
     Spec = attrib(default=None)
     Tags = attrib(default=None)
     VirtualServiceName = attrib(default=None)

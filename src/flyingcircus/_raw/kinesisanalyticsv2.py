@@ -34,6 +34,7 @@ class ApplicationProperties(ResourceProperties):
     ApplicationName = attrib(default=None)
     RuntimeEnvironment = attrib(default=None)
     ServiceExecutionRole = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

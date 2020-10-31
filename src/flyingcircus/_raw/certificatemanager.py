@@ -20,6 +20,8 @@ __all__ = ["Certificate", "CertificateProperties"]
 
 @attrs(**ATTRSCONFIG)
 class CertificateProperties(ResourceProperties):
+    CertificateAuthorityArn = attrib(default=None)
+    CertificateTransparencyLoggingPreference = attrib(default=None)
     DomainName = attrib(default=None)
     DomainValidationOptions = attrib(default=None)
     SubjectAlternativeNames = attrib(default=None)
