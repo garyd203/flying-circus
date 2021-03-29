@@ -133,8 +133,9 @@ stages:
 
           - script: |
               python -m pip install --upgrade pip
-              pip install spelling==0.9.0
-              python -m spelling
+              # TODO disabled pending bug fixes in `spelling` package
+              #pip install spelling
+              #python -m spelling
             displayName: 'spelling'
 
       - job: Test
