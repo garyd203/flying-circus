@@ -101,6 +101,7 @@ class IdentityPoolRoleAttachment(Resource):
 
 @attrs(**ATTRSCONFIG)
 class UserPoolProperties(ResourceProperties):
+    AccountRecoverySetting = attrib(default=None)
     AdminCreateUserConfig = attrib(default=None)
     AliasAttributes = attrib(default=None)
     AutoVerifiedAttributes = attrib(default=None)
@@ -117,6 +118,7 @@ class UserPoolProperties(ResourceProperties):
     SmsConfiguration = attrib(default=None)
     SmsVerificationMessage = attrib(default=None)
     UsernameAttributes = attrib(default=None)
+    UsernameConfiguration = attrib(default=None)
     UserPoolAddOns = attrib(default=None)
     UserPoolName = attrib(default=None)
     UserPoolTags = attrib(default=None)
@@ -142,6 +144,7 @@ class UserPool(Resource):
 
 @attrs(**ATTRSCONFIG)
 class UserPoolClientProperties(ResourceProperties):
+    AccessTokenValidity = attrib(default=None)
     AllowedOAuthFlows = attrib(default=None)
     AllowedOAuthFlowsUserPoolClient = attrib(default=None)
     AllowedOAuthScopes = attrib(default=None)
@@ -151,11 +154,13 @@ class UserPoolClientProperties(ResourceProperties):
     DefaultRedirectURI = attrib(default=None)
     ExplicitAuthFlows = attrib(default=None)
     GenerateSecret = attrib(default=None)
+    IdTokenValidity = attrib(default=None)
     LogoutURLs = attrib(default=None)
     PreventUserExistenceErrors = attrib(default=None)
     ReadAttributes = attrib(default=None)
     RefreshTokenValidity = attrib(default=None)
     SupportedIdentityProviders = attrib(default=None)
+    TokenValidityUnits = attrib(default=None)
     UserPoolId = attrib(default=None)
     WriteAttributes = attrib(default=None)
 

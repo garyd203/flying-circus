@@ -27,6 +27,7 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class BrokerProperties(ResourceProperties):
+    AuthenticationStrategy = attrib(default=None)
     AutoMinorVersionUpgrade = attrib(default=None)
     BrokerName = attrib(default=None)
     Configuration = attrib(default=None)
@@ -35,6 +36,7 @@ class BrokerProperties(ResourceProperties):
     EngineType = attrib(default=None)
     EngineVersion = attrib(default=None)
     HostInstanceType = attrib(default=None)
+    LdapServerMetadata = attrib(default=None)
     Logs = attrib(default=None)
     MaintenanceWindowStartTime = attrib(default=None)
     PubliclyAccessible = attrib(default=None)

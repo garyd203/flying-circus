@@ -31,6 +31,7 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class ListenerProperties(ResourceProperties):
+    AlpnPolicy = attrib(default=None)
     Certificates = attrib(default=None)
     DefaultActions = attrib(default=None)
     LoadBalancerArn = attrib(default=None)

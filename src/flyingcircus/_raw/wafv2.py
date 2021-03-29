@@ -24,6 +24,8 @@ __all__ = [
     "RuleGroupProperties",
     "WebACL",
     "WebACLProperties",
+    "WebACLAssociation",
+    "WebACLAssociationProperties",
 ]
 
 
@@ -131,4 +133,27 @@ class WebACL(Resource):
 
     Properties: WebACLProperties = attrib(
         factory=WebACLProperties, converter=create_object_converter(WebACLProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class WebACLAssociationProperties(ResourceProperties):
+    ResourceArn = attrib(default=None)
+    WebACLArn = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class WebACLAssociation(Resource):
+    """A Web Acl Association for WAFv2.
+
+    See Also:
+        `AWS Cloud Formation documentation for WebACLAssociation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webaclassociation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::WAFv2::WebACLAssociation"
+
+    Properties: WebACLAssociationProperties = attrib(
+        factory=WebACLAssociationProperties,
+        converter=create_object_converter(WebACLAssociationProperties),
     )

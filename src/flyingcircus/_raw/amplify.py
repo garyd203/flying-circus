@@ -33,6 +33,7 @@ class AppProperties(ResourceProperties):
     BuildSpec = attrib(default=None)
     CustomRules = attrib(default=None)
     Description = attrib(default=None)
+    EnableBranchAutoDeletion = attrib(default=None)
     EnvironmentVariables = attrib(default=None)
     IAMServiceRole = attrib(default=None)
     Name = attrib(default=None)
@@ -65,6 +66,7 @@ class BranchProperties(ResourceProperties):
     BuildSpec = attrib(default=None)
     Description = attrib(default=None)
     EnableAutoBuild = attrib(default=None)
+    EnablePerformanceMode = attrib(default=None)
     EnablePullRequestPreview = attrib(default=None)
     EnvironmentVariables = attrib(default=None)
     PullRequestEnvironmentName = attrib(default=None)
@@ -91,7 +93,10 @@ class Branch(Resource):
 @attrs(**ATTRSCONFIG)
 class DomainProperties(ResourceProperties):
     AppId = attrib(default=None)
+    AutoSubDomainCreationPatterns = attrib(default=None)
+    AutoSubDomainIAMRole = attrib(default=None)
     DomainName = attrib(default=None)
+    EnableAutoSubDomain = attrib(default=None)
     SubDomainSettings = attrib(default=None)
 
 

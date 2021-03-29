@@ -24,6 +24,10 @@ __all__ = [
     "DBInstanceProperties",
     "DBParameterGroup",
     "DBParameterGroupProperties",
+    "DBProxy",
+    "DBProxyProperties",
+    "DBProxyTargetGroup",
+    "DBProxyTargetGroupProperties",
     "DBSecurityGroup",
     "DBSecurityGroupProperties",
     "DBSecurityGroupIngress",
@@ -54,6 +58,7 @@ class DBClusterProperties(ResourceProperties):
     Engine = attrib(default=None)
     EngineMode = attrib(default=None)
     EngineVersion = attrib(default=None)
+    GlobalClusterIdentifier = attrib(default=None)
     KmsKeyId = attrib(default=None)
     MasterUsername = attrib(default=None)
     MasterUserPassword = attrib(default=None)
@@ -122,6 +127,7 @@ class DBInstanceProperties(ResourceProperties):
     AutoMinorVersionUpgrade = attrib(default=None)
     AvailabilityZone = attrib(default=None)
     BackupRetentionPeriod = attrib(default=None)
+    CACertificateIdentifier = attrib(default=None)
     CharacterSetName = attrib(default=None)
     CopyTagsToSnapshot = attrib(default=None)
     DBClusterIdentifier = attrib(default=None)
@@ -208,6 +214,62 @@ class DBParameterGroup(Resource):
     Properties: DBParameterGroupProperties = attrib(
         factory=DBParameterGroupProperties,
         converter=create_object_converter(DBParameterGroupProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class DBProxyProperties(ResourceProperties):
+    Auth = attrib(default=None)
+    DBProxyName = attrib(default=None)
+    DebugLogging = attrib(default=None)
+    EngineFamily = attrib(default=None)
+    IdleClientTimeout = attrib(default=None)
+    RequireTLS = attrib(default=None)
+    RoleArn = attrib(default=None)
+    Tags = attrib(default=None)
+    VpcSecurityGroupIds = attrib(default=None)
+    VpcSubnetIds = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class DBProxy(Resource):
+    """A Db Proxy for RDS.
+
+    See Also:
+        `AWS Cloud Formation documentation for DBProxy
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxy.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::RDS::DBProxy"
+
+    Properties: DBProxyProperties = attrib(
+        factory=DBProxyProperties, converter=create_object_converter(DBProxyProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class DBProxyTargetGroupProperties(ResourceProperties):
+    ConnectionPoolConfigurationInfo = attrib(default=None)
+    DBClusterIdentifiers = attrib(default=None)
+    DBInstanceIdentifiers = attrib(default=None)
+    DBProxyName = attrib(default=None)
+    TargetGroupName = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class DBProxyTargetGroup(Resource):
+    """A Db Proxy Target Group for RDS.
+
+    See Also:
+        `AWS Cloud Formation documentation for DBProxyTargetGroup
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxytargetgroup.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::RDS::DBProxyTargetGroup"
+
+    Properties: DBProxyTargetGroupProperties = attrib(
+        factory=DBProxyTargetGroupProperties,
+        converter=create_object_converter(DBProxyTargetGroupProperties),
     )
 
 

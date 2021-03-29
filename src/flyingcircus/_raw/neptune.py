@@ -31,20 +31,27 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class DBClusterProperties(ResourceProperties):
+    AssociatedRoles = attrib(default=None)
     AvailabilityZones = attrib(default=None)
     BackupRetentionPeriod = attrib(default=None)
     DBClusterIdentifier = attrib(default=None)
     DBClusterParameterGroupName = attrib(default=None)
     DBSubnetGroupName = attrib(default=None)
+    DeletionProtection = attrib(default=None)
     EnableCloudwatchLogsExports = attrib(default=None)
+    EngineVersion = attrib(default=None)
     IamAuthEnabled = attrib(default=None)
     KmsKeyId = attrib(default=None)
     Port = attrib(default=None)
     PreferredBackupWindow = attrib(default=None)
     PreferredMaintenanceWindow = attrib(default=None)
+    RestoreToTime = attrib(default=None)
+    RestoreType = attrib(default=None)
     SnapshotIdentifier = attrib(default=None)
+    SourceDBClusterIdentifier = attrib(default=None)
     StorageEncrypted = attrib(default=None)
     Tags = attrib(default=None)
+    UseLatestRestorableTime = attrib(default=None)
     VpcSecurityGroupIds = attrib(default=None)
 
 

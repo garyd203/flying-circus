@@ -37,14 +37,21 @@ __all__ = [
 
 @attrs(**ATTRSCONFIG)
 class AssociationProperties(ResourceProperties):
+    ApplyOnlyAtCronInterval = attrib(default=None)
     AssociationName = attrib(default=None)
+    AutomationTargetParameterName = attrib(default=None)
+    ComplianceSeverity = attrib(default=None)
     DocumentVersion = attrib(default=None)
     InstanceId = attrib(default=None)
+    MaxConcurrency = attrib(default=None)
+    MaxErrors = attrib(default=None)
     Name = attrib(default=None)
     OutputLocation = attrib(default=None)
     Parameters = attrib(default=None)
     ScheduleExpression = attrib(default=None)
+    SyncCompliance = attrib(default=None)
     Targets = attrib(default=None)
+    WaitForSuccessTimeoutSeconds = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -98,6 +105,7 @@ class MaintenanceWindowProperties(ResourceProperties):
     EndDate = attrib(default=None)
     Name = attrib(default=None)
     Schedule = attrib(default=None)
+    ScheduleOffset = attrib(default=None)
     ScheduleTimezone = attrib(default=None)
     StartDate = attrib(default=None)
     Tags = attrib(default=None)
@@ -184,6 +192,7 @@ class MaintenanceWindowTask(Resource):
 @attrs(**ATTRSCONFIG)
 class ParameterProperties(ResourceProperties):
     AllowedPattern = attrib(default=None)
+    DataType = attrib(default=None)
     Description = attrib(default=None)
     Name = attrib(default=None)
     Policies = attrib(default=None)
@@ -250,8 +259,11 @@ class ResourceDataSyncProperties(ResourceProperties):
     BucketPrefix = attrib(default=None)
     BucketRegion = attrib(default=None)
     KMSKeyArn = attrib(default=None)
+    S3Destination = attrib(default=None)
     SyncFormat = attrib(default=None)
     SyncName = attrib(default=None)
+    SyncSource = attrib(default=None)
+    SyncType = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

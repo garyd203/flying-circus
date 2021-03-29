@@ -15,12 +15,47 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["FileSystem", "FileSystemProperties", "MountTarget", "MountTargetProperties"]
+__all__ = [
+    "AccessPoint",
+    "AccessPointProperties",
+    "FileSystem",
+    "FileSystemProperties",
+    "MountTarget",
+    "MountTargetProperties",
+]
+
+
+@attrs(**ATTRSCONFIG)
+class AccessPointProperties(ResourceProperties):
+    AccessPointTags = attrib(default=None)
+    ClientToken = attrib(default=None)
+    FileSystemId = attrib(default=None)
+    PosixUser = attrib(default=None)
+    RootDirectory = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class AccessPoint(Resource):
+    """A Access Point for EFS.
+
+    See Also:
+        `AWS Cloud Formation documentation for AccessPoint
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-accesspoint.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EFS::AccessPoint"
+
+    Properties: AccessPointProperties = attrib(
+        factory=AccessPointProperties,
+        converter=create_object_converter(AccessPointProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)
 class FileSystemProperties(ResourceProperties):
+    BackupPolicy = attrib(default=None)
     Encrypted = attrib(default=None)
+    FileSystemPolicy = attrib(default=None)
     FileSystemTags = attrib(default=None)
     KmsKeyId = attrib(default=None)
     LifecyclePolicies = attrib(default=None)

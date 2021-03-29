@@ -106,7 +106,10 @@ class EventSourceMappingProperties(ResourceProperties):
     MaximumRecordAgeInSeconds = attrib(default=None)
     MaximumRetryAttempts = attrib(default=None)
     ParallelizationFactor = attrib(default=None)
+    Queues = attrib(default=None)
+    SourceAccessConfigurations = attrib(default=None)
     StartingPosition = attrib(default=None)
+    Topics = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -132,6 +135,7 @@ class FunctionProperties(ResourceProperties):
     DeadLetterConfig = attrib(default=None)
     Description = attrib(default=None)
     Environment = attrib(default=None)
+    FileSystemConfigs = attrib(default=None)
     FunctionName = attrib(default=None)
     Handler = attrib(default=None)
     KmsKeyArn = attrib(default=None)

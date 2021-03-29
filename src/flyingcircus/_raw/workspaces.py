@@ -15,7 +15,35 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Workspace", "WorkspaceProperties"]
+__all__ = [
+    "ConnectionAlias",
+    "ConnectionAliasProperties",
+    "Workspace",
+    "WorkspaceProperties",
+]
+
+
+@attrs(**ATTRSCONFIG)
+class ConnectionAliasProperties(ResourceProperties):
+    ConnectionString = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ConnectionAlias(Resource):
+    """A Connection Alias for WorkSpaces.
+
+    See Also:
+        `AWS Cloud Formation documentation for ConnectionAlias
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-connectionalias.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::WorkSpaces::ConnectionAlias"
+
+    Properties: ConnectionAliasProperties = attrib(
+        factory=ConnectionAliasProperties,
+        converter=create_object_converter(ConnectionAliasProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)

@@ -15,7 +15,7 @@ from ..core import Resource
 from ..core import ResourceProperties
 from ..core import create_object_converter
 
-__all__ = ["Ledger", "LedgerProperties"]
+__all__ = ["Ledger", "LedgerProperties", "Stream", "StreamProperties"]
 
 
 @attrs(**ATTRSCONFIG)
@@ -39,4 +39,31 @@ class Ledger(Resource):
 
     Properties: LedgerProperties = attrib(
         factory=LedgerProperties, converter=create_object_converter(LedgerProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class StreamProperties(ResourceProperties):
+    ExclusiveEndTime = attrib(default=None)
+    InclusiveStartTime = attrib(default=None)
+    KinesisConfiguration = attrib(default=None)
+    LedgerName = attrib(default=None)
+    RoleArn = attrib(default=None)
+    StreamName = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class Stream(Resource):
+    """A Stream for QLDB.
+
+    See Also:
+        `AWS Cloud Formation documentation for Stream
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-qldb-stream.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::QLDB::Stream"
+
+    Properties: StreamProperties = attrib(
+        factory=StreamProperties, converter=create_object_converter(StreamProperties)
     )

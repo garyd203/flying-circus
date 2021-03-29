@@ -57,6 +57,7 @@ class Channel(Resource):
 @attrs(**ATTRSCONFIG)
 class InputProperties(ResourceProperties):
     Destinations = attrib(default=None)
+    InputDevices = attrib(default=None)
     InputSecurityGroups = attrib(default=None)
     MediaConnectFlows = attrib(default=None)
     Name = attrib(default=None)

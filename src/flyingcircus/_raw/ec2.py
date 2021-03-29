@@ -21,6 +21,8 @@ from ..core import create_object_converter
 __all__ = [
     "CapacityReservation",
     "CapacityReservationProperties",
+    "CarrierGateway",
+    "CarrierGatewayProperties",
     "ClientVpnAuthorizationRule",
     "ClientVpnAuthorizationRuleProperties",
     "ClientVpnEndpoint",
@@ -53,6 +55,10 @@ __all__ = [
     "InternetGatewayProperties",
     "LaunchTemplate",
     "LaunchTemplateProperties",
+    "LocalGatewayRoute",
+    "LocalGatewayRouteProperties",
+    "LocalGatewayRouteTableVPCAssociation",
+    "LocalGatewayRouteTableVPCAssociationProperties",
     "NatGateway",
     "NatGatewayProperties",
     "NetworkAcl",
@@ -67,6 +73,8 @@ __all__ = [
     "NetworkInterfacePermissionProperties",
     "PlacementGroup",
     "PlacementGroupProperties",
+    "PrefixList",
+    "PrefixListProperties",
     "Route",
     "RouteProperties",
     "RouteTable",
@@ -173,6 +181,29 @@ class CapacityReservation(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class CarrierGatewayProperties(ResourceProperties):
+    Tags = attrib(default=None)
+    VpcId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class CarrierGateway(Resource):
+    """A Carrier Gateway for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for CarrierGateway
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-carriergateway.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::CarrierGateway"
+
+    Properties: CarrierGatewayProperties = attrib(
+        factory=CarrierGatewayProperties,
+        converter=create_object_converter(CarrierGatewayProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class ClientVpnAuthorizationRuleProperties(ResourceProperties):
     AccessGroupId = attrib(default=None)
     AuthorizeAllGroups = attrib(default=None)
@@ -205,10 +236,14 @@ class ClientVpnEndpointProperties(ResourceProperties):
     ConnectionLogOptions = attrib(default=None)
     Description = attrib(default=None)
     DnsServers = attrib(default=None)
+    SecurityGroupIds = attrib(default=None)
+    SelfServicePortal = attrib(default=None)
     ServerCertificateArn = attrib(default=None)
     SplitTunnel = attrib(default=None)
     TagSpecifications = attrib(default=None)
     TransportProtocol = attrib(default=None)
+    VpcId = attrib(default=None)
+    VpnPort = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -437,9 +472,12 @@ class FlowLogProperties(ResourceProperties):
     DeliverLogsPermissionArn = attrib(default=None)
     LogDestination = attrib(default=None)
     LogDestinationType = attrib(default=None)
+    LogFormat = attrib(default=None)
     LogGroupName = attrib(default=None)
+    MaxAggregationInterval = attrib(default=None)
     ResourceId = attrib(default=None)
     ResourceType = attrib(default=None)
+    Tags = attrib(default=None)
     TrafficType = attrib(default=None)
 
 
@@ -518,7 +556,9 @@ class InstanceProperties(ResourceProperties):
     EbsOptimized = attrib(default=None)
     ElasticGpuSpecifications = attrib(default=None)
     ElasticInferenceAccelerators = attrib(default=None)
+    HibernationOptions = attrib(default=None)
     HostId = attrib(default=None)
+    HostResourceGroupArn = attrib(default=None)
     IamInstanceProfile = attrib(default=None)
     ImageId = attrib(default=None)
     InstanceInitiatedShutdownBehavior = attrib(default=None)
@@ -608,6 +648,56 @@ class LaunchTemplate(Resource):
     Properties: LaunchTemplateProperties = attrib(
         factory=LaunchTemplateProperties,
         converter=create_object_converter(LaunchTemplateProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class LocalGatewayRouteProperties(ResourceProperties):
+    DestinationCidrBlock = attrib(default=None)
+    LocalGatewayRouteTableId = attrib(default=None)
+    LocalGatewayVirtualInterfaceGroupId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class LocalGatewayRoute(Resource):
+    """A Local Gateway Route for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for LocalGatewayRoute
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-localgatewayroute.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::LocalGatewayRoute"
+
+    Properties: LocalGatewayRouteProperties = attrib(
+        factory=LocalGatewayRouteProperties,
+        converter=create_object_converter(LocalGatewayRouteProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class LocalGatewayRouteTableVPCAssociationProperties(ResourceProperties):
+    LocalGatewayRouteTableId = attrib(default=None)
+    Tags = attrib(default=None)
+    VpcId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class LocalGatewayRouteTableVPCAssociation(Resource):
+    """A Local Gateway Route Table Vpc Association for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for LocalGatewayRouteTableVPCAssociation
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-localgatewayroutetablevpcassociation.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::LocalGatewayRouteTableVPCAssociation"
+
+    Properties: LocalGatewayRouteTableVPCAssociationProperties = attrib(
+        factory=LocalGatewayRouteTableVPCAssociationProperties,
+        converter=create_object_converter(
+            LocalGatewayRouteTableVPCAssociationProperties
+        ),
     )
 
 
@@ -792,16 +882,45 @@ class PlacementGroup(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class PrefixListProperties(ResourceProperties):
+    AddressFamily = attrib(default=None)
+    Entries = attrib(default=None)
+    MaxEntries = attrib(default=None)
+    PrefixListName = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class PrefixList(Resource):
+    """A Prefix List for EC2.
+
+    See Also:
+        `AWS Cloud Formation documentation for PrefixList
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-prefixlist.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EC2::PrefixList"
+
+    Properties: PrefixListProperties = attrib(
+        factory=PrefixListProperties,
+        converter=create_object_converter(PrefixListProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class RouteProperties(ResourceProperties):
+    CarrierGatewayId = attrib(default=None)
     DestinationCidrBlock = attrib(default=None)
     DestinationIpv6CidrBlock = attrib(default=None)
     EgressOnlyInternetGatewayId = attrib(default=None)
     GatewayId = attrib(default=None)
     InstanceId = attrib(default=None)
+    LocalGatewayId = attrib(default=None)
     NatGatewayId = attrib(default=None)
     NetworkInterfaceId = attrib(default=None)
     RouteTableId = attrib(default=None)
     TransitGatewayId = attrib(default=None)
+    VpcEndpointId = attrib(default=None)
     VpcPeeringConnectionId = attrib(default=None)
 
 
@@ -963,6 +1082,7 @@ class SubnetProperties(ResourceProperties):
     CidrBlock = attrib(default=None)
     Ipv6CidrBlock = attrib(default=None)
     MapPublicIpOnLaunch = attrib(default=None)
+    OutpostArn = attrib(default=None)
     Tags = attrib(default=None)
     VpcId = attrib(default=None)
 
@@ -1169,6 +1289,7 @@ class TransitGatewayProperties(ResourceProperties):
     DefaultRouteTablePropagation = attrib(default=None)
     Description = attrib(default=None)
     DnsSupport = attrib(default=None)
+    MulticastSupport = attrib(default=None)
     Tags = attrib(default=None)
     VpnEcmpSupport = attrib(default=None)
 
@@ -1641,6 +1762,8 @@ class VolumeProperties(ResourceProperties):
     Encrypted = attrib(default=None)
     Iops = attrib(default=None)
     KmsKeyId = attrib(default=None)
+    MultiAttachEnabled = attrib(default=None)
+    OutpostArn = attrib(default=None)
     Size = attrib(default=None)
     SnapshotId = attrib(default=None)
     Tags = attrib(default=None)

@@ -65,9 +65,11 @@ class EndpointProperties(ResourceProperties):
     EndpointType = attrib(default=None)
     EngineName = attrib(default=None)
     ExtraConnectionAttributes = attrib(default=None)
+    KafkaSettings = attrib(default=None)
     KinesisSettings = attrib(default=None)
     KmsKeyId = attrib(default=None)
     MongoDbSettings = attrib(default=None)
+    NeptuneSettings = attrib(default=None)
     Password = attrib(default=None)
     Port = attrib(default=None)
     S3Settings = attrib(default=None)
@@ -195,6 +197,7 @@ class ReplicationTaskProperties(ResourceProperties):
     TableMappings = attrib(default=None)
     Tags = attrib(default=None)
     TargetEndpointArn = attrib(default=None)
+    TaskData = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

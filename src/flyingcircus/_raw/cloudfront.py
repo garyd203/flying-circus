@@ -16,13 +16,41 @@ from ..core import ResourceProperties
 from ..core import create_object_converter
 
 __all__ = [
+    "CachePolicy",
+    "CachePolicyProperties",
     "CloudFrontOriginAccessIdentity",
     "CloudFrontOriginAccessIdentityProperties",
     "Distribution",
     "DistributionProperties",
+    "OriginRequestPolicy",
+    "OriginRequestPolicyProperties",
+    "RealtimeLogConfig",
+    "RealtimeLogConfigProperties",
     "StreamingDistribution",
     "StreamingDistributionProperties",
 ]
+
+
+@attrs(**ATTRSCONFIG)
+class CachePolicyProperties(ResourceProperties):
+    CachePolicyConfig = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class CachePolicy(Resource):
+    """A Cache Policy for CloudFront.
+
+    See Also:
+        `AWS Cloud Formation documentation for CachePolicy
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-cachepolicy.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudFront::CachePolicy"
+
+    Properties: CachePolicyProperties = attrib(
+        factory=CachePolicyProperties,
+        converter=create_object_converter(CachePolicyProperties),
+    )
 
 
 @attrs(**ATTRSCONFIG)
@@ -67,6 +95,53 @@ class Distribution(Resource):
     Properties: DistributionProperties = attrib(
         factory=DistributionProperties,
         converter=create_object_converter(DistributionProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class OriginRequestPolicyProperties(ResourceProperties):
+    OriginRequestPolicyConfig = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class OriginRequestPolicy(Resource):
+    """A Origin Request Policy for CloudFront.
+
+    See Also:
+        `AWS Cloud Formation documentation for OriginRequestPolicy
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originrequestpolicy.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudFront::OriginRequestPolicy"
+
+    Properties: OriginRequestPolicyProperties = attrib(
+        factory=OriginRequestPolicyProperties,
+        converter=create_object_converter(OriginRequestPolicyProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class RealtimeLogConfigProperties(ResourceProperties):
+    EndPoints = attrib(default=None)
+    Fields = attrib(default=None)
+    Name = attrib(default=None)
+    SamplingRate = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class RealtimeLogConfig(Resource):
+    """A Realtime Log Config for CloudFront.
+
+    See Also:
+        `AWS Cloud Formation documentation for RealtimeLogConfig
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-realtimelogconfig.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudFront::RealtimeLogConfig"
+
+    Properties: RealtimeLogConfigProperties = attrib(
+        factory=RealtimeLogConfigProperties,
+        converter=create_object_converter(RealtimeLogConfigProperties),
     )
 
 

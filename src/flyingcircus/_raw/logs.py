@@ -56,6 +56,7 @@ class Destination(Resource):
 
 @attrs(**ATTRSCONFIG)
 class LogGroupProperties(ResourceProperties):
+    KmsKeyId = attrib(default=None)
     LogGroupName = attrib(default=None)
     RetentionInDays = attrib(default=None)
 

@@ -20,6 +20,8 @@ __all__ = [
     "AlarmProperties",
     "AnomalyDetector",
     "AnomalyDetectorProperties",
+    "CompositeAlarm",
+    "CompositeAlarmProperties",
     "Dashboard",
     "DashboardProperties",
     "InsightRule",
@@ -95,6 +97,34 @@ class AnomalyDetector(Resource):
 
 
 @attrs(**ATTRSCONFIG)
+class CompositeAlarmProperties(ResourceProperties):
+    ActionsEnabled = attrib(default=None)
+    AlarmActions = attrib(default=None)
+    AlarmDescription = attrib(default=None)
+    AlarmName = attrib(default=None)
+    AlarmRule = attrib(default=None)
+    InsufficientDataActions = attrib(default=None)
+    OKActions = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class CompositeAlarm(Resource):
+    """A Composite Alarm for CloudWatch.
+
+    See Also:
+        `AWS Cloud Formation documentation for CompositeAlarm
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-compositealarm.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::CloudWatch::CompositeAlarm"
+
+    Properties: CompositeAlarmProperties = attrib(
+        factory=CompositeAlarmProperties,
+        converter=create_object_converter(CompositeAlarmProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
 class DashboardProperties(ResourceProperties):
     DashboardBody = attrib(default=None)
     DashboardName = attrib(default=None)
@@ -122,6 +152,7 @@ class InsightRuleProperties(ResourceProperties):
     RuleBody = attrib(default=None)
     RuleName = attrib(default=None)
     RuleState = attrib(default=None)
+    Tags = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

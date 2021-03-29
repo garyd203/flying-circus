@@ -20,6 +20,8 @@ __all__ = [
     "DiscovererProperties",
     "Registry",
     "RegistryProperties",
+    "RegistryPolicy",
+    "RegistryPolicyProperties",
     "Schema",
     "SchemaProperties",
 ]
@@ -70,6 +72,30 @@ class Registry(Resource):
     Properties: RegistryProperties = attrib(
         factory=RegistryProperties,
         converter=create_object_converter(RegistryProperties),
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class RegistryPolicyProperties(ResourceProperties):
+    Policy = attrib(default=None)
+    RegistryName = attrib(default=None)
+    RevisionId = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class RegistryPolicy(Resource):
+    """A Registry Policy for EventSchemas.
+
+    See Also:
+        `AWS Cloud Formation documentation for RegistryPolicy
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::EventSchemas::RegistryPolicy"
+
+    Properties: RegistryPolicyProperties = attrib(
+        factory=RegistryPolicyProperties,
+        converter=create_object_converter(RegistryPolicyProperties),
     )
 
 

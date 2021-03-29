@@ -18,6 +18,8 @@ from ..core import create_object_converter
 __all__ = [
     "Api",
     "ApiProperties",
+    "ApiGatewayManagedOverrides",
+    "ApiGatewayManagedOverridesProperties",
     "ApiMapping",
     "ApiMappingProperties",
     "Authorizer",
@@ -38,6 +40,8 @@ __all__ = [
     "RouteResponseProperties",
     "Stage",
     "StageProperties",
+    "VpcLink",
+    "VpcLinkProperties",
 ]
 
 
@@ -50,6 +54,7 @@ class ApiProperties(ResourceProperties):
     CorsConfiguration = attrib(default=None)
     CredentialsArn = attrib(default=None)
     Description = attrib(default=None)
+    DisableExecuteApiEndpoint = attrib(default=None)
     DisableSchemaValidation = attrib(default=None)
     FailOnWarnings = attrib(default=None)
     Name = attrib(default=None)
@@ -74,6 +79,31 @@ class Api(Resource):
 
     Properties: ApiProperties = attrib(
         factory=ApiProperties, converter=create_object_converter(ApiProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class ApiGatewayManagedOverridesProperties(ResourceProperties):
+    ApiId = attrib(default=None)
+    Integration = attrib(default=None)
+    Route = attrib(default=None)
+    Stage = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class ApiGatewayManagedOverrides(Resource):
+    """A Api Gateway Managed Overrides for ApiGatewayV2.
+
+    See Also:
+        `AWS Cloud Formation documentation for ApiGatewayManagedOverrides
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apigatewaymanagedoverrides.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ApiGatewayV2::ApiGatewayManagedOverrides"
+
+    Properties: ApiGatewayManagedOverridesProperties = attrib(
+        factory=ApiGatewayManagedOverridesProperties,
+        converter=create_object_converter(ApiGatewayManagedOverridesProperties),
     )
 
 
@@ -106,9 +136,11 @@ class ApiMapping(Resource):
 class AuthorizerProperties(ResourceProperties):
     ApiId = attrib(default=None)
     AuthorizerCredentialsArn = attrib(default=None)
+    AuthorizerPayloadFormatVersion = attrib(default=None)
     AuthorizerResultTtlInSeconds = attrib(default=None)
     AuthorizerType = attrib(default=None)
     AuthorizerUri = attrib(default=None)
+    EnableSimpleResponses = attrib(default=None)
     IdentitySource = attrib(default=None)
     IdentityValidationExpression = attrib(default=None)
     JwtConfiguration = attrib(default=None)
@@ -160,6 +192,7 @@ class Deployment(Resource):
 class DomainNameProperties(ResourceProperties):
     DomainName = attrib(default=None)
     DomainNameConfigurations = attrib(default=None)
+    MutualTlsAuthentication = attrib(default=None)
     Tags = attrib(default=None)
 
 
@@ -183,11 +216,13 @@ class DomainName(Resource):
 @attrs(**ATTRSCONFIG)
 class IntegrationProperties(ResourceProperties):
     ApiId = attrib(default=None)
+    ConnectionId = attrib(default=None)
     ConnectionType = attrib(default=None)
     ContentHandlingStrategy = attrib(default=None)
     CredentialsArn = attrib(default=None)
     Description = attrib(default=None)
     IntegrationMethod = attrib(default=None)
+    IntegrationSubtype = attrib(default=None)
     IntegrationType = attrib(default=None)
     IntegrationUri = attrib(default=None)
     PassthroughBehavior = attrib(default=None)
@@ -196,6 +231,7 @@ class IntegrationProperties(ResourceProperties):
     RequestTemplates = attrib(default=None)
     TemplateSelectionExpression = attrib(default=None)
     TimeoutInMillis = attrib(default=None)
+    TlsConfig = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -355,4 +391,28 @@ class Stage(Resource):
 
     Properties: StageProperties = attrib(
         factory=StageProperties, converter=create_object_converter(StageProperties)
+    )
+
+
+@attrs(**ATTRSCONFIG)
+class VpcLinkProperties(ResourceProperties):
+    Name = attrib(default=None)
+    SecurityGroupIds = attrib(default=None)
+    SubnetIds = attrib(default=None)
+    Tags = attrib(default=None)
+
+
+@attrs(**ATTRSCONFIG)
+class VpcLink(Resource):
+    """A Vpc Link for ApiGatewayV2.
+
+    See Also:
+        `AWS Cloud Formation documentation for VpcLink
+        <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-vpclink.html>`_
+    """
+
+    RESOURCE_TYPE = "AWS::ApiGatewayV2::VpcLink"
+
+    Properties: VpcLinkProperties = attrib(
+        factory=VpcLinkProperties, converter=create_object_converter(VpcLinkProperties)
     )

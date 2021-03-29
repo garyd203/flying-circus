@@ -28,6 +28,7 @@ __all__ = [
 @attrs(**ATTRSCONFIG)
 class DataLakeSettingsProperties(ResourceProperties):
     Admins = attrib(default=None)
+    TrustedResourceOwners = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

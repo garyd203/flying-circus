@@ -20,11 +20,14 @@ __all__ = ["Server", "ServerProperties", "User", "UserProperties"]
 
 @attrs(**ATTRSCONFIG)
 class ServerProperties(ResourceProperties):
+    Certificate = attrib(default=None)
     EndpointDetails = attrib(default=None)
     EndpointType = attrib(default=None)
     IdentityProviderDetails = attrib(default=None)
     IdentityProviderType = attrib(default=None)
     LoggingRole = attrib(default=None)
+    Protocols = attrib(default=None)
+    SecurityPolicyName = attrib(default=None)
     Tags = attrib(default=None)
 
 
@@ -47,6 +50,8 @@ class Server(Resource):
 @attrs(**ATTRSCONFIG)
 class UserProperties(ResourceProperties):
     HomeDirectory = attrib(default=None)
+    HomeDirectoryMappings = attrib(default=None)
+    HomeDirectoryType = attrib(default=None)
     Policy = attrib(default=None)
     Role = attrib(default=None)
     ServerId = attrib(default=None)

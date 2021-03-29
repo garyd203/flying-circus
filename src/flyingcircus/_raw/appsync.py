@@ -63,6 +63,7 @@ class ApiCache(Resource):
 @attrs(**ATTRSCONFIG)
 class ApiKeyProperties(ResourceProperties):
     ApiId = attrib(default=None)
+    ApiKeyId = attrib(default=None)
     Description = attrib(default=None)
     Expires = attrib(default=None)
 
@@ -125,6 +126,7 @@ class FunctionConfigurationProperties(ResourceProperties):
     RequestMappingTemplateS3Location = attrib(default=None)
     ResponseMappingTemplate = attrib(default=None)
     ResponseMappingTemplateS3Location = attrib(default=None)
+    SyncConfig = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)
@@ -153,6 +155,7 @@ class GraphQLApiProperties(ResourceProperties):
     OpenIDConnectConfig = attrib(default=None)
     Tags = attrib(default=None)
     UserPoolConfig = attrib(default=None)
+    XrayEnabled = attrib(default=None)
 
 
 @attrs(**ATTRSCONFIG)

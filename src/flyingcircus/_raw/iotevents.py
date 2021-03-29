@@ -23,6 +23,7 @@ class DetectorModelProperties(ResourceProperties):
     DetectorModelDefinition = attrib(default=None)
     DetectorModelDescription = attrib(default=None)
     DetectorModelName = attrib(default=None)
+    EvaluationMethod = attrib(default=None)
     Key = attrib(default=None)
     RoleArn = attrib(default=None)
     Tags = attrib(default=None)

@@ -34,6 +34,7 @@ class DBClusterProperties(ResourceProperties):
     DBClusterIdentifier = attrib(default=None)
     DBClusterParameterGroupName = attrib(default=None)
     DBSubnetGroupName = attrib(default=None)
+    DeletionProtection = attrib(default=None)
     EnableCloudwatchLogsExports = attrib(default=None)
     EngineVersion = attrib(default=None)
     KmsKeyId = attrib(default=None)
