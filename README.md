@@ -125,6 +125,8 @@ help you. This is presented in the simple "Is/Is Not" format.
 * ...a tool to make it easier to write YAML or JSON. You write Python, and YAML is an output format.
 * ...a DSL with a completely new syntax. You use normal Python syntax with all
   of it's features and nothing changed.
+* ...CDK.
+* ...multi-language, or even pseudo-multi-language (like CDK). Python has great support for typed objects, can directly run scripts without compilation, and has an easy learning curve. The hard part ut defining infrastructure is not having to leave your native application development language, it's learning the correct details and semantics of a large infrastructure library, as well as understanding a different deployment lifecycle.
 * ...a templating language, like Jinja2.
 * ...a template management tool, like Ansible.
 * ...an independent implementation of infrastructure management, like AWS
@@ -141,6 +143,7 @@ help you. This is presented in the simple "Is/Is Not" format.
 * ...a validation tool - although it could become this in the future, and
   already has elements of validation as a by-product of presenting a helpful
   interface to users.
+* ...Ben Kehoe's perfect cloud infrastructure tool. It just makes one hard aspect of the current tool a lot easier
 
 # Sounds Great, Can I Use It?
 
